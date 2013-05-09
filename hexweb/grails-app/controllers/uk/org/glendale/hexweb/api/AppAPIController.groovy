@@ -11,7 +11,7 @@ package uk.org.glendale.hexweb.api
 import grails.converters.JSON
 import uk.org.glendale.hexweb.MapInfo
 
-class AppController {
+class AppAPIController {
 
     def info() { 
 		MapInfo	info = MapInfo.findById(1)

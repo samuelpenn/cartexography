@@ -9,5 +9,21 @@ class UrlMappings {
 
 		"/"(view:"/index")
 		"500"(view:'/error')
+		
+		"/api/app/info" {
+			controller = "appAPI"
+			action = "info"
+		}
+		
+		"/api/map/$mapId/terrain" {
+			controller = "mapAPI"
+			action = "terrain"
+		}
+		
+		"/api/map/$mapId/map" {
+			controller = "mapAPI"
+			action = "map"
+		}
+
 	}
 }

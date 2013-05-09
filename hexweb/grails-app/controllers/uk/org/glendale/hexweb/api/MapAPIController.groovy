@@ -15,18 +15,18 @@ import uk.org.glendale.hexweb.Terrain
 
 import groovy.sql.Sql
 
-class MapController {
+class MapAPIController {
 
-    def terrain(int map) { 
-		MapInfo		info = MapInfo.findById(map)
+    def terrain(int mapId) { 
+		MapInfo		info = MapInfo.findById(mapId)
 		
 		List<Terrain>  list = Terrain.findAll()
 		
 		render list as JSON
 	}
 	
-	def oceanFill(int map) {
-		MapInfo		info = MapInfo.findById(map)
+	def oceanFill(int mapId) {
+		MapInfo		info = MapInfo.findById(mapId)
 		
 		Terrain		ocean = Terrain.findById(1)
 		
@@ -40,7 +40,7 @@ class MapController {
 		render "Done"
 	}
 	
-	def randomFill(int map) {
+	def randomFill(int mapId) {
 		MapInfo		info = MapInfo.findById(map)
 		
 		Terrain		ocean = Terrain.findById(1)
