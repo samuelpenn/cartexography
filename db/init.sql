@@ -24,6 +24,11 @@ create table terrain(id int not null auto_increment,
 insert into terrain values(1, 1, 'ocean', 'Ocean', true, '#0000FF', '  ', 0);
 insert into terrain values(2, 1, 'sea', 'Sea', true, '#7777FF', '  ', 0);
 insert into terrain values(3, 1, 'grass', 'Grassland', false, '#77FF77', '..', 0);
+insert into terrain values(4, 1, 'hills', 'Hills', false, '#55EE55', '~~', 0);
+insert into terrain values(5, 1, 'woods', 'Woodland', false, '#44AA44', 'ww', 0);
+insert into terrain values(6, 1, 'mixed_forest', 'Mixed Forest', false, '#338833', 'WW', 0);
+insert into terrain values(7, 1, 'cropland', 'Cropland', false, '#88FF88', '..', 0);
+
 
 create table map (id bigint not null auto_increment,
         mapinfo_id int,
