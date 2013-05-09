@@ -24,6 +24,11 @@ class UrlMappings {
 			controller = "mapAPI"
 			action = "map"
 		}
+		
+		"/api/map/$mapId/update" {
+			controller = "mapAPI"
+			action = "update"
+		}
 
 	}
 }

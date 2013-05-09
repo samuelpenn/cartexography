@@ -56,6 +56,8 @@
 				var y = Math.floor(py / 56);
 				
 				context.drawImage(images[TERRAIN].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
+				
+				$.getJSON("/hexweb/api/map/"+MAP_ID+"/update?x="+x+"&y="+y+"&terrain="+TERRAIN);
 			}
 
 			window.onload = function() {

@@ -99,4 +99,23 @@ class MapAPIController {
 		
 		render map as JSON
 	}
+	
+	def update(int mapId, int x, int y, int terrain) {
+		MapInfo		info = MapInfo.findById(mapId)
+		
+		println "Update: ${mapId}-${x},${y}"
+
+		Hex hex = Hex.findAll ({
+			eq("mapInfo", info)
+			eq("x", x)
+			eq("y", y)
+		}).first();
+		if (hex == null) {
+			println "Nothing found"
+		} else {
+			println "Found " + hex.x + "," + hex.y
+		}
+		hex.terrain = Terrain.findById(terrain);
+		hex.save();
+	}
 }
