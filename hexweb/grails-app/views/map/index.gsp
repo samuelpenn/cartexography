@@ -11,6 +11,8 @@
 			var		WIDTH = 32;
 			var		HEIGHT = 20;
 			
+			var		TERRAIN = 0;
+			
 			var		imagesToLoad = 0;
 			var		images = {};
 			var 	context = null;
@@ -32,6 +34,29 @@
 				
 				});
 			};
+			
+			function selectTerrain(id) {
+				$("#t"+TERRAIN).removeClass("sterrain");
+				TERRAIN = id;
+				$("#t"+TERRAIN).addClass("sterrain");
+			}
+			
+			function clickMap(event) {
+				var	px, py;
+				var canoffset = $("#map").offset();
+				px = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
+				py = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1;
+				
+				px -= 8;
+				py -= 8;
+				var x = Math.floor(px / 48);
+				if (x %2 == 1) {
+					py -= 28;
+				} 
+				var y = Math.floor(py / 56);
+				
+				context.drawImage(images[TERRAIN].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
+			}
 
 			window.onload = function() {
 				context = document.getElementById("map").getContext("2d");
@@ -49,13 +74,23 @@
 						d.image.onload = function() {
 							imagesToLoad--;
 						}
+						if (d.name == "ocean") {
+							TERRAIN = d.id;
+						}
+						
+						var h = "<li id='t"+d.id+"' onclick='selectTerrain("+d.id+")'>";
+						h += "<img src='"+BASE_PATH + d.name +".png'/>";
+						h += d.title;
+						h +="</li>";
+						$("#terrainPalette").append(h);
 					}
+					selectTerrain(TERRAIN);
 				});
 
 				while (imagesToLoad > 0) {
 				}
 				refreshMap();
-				
+				document.getElementById("map").addEventListener("mousedown", clickMap, false);
 			};
 			
 			
@@ -68,6 +103,7 @@
 				
 				refreshMap();
 			};
+			
 		</g:javascript>
 		
 		<r:layoutResources/>
@@ -92,6 +128,10 @@
 			left: 8px;
 			top: 8px;
 		}
+		li.sterrain {
+			background-color: #ddddff;
+			font-weight: bold;
+		}
 		
 	</style>
 	
@@ -107,6 +147,10 @@
 			<div>
 				<p><b>X: </b> <span id="x-orig-view">?</span></p>
 				<p><b>Y: </b> <span id="y-orig-view">?</span></p>
+			</div>
+			<div>
+				<ul id="terrainPalette">
+				</ul>
 			</div>
 		</div>
 		<canvas id="map" width="1600px" height="1200px"></canvas>
