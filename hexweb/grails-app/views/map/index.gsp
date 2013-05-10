@@ -28,10 +28,16 @@
 			var		things = {};
 			var 	context = null;
 			var		mapData = null;
+			
+			var		MAP = new Object();
 
 			function refreshMap() {
 				$.getJSON("/hexweb/api/map/"+MAP_ID+"/map?x="+X+"&y="+Y+"&w="+WIDTH+"&h="+HEIGHT, function(data) {
 					var mapData = data.map;
+					var	placeData = data.places;
+					
+					MAP.map = mapData;
+					MAP.places = placeData;
 
 					for (var y=0; y < 20; y++) {
 						for (var x=0; x < 32; x++) {
@@ -42,9 +48,19 @@
 					
 					$("#x-orig-view").html(X + " / " + MAP_WIDTH)
 					$("#y-orig-view").html(Y + " / " + MAP_HEIGHT)
+					
+					for (var i=0; i < placeData.length; i++) {
+						drawPlace(placeData[i]);
+					}
 				
 				});
 			};
+			
+			function drawPlace(p) {
+				var x = p.x * 48 - 24 + (p.sx * 65)/100;
+				var y = p.y * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
+				context.drawImage(things[p.thing_id].image, x, y, 65, 56);
+			}
 			
 			function selectTerrain(id) {
 				PAINT_MODE = PAINT_MODE_TERRAIN;
@@ -120,7 +136,10 @@
 					}
 
 					//context.drawImage(images[TERRAIN].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
-					$.getJSON("/hexweb/api/map/"+MAP_ID+"/place?x="+(X+x)+"&y="+(Y+y)+"&sx="+sx+"&sy="+sy+"&thingId="+THING);
+					$.getJSON("/hexweb/api/map/"+MAP_ID+"/place?x="+(X+x)+"&y="+(Y+y)+"&sx="+sx+"&sy="+sy+"&thingId="+THING, function (data) {
+						MAP.places.push(data);
+						drawPlace(data);
+					});
 					
 				}
 			}

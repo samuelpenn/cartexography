@@ -138,6 +138,8 @@ class MapAPIController {
 	 * array consisting only of the terrain id. Array is an array of rows, containing
 	 * columns.
 	 * 
+	 * Also returns any places that are located within the map area.
+	 * 
 	 * @param map	Map to get.
 	 * @param x		X coordinate of top left.
 	 * @param y		Y coordinate of top left.
@@ -168,8 +170,15 @@ class MapAPIController {
 		
 		println "Size: " + list.size()
 		
+		List places = Place.findAll ({
+			eq('mapInfo', info)
+			between('tileX', x, x + w -1)
+			between('tileY', y, y + h - 1)			
+		})
+		
 		Map data = new HashMap();
 		data.put("map", map)
+		data.put("places", places)
 		
 		render data as JSON
 	}
@@ -224,5 +233,7 @@ class MapAPIController {
 		place.save()
 		place.name = thing.name + "-" + place.id
 		place.save()
+		
+		render place as JSON
 	}
 }
