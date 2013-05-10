@@ -14,7 +14,6 @@ class Terrain {
 	String		title
 	boolean		water
 	String		colour
-	String		letter
 
     static constraints = {
     }

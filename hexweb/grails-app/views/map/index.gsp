@@ -41,7 +41,20 @@
 				$("#t"+TERRAIN).addClass("sterrain");
 			}
 			
+			var MOUSE_DOWN = 0;
+			function unclickMap(event) {
+				MOUSE_DOWN = 0;
+			}
+			
 			function clickMap(event) {
+				MOUSE_DOWN = 1;
+				drawMap(event);
+			}
+			
+			function drawMap(event) {
+				if (MOUSE_DOWN == 0) {
+					return;
+				}
 				var	px, py;
 				var canoffset = $("#map").offset();
 				px = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
@@ -55,9 +68,13 @@
 				} 
 				var y = Math.floor(py / 56);
 				
+				if (y < 0 || x < 0 || y >= HEIGHT || x >= WIDTH) {
+					return;
+				}
+				
 				context.drawImage(images[TERRAIN].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
 				
-				$.getJSON("/hexweb/api/map/"+MAP_ID+"/update?x="+x+"&y="+y+"&terrain="+TERRAIN);
+				$.getJSON("/hexweb/api/map/"+MAP_ID+"/update?x="+(X+x)+"&y="+(Y+y)+"&terrain="+TERRAIN);
 			}
 
 			window.onload = function() {
@@ -93,6 +110,9 @@
 				}
 				refreshMap();
 				document.getElementById("map").addEventListener("mousedown", clickMap, false);
+				document.getElementById("map").addEventListener("mouseup", unclickMap, false);
+				document.getElementById("map").addEventListener("mouseout", unclickMap, false);
+				document.getElementById("map").addEventListener("mousemove", drawMap, false);
 			};
 			
 			
