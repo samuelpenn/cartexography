@@ -8,8 +8,21 @@
  */
 package uk.org.glendale.hexweb.ui
 
-class MapController {
+import uk.org.glendale.hexweb.MapInfo
 
-    def index() { 
+
+
+class MapController {
+	def mapService
+
+    def editMap(String id) {
+		MapInfo info = mapService.getMapByNameOrId(id)
+		
+		if (info == null) {
+			throw new IllegalArgumentException("Map [${id}] not found")
+		}
+		
+		println "view: ${id}"
+		render(view: "index", model: [mapInfo: info]) 
 	}
 }

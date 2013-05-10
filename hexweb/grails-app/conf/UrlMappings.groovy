@@ -10,29 +10,52 @@ class UrlMappings {
 		"/"(view:"/index")
 		"500"(view:'/error')
 		
+		"/map/$id" {
+			controller = "map"
+			action = "editMap"
+			view = "index"
+		}
+		
+		"/map/$id/view" {
+			controller = "map"
+			action = "viewMap"
+			view = "index"
+		}
+		
+		
 		"/api/app/info" {
 			controller = "appAPI"
 			action = "info"
 		}
-		
-		"/api/map/$mapId/info" {
+
+		"/api/app/create" {
+			controller = "appAPI"
+			action = [ POST: "createMap" ]
+		}
+
+		"/api/map/$id/info" {
 			controller = "mapAPI"
-			action = "info"
+			action = [ GET: "info", PUT: "updateInfo" ]
 		}
 		
-		"/api/map/$mapId/terrain" {
+		"/api/map/$id/terrain" {
 			controller = "mapAPI"
 			action = "terrain"
 		}
 
-		"/api/map/$mapId/map" {
+		"/api/map/$id/map" {
 			controller = "mapAPI"
 			action = "map"
 		}
 		
-		"/api/map/$mapId/update" {
+		"/api/map/$id/update" {
 			controller = "mapAPI"
 			action = "update"
+		}
+
+		"/api/map/$id/fill" {
+			controller = "mapAPI"
+			action = "fillMap"
 		}
 
 	}

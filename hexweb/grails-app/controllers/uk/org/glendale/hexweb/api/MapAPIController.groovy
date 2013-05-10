@@ -16,32 +16,88 @@ import uk.org.glendale.hexweb.Terrain
 import groovy.sql.Sql
 
 class MapAPIController {
+	/** Common services for maps */
+	def mapService
+	def terrainService
 
-    def terrain(int mapId) { 
-		MapInfo		info = MapInfo.findById(mapId)
+	
+	/**
+	 * Returns information about this map.
+	 * 
+	 * GET: /api/map/{id}/info
+	 */
+	def info(String id) {
+		MapInfo	info = mapService.getMapByNameOrId(id)
 		
-		List<Terrain>  list = Terrain.findAll()
+		def data = [ info: info, terrain: getTerrain(info) ]
+		
+		render data as JSON
+	}
+	
+	private List getTerrain(MapInfo info) {
+		List<Terrain>  list = Terrain.findAllByMapInfo(info)
+		if (info.template > 0) {
+			MapInfo	template = mapService.getMapByNameOrId(info.template)
+			list.addAll(Terrain.findAllByMapInfo(template))
+		}
+		return list
+	}
+	
+	/**
+	 * Updates information about this map.
+	 * 
+	 * PUT: /api/map/{id}/info
+	 */
+	def updateInfo(String id, String title, int width, int height, int scale) {
+		MapInfo	info = mapService.getMapByNameOrId(id)
+		if (title != null) {
+			info.title = title
+		}
+		if (width > 0) {
+			info.width = width
+		}
+		if (height > 0) {
+			info.height = height
+		}
+		if (scale > 0) {
+			info.scale = scale
+		}
+		
+		render info as JSON
+	}
+
+	
+    def terrain(String id) { 
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		
+		List<Terrain>  list = Terrain.findAllByMapInfo(info)
+		if (info.template > 0) {
+			MapInfo	template = mapService.getMapByNameOrId(info.template)
+			list.addAll(Terrain.findAllByMapInfo(template))
+		}
 		
 		render list as JSON
 	}
 	
-	def oceanFill(int mapId) {
-		MapInfo		info = MapInfo.findById(mapId)
+	def fillMap(String id, String terrainId) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		Terrain		ocean = Terrain.findById(1)
+		Terrain		fill = terrainService.getTerrainByNameOrId(terrainId)
 		
 		for (int y=0; y < info.height; y++) {
 			for (int x=0; x < info.width; x++) {
-				Hex hex = new Hex(mapInfo: info, x: x, y: y, terrain: ocean)
-				hex.save()
+				if (mapService.getHex(info, x, y) == null) {
+					Hex hex = new Hex(mapInfo: info, x: x, y: y, terrain: fill)
+					hex.save()
+				}
 			}
 		}
 		
 		render "Done"
 	}
 	
-	def randomFill(int mapId) {
-		MapInfo		info = MapInfo.findById(map)
+	def randomFill(String id) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
 		
 		Terrain		ocean = Terrain.findById(1)
 		Terrain 	land = Terrain.findById(3)
@@ -60,13 +116,6 @@ class MapAPIController {
 		render "Done"
 	}
 	
-	/**
-	 * Returns information about this map.
-	 */
-	def info(int mapId) {
-		MapInfo	info = MapInfo.findById(mapId)
-		render info as JSON
-	}
 
 	
 	def sessionFactory
@@ -83,8 +132,8 @@ class MapAPIController {
 	 * @param h		Height.
 	 * @return
 	 */
-	def map(int mapId, int x, int y, int w, int h) {
-		MapInfo		info = MapInfo.findById(mapId)
+	def map(String id, int x, int y, int w, int h) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
 
 		int[][]		map = new int[h][w]
 		
@@ -109,18 +158,19 @@ class MapAPIController {
 		render map as JSON
 	}
 	
-	def update(int mapId, int x, int y, int terrain) {
-		MapInfo		info = MapInfo.findById(mapId)
+	def update(String id, int x, int y, int terrain) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		println "Update: ${mapId}-${x},${y}"
+		println "Update: ${id}-${x},${y}"
 
-		Hex hex = Hex.findAll ({
+		Hex hex = Hex.find ({
 			eq("mapInfo", info)
 			eq("x", x)
 			eq("y", y)
-		}).first();
+		});
 		if (hex == null) {
 			println "Nothing found"
+			hex = new Hex(x: x, y: y, mapInfo: info)
 		} else {
 			println "Found " + hex.x + "," + hex.y
 		}

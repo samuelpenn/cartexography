@@ -5,15 +5,15 @@
 		
 		<g:javascript>
 			var		BASE_PATH = "/hexweb/images/style/standard/terrain/";
-			var		MAP_ID = 1;
+			var		MAP_ID = ${mapInfo.id};
 			var		X = 0;
 			var		Y = 0;
 			var		WIDTH = 32;
 			var		HEIGHT = 20;
 			
-			var 	MAP_TITLE = "Unnamed";
-			var		MAP_WIDTH = 0;
-			var		MAP_HEIGHT = 0;
+			var 	MAP_TITLE = "${mapInfo.title}";
+			var		MAP_WIDTH = ${mapInfo.width};
+			var		MAP_HEIGHT = ${mapInfo.height};
 			
 			var		TERRAIN = 0;
 			
@@ -85,21 +85,19 @@
 				context = document.getElementById("map").getContext("2d");
 				
 				$.getJSON("/hexweb/api/map/"+MAP_ID+"/info", function(data) {
-					MAP_WIDTH = data.width;
-					MAP_HEIGHT = data.height;
-					MAP_TITLE = data.title;
+					MAP_WIDTH = data.info.width;
+					MAP_HEIGHT = data.info.height;
+					MAP_TITLE = data.info.title;
 					
 					document.title = MAP_TITLE;
-				});
 
-				$.getJSON("/hexweb/api/map/"+MAP_ID+"/terrain", function(data) {
 					imagesToLoad = 0;
-					for (var i=0; i < data.length; i++) {
+					for (var i=0; i < data.terrain.length; i++) {
 						imagesToLoad++;
-						images[data[i].id] = data[i];
+						images[data.terrain[i].id] = data.terrain[i];
 						
 						
-						var d = data[i];
+						var d = data.terrain[i];
 						d.image = new Image();
 						d.image.src = BASE_PATH + d.name + ".png";
 						d.image.onload = function() {
