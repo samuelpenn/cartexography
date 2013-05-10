@@ -60,6 +60,15 @@ class MapAPIController {
 		render "Done"
 	}
 	
+	/**
+	 * Returns information about this map.
+	 */
+	def info(int mapId) {
+		MapInfo	info = MapInfo.findById(mapId)
+		render info as JSON
+	}
+
+	
 	def sessionFactory
 	
 	/**
@@ -117,5 +126,8 @@ class MapAPIController {
 		}
 		hex.terrain = Terrain.findById(terrain);
 		hex.save();
+		println "Saved"
+		
+		render terrain
 	}
 }

@@ -11,6 +11,10 @@
 			var		WIDTH = 32;
 			var		HEIGHT = 20;
 			
+			var 	MAP_TITLE = "Unnamed";
+			var		MAP_WIDTH = 0;
+			var		MAP_HEIGHT = 0;
+			
 			var		TERRAIN = 0;
 			
 			var		imagesToLoad = 0;
@@ -29,8 +33,8 @@
 						}
 					}
 					
-					$("#x-orig-view").html(X)
-					$("#y-orig-view").html(Y)
+					$("#x-orig-view").html(X + " / " + MAP_WIDTH)
+					$("#y-orig-view").html(Y + " / " + MAP_HEIGHT)
 				
 				});
 			};
@@ -79,6 +83,14 @@
 
 			window.onload = function() {
 				context = document.getElementById("map").getContext("2d");
+				
+				$.getJSON("/hexweb/api/map/"+MAP_ID+"/info", function(data) {
+					MAP_WIDTH = data.width;
+					MAP_HEIGHT = data.height;
+					MAP_TITLE = data.title;
+					
+					document.title = MAP_TITLE;
+				});
 
 				$.getJSON("/hexweb/api/map/"+MAP_ID+"/terrain", function(data) {
 					imagesToLoad = 0;
@@ -123,6 +135,13 @@
 				if (X < 0) X = 0;
 				if (Y < 0) Y = 0;
 				
+				if (X > MAP_WIDTH - WIDTH) {
+					X = MAP_WIDTH - WIDTH;
+				}
+				if (Y > MAP_HEIGHT - HEIGHT) {
+					Y = MAP_HEIGHT - HEIGHT;
+				} 
+				
 				refreshMap();
 			};
 			
@@ -150,9 +169,22 @@
 			left: 8px;
 			top: 8px;
 		}
+		#terrainPanel {
+			height: 600px;
+			overflow: scroll;
+		}
 		li.sterrain {
 			background-color: #ddddff;
 			font-weight: bold;
+		}
+		#terrainPalette {
+			margin-left: 0px;
+			padding-left: 0px;
+		}
+		#terrainPalette li {
+			list-style: none;
+			margin-left: 0px;
+			padding-left: 0px;
 		}
 		
 	</style>
@@ -170,7 +202,7 @@
 				<p><b>X: </b> <span id="x-orig-view">?</span></p>
 				<p><b>Y: </b> <span id="y-orig-view">?</span></p>
 			</div>
-			<div>
+			<div id="terrainPanel">
 				<ul id="terrainPalette">
 				</ul>
 			</div>

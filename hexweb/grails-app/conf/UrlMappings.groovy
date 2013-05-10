@@ -15,11 +15,16 @@ class UrlMappings {
 			action = "info"
 		}
 		
+		"/api/map/$mapId/info" {
+			controller = "mapAPI"
+			action = "info"
+		}
+		
 		"/api/map/$mapId/terrain" {
 			controller = "mapAPI"
 			action = "terrain"
 		}
-		
+
 		"/api/map/$mapId/map" {
 			controller = "mapAPI"
 			action = "map"
