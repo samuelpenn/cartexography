@@ -6,10 +6,12 @@ create table mapinfo (id int not null auto_increment,
         width int, 
         height int, 
         world smallint,
+	scale int,
+	template int,
         version int,
         primary key (id));
 
-insert into mapinfo values(0, 'test', 'Test Map', 320, 400, false, 0);
+insert into mapinfo values(0, 'test', 'Test Map', 320, 400, false, 5000, 0, 0);
 
 create table terrain(id int not null auto_increment, 
 	mapinfo_id int,
