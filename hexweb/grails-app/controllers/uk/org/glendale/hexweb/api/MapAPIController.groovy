@@ -11,7 +11,9 @@ package uk.org.glendale.hexweb.api
 import grails.converters.JSON
 import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.MapInfo
+import uk.org.glendale.hexweb.Place
 import uk.org.glendale.hexweb.Terrain
+import uk.org.glendale.hexweb.Thing
 
 import groovy.sql.Sql
 
@@ -19,17 +21,19 @@ class MapAPIController {
 	/** Common services for maps */
 	def mapService
 	def terrainService
+	def thingService
 
 	
 	/**
-	 * Returns information about this map.
+	 * Returns information about this map. Includes the map metadata, list of
+	 * terrain and things for the palettes.
 	 * 
 	 * GET: /api/map/{id}/info
 	 */
 	def info(String id) {
 		MapInfo	info = mapService.getMapByNameOrId(id)
 		
-		def data = [ info: info, terrain: getTerrain(info) ]
+		def data = [ info: info, terrain: getTerrain(info), things: getThings(info) ]
 		
 		render data as JSON
 	}
@@ -39,6 +43,15 @@ class MapAPIController {
 		if (info.template > 0) {
 			MapInfo	template = mapService.getMapByNameOrId(info.template)
 			list.addAll(Terrain.findAllByMapInfo(template))
+		}
+		return list
+	}
+	
+	private List getThings(MapInfo info) {
+		List<Thing>  list = Thing.findAllByMapInfo(info)
+		if (info.template > 0) {
+			MapInfo	template = mapService.getMapByNameOrId(info.template)
+			list.addAll(Thing.findAllByMapInfo(template))
 		}
 		return list
 	}
@@ -155,9 +168,15 @@ class MapAPIController {
 		
 		println "Size: " + list.size()
 		
-		render map as JSON
+		Map data = new HashMap();
+		data.put("map", map)
+		
+		render data as JSON
 	}
 	
+	/**
+	 * Updates a hex with a new terrain.
+	 */
 	def update(String id, int x, int y, int terrain) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
@@ -179,5 +198,31 @@ class MapAPIController {
 		println "Saved"
 		
 		render terrain
+	}
+	
+	/**
+	 * Adds a new place to the map. Specify a map, a thing and a location,
+	 * and the place is created and attached to the map.
+	 * 
+	 * @param id
+	 * @param thingId
+	 * @param x
+	 * @param y
+	 * @param sx
+	 * @param st
+	 * @return
+	 */
+	def addPlace(String id, String thingId, int x, int y, int sx, int sy) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		Thing		thing = thingService.getThingByNameOrId(thingId)
+		
+		println "Adding [${thing.name}] to ${x}.${sx},${y}.${sy}"
+		
+		Place	place = new Place(mapInfo: info, thing: thing, tileX: x, tileY: y, subX: sx, subY: sy)
+		place.name = thing.name
+		place.title = thing.title
+		place.save()
+		place.name = thing.name + "-" + place.id
+		place.save()
 	}
 }

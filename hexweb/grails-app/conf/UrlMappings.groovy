@@ -53,6 +53,11 @@ class UrlMappings {
 			action = "update"
 		}
 
+		"/api/map/$id/place" {
+			controller = "mapAPI"
+			action = "addPlace"
+		}
+
 		"/api/map/$id/fill" {
 			controller = "mapAPI"
 			action = "fillMap"
