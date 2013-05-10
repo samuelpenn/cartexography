@@ -57,8 +57,8 @@
 			};
 			
 			function drawPlace(p) {
-				var x = p.x * 48 - 24 + (p.sx * 65)/100;
-				var y = p.y * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
+				var x = (p.x - X) * 48 - 24 + (p.sx * 65)/100;
+				var y = (p.y - Y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
 				context.drawImage(things[p.thing_id].image, x, y, 65, 56);
 			}
 			
