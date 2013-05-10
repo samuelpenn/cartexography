@@ -44,6 +44,29 @@ insert into terrain values(19, 1, 'ice', 'Ice', true, '#F0F0F0', 0);
 insert into terrain values(20, 1, 'dry', 'Dry Grassland', false, '#AAFF77', 0);
 insert into terrain values(21, 1, 'desert', 'Desert', false, '#FFFF77', 0);
 
+create table thing(id int not null auto_increment,
+	mapinfo_id int,
+	name varchar(32),
+	title varchar(64),
+	importance int,
+	version int,
+	primary key(id));
+
+insert into thing values(1, 1, 'town', "Town", 2, 0);
+
+create table place(id int not null auto_increment,
+	mapinfo_id int,
+	thing_id int,
+	importance int,
+	tile_x int,
+	tile_y int,
+	sub_x int,
+	sub_y int,
+	name varchar(32),
+	title varchar(64),
+	version int,
+	primary key(id));
+
 
 create table map (id bigint not null auto_increment,
         mapinfo_id int,
