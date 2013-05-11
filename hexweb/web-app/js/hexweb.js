@@ -25,3 +25,9 @@ EDIT_MODE.ADD = "ADD";        // Add new items
 EDIT_MODE.SELECT = "SELECT";  // Select existing items
 EDIT_MODE.EDIT = "EDIT";	  // Edit existing items
 EDIT_MODE.DELETE = "DELETE";  // Delete existing items
+
+
+/* Global variables */
+var MAP = { id: 0 };					// This will be populated directly from JSON
+var VIEW = { width: 32, height: 20, x: 0, y: 0, context: null } 	// View port configuration.
+

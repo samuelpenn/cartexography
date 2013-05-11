@@ -2,6 +2,7 @@
 	<head>
 		<title>Map</title>
 		<g:javascript library="jquery"/>
+		<g:javascript src="hexweb.js"/>
 		
 		<g:javascript>
 			var		BASE_PATH = "/hexweb/images/style/standard/";
@@ -11,9 +12,11 @@
 			var		WIDTH = 32;
 			var		HEIGHT = 20;
 			
-			var 	MAP_TITLE = "${mapInfo.title}";
-			var		MAP_WIDTH = ${mapInfo.width};
-			var		MAP_HEIGHT = ${mapInfo.height};
+			MAP.info = { id: ${mapInfo.id}, 
+						 name: "${mapInfo.name}",
+						 title: "${mapInfo.title}",
+						 width: ${mapInfo.width},
+						 height: ${mapInfo.height} }; 
 			
 			var		TERRAIN = 0;
 			var		THING = 0;
@@ -24,42 +27,34 @@
 			var		PAINT_MODE = PAINT_MODE_TERRAIN;
 			
 			var		imagesToLoad = 0;
-			var		images = {};
-			var		things = {};
-			var 	context = null;
-			var		mapData = null;
-			
-			var		MAP = new Object();
 
 			function refreshMap() {
-				$.getJSON("/hexweb/api/map/"+MAP_ID+"/map?x="+X+"&y="+Y+"&w="+WIDTH+"&h="+HEIGHT, function(data) {
-					var mapData = data.map;
-					var	placeData = data.places;
+				$.getJSON("/hexweb/api/map/"+MAP.info.id+"/map?x="+VIEW.x+"&y="+VIEW.y+"&w="+VIEW.width+"&h="+VIEW.height, function(data) {
+					MAP.map = data.map;
+					MAP.places = data.places;
 					
-					MAP.map = mapData;
-					MAP.places = placeData;
-
 					for (var y=0; y < 20; y++) {
 						for (var x=0; x < 32; x++) {
-							var t = mapData[y][x];
-							context.drawImage(images[t].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
+							var t = MAP.map[y][x];
+							VIEW.context.drawImage(MAP.images[t].image, 
+									x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
 						}
 					}
 					
-					$("#x-orig-view").html(X + " / " + MAP_WIDTH)
-					$("#y-orig-view").html(Y + " / " + MAP_HEIGHT)
+					$("#x-orig-view").html(X + " / " + MAP.info.width)
+					$("#y-orig-view").html(Y + " / " + MAP.info.height)
 					
-					for (var i=0; i < placeData.length; i++) {
-						drawPlace(placeData[i]);
+					for (var i=0; i < MAP.places.length; i++) {
+						drawPlace(MAP.places[i]);
 					}
 				
 				});
 			};
 			
 			function drawPlace(p) {
-				var x = (p.x - X) * 48 - 24 + (p.sx * 65)/100;
-				var y = (p.y - Y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
-				context.drawImage(things[p.thing_id].image, x, y, 65, 56);
+				var x = (p.x - VIEW.x) * 48 - 24 + (p.sx * 65)/100;
+				var y = (p.y - VIEW.y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
+				VIEW.context.drawImage(MAP.things[p.thing_id].image, x, y, 65, 56);
 			}
 			
 			function selectTerrain(id) {
@@ -107,13 +102,13 @@
 					} 
 					var y = Math.floor(py / 56);
 					
-					if (y < 0 || x < 0 || y >= HEIGHT || x >= WIDTH) {
+					if (y < 0 || x < 0 || y >= MAP.info.height || x >= MAP.info.width) {
 						return;
 					}
 					
-					context.drawImage(images[TERRAIN].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
+					VIEW.context.drawImage(MAP.images[TERRAIN].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
 					
-					$.getJSON("/hexweb/api/map/"+MAP_ID+"/update?x="+(X+x)+"&y="+(Y+y)+"&terrain="+TERRAIN);
+					$.getJSON("/hexweb/api/map/"+MAP_ID+"/update?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&terrain="+TERRAIN);
 				} else if (PAINT_MODE == PAINT_MODE_THING_NEW) {
 					MOUSE_DOWN = 0; // Only paint one thing per click
 					var	px, py;
@@ -131,7 +126,7 @@
 					var y = Math.floor(py / 56);
 					var sy = Math.floor(((py - y*56.0) * 100.0) / 56.0);
 
-					if (y < 0 || x < 0 || y >= HEIGHT || x >= WIDTH) {
+					if (y < 0 || x < 0 || y >= MAP.info.height || x >= MAP.info.width) {
 						return;
 					}
 
@@ -145,21 +140,20 @@
 			}
 
 			window.onload = function() {
-				context = document.getElementById("map").getContext("2d");
+				VIEW.context = document.getElementById("map").getContext("2d");
 				
 				$.getJSON("/hexweb/api/map/"+MAP_ID+"/info", function(data) {
-					MAP_WIDTH = data.info.width;
-					MAP_HEIGHT = data.info.height;
-					MAP_TITLE = data.info.title;
+					MAP.info = data.info;
+					MAP.images = {}; // Hex images
+					MAP.things = {}; // Thing data
 					
-					document.title = MAP_TITLE;
+					document.title = MAP.info.title;
 					
 					imagesToLoad = 0;
 					for (var i=0; i < data.terrain.length; i++) {
 						imagesToLoad++;
-						images[data.terrain[i].id] = data.terrain[i];
-						
-						
+						MAP.images[data.terrain[i].id] = data.terrain[i];
+
 						var d = data.terrain[i];
 						d.image = new Image();
 						d.image.src = BASE_PATH + "terrain/" + d.name + ".png";
@@ -181,7 +175,7 @@
 					for (var i=0; i < data.things.length; i++) {
 						imagesToLoad++;
 						var t = data.things[i];
-						things[t.id] = t;
+						MAP.things[t.id] = t;
 						t.image = new Image();
 						t.image.src = BASE_PATH + "things/" + t.name + ".png";
 						t.image.onload = function() {
@@ -215,11 +209,11 @@
 				if (X < 0) X = 0;
 				if (Y < 0) Y = 0;
 				
-				if (X > MAP_WIDTH - WIDTH) {
-					X = MAP_WIDTH - WIDTH;
+				if (X > MAP.info.width - VIEW.width) {
+					X = MAP.info.width - VIEW.width;
 				}
-				if (Y > MAP_HEIGHT - HEIGHT) {
-					Y = MAP_HEIGHT - HEIGHT;
+				if (Y > MAP.info.height - VIEW.height) {
+					Y = MAP.info.height - VIEW.height;
 				} 
 				
 				refreshMap();
