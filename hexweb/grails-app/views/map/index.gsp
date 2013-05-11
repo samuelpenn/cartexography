@@ -18,9 +18,7 @@
 						 width: ${mapInfo.width},
 						 height: ${mapInfo.height} }; 
 			
-			var		TERRAIN = 0;
-			var		THING = 0;
-			
+	
 			var 	PAINT_MODE_TERRAIN = "TERRAIN";
 			var		PAINT_MODE_THING_NEW = "THING_NEW"
 			
@@ -30,19 +28,21 @@
 
 			
 			function selectTerrain(id) {
-				PAINT_MODE = PAINT_MODE_TERRAIN;
+				VIEW.brushMode = BRUSH_MODE.TERRAIN;
+				VIEW.editMode = EDIT_MODE.PAINT;
 
-				$("#t"+TERRAIN).removeClass("selected");
-				TERRAIN = id;
-				$("#t"+TERRAIN).addClass("selected");
+				$("#t"+VIEW.terrainBrush).removeClass("selected");
+				VIEW.terrainBrush = id;
+				$("#t"+VIEW.terrainBrush).addClass("selected");
 			}
 			
 			function selectThing(id) {
-				PAINT_MODE = PAINT_MODE_THING_NEW;
+				VIEW.brushMode = BRUSH_MODE.THING;
+				VIEW.editMode = EDIT_MODE.ADD;
 
-				$("#th"+THING).removeClass("selected");
-				THING = id;
-				$("#th"+THING).addClass("selected");
+				$("#th"+VIEW.thingBrush).removeClass("selected");
+				VIEW.thingBrush = id;
+				$("#th"+VIEW.thingBrush).addClass("selected");
 			}
 			
 			var MOUSE_DOWN = 0;
@@ -60,7 +60,7 @@
 					return;
 				}
 				
-				if (PAINT_MODE == PAINT_MODE_TERRAIN) {
+				if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
 					var	px, py;
 					var canoffset = $("#map").offset();
 					px = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
@@ -78,9 +78,9 @@
 						return;
 					}
 					
-					VIEW.context.drawImage(MAP.images[TERRAIN].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
+					VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
 					
-					$.getJSON("/hexweb/api/map/"+MAP_ID+"/update?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&terrain="+TERRAIN);
+					$.getJSON("/hexweb/api/map/"+MAP_ID+"/update?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&terrain="+VIEW.terrainBrush);
 				} else if (PAINT_MODE == PAINT_MODE_THING_NEW) {
 					MOUSE_DOWN = 0; // Only paint one thing per click
 					var	px, py;
@@ -133,7 +133,7 @@
 							imagesToLoad--;
 						}
 						if (d.name == "ocean") {
-							TERRAIN = d.id;
+							VIEW.terrainBrush = d.id;
 						}
 						
 						var h = "<li id='t"+d.id+"' onclick='selectTerrain("+d.id+")'>";
@@ -175,17 +175,17 @@
 			
 			
 			function moveMap(mx, my) {
-				X += mx;
-				Y += my;
+				VIEW.x += mx;
+				VIEW.y += my;
 				
-				if (X < 0) X = 0;
-				if (Y < 0) Y = 0;
+				if (VIEW.x < 0) VIEW.x = 0;
+				if (VIEW.y < 0) VIEW.y = 0;
 				
-				if (X > MAP.info.width - VIEW.width) {
-					X = MAP.info.width - VIEW.width;
+				if (VIEW.x > MAP.info.width - VIEW.width) {
+					VIEW.x = MAP.info.width - VIEW.width;
 				}
-				if (Y > MAP.info.height - VIEW.height) {
-					Y = MAP.info.height - VIEW.height;
+				if (VIEW.y > MAP.info.height - VIEW.height) {
+					VIEW.y = MAP.info.height - VIEW.height;
 				} 
 				
 				refreshMap();

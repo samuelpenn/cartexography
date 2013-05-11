@@ -31,6 +31,12 @@ EDIT_MODE.DELETE = "DELETE";  // Delete existing items
 var MAP = { id: 0 };					// This will be populated directly from JSON
 var VIEW = { width: 32, height: 20, x: 0, y: 0, context: null } 	// View port configuration.
 
+VIEW.brushMode = BRUSH_MODE.TERRAIN;
+VIEW.brushSize = BRUSH_SIZE.SMALL;
+VIEW.editMode = EDIT_MODE.PAINT;
+
+VIEW.terrainBrush = 0;
+VIEW.thingBrush = 0;
 
 /**
  * Download the map data for the current view and display it in the
@@ -59,6 +65,9 @@ function refreshMap() {
 	});
 };
 
+/**
+ * Draw the specified place on the map.
+ */
 function drawPlace(p) {
 	var x = (p.x - VIEW.x) * 48 - 24 + (p.sx * 65)/100;
 	var y = (p.y - VIEW.y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
