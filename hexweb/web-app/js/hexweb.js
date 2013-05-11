@@ -31,3 +31,36 @@ EDIT_MODE.DELETE = "DELETE";  // Delete existing items
 var MAP = { id: 0 };					// This will be populated directly from JSON
 var VIEW = { width: 32, height: 20, x: 0, y: 0, context: null } 	// View port configuration.
 
+
+/**
+ * Download the map data for the current view and display it in the
+ * canvas.
+ */
+function refreshMap() {
+	$.getJSON("/hexweb/api/map/"+MAP.info.id+"/map?x="+VIEW.x+"&y="+VIEW.y+"&w="+VIEW.width+"&h="+VIEW.height, function(data) {
+		MAP.map = data.map;
+		MAP.places = data.places;
+		
+		for (var y=0; y < 20; y++) {
+			for (var x=0; x < 32; x++) {
+				var t = MAP.map[y][x];
+				VIEW.context.drawImage(MAP.images[t].image, 
+						x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
+			}
+		}
+		
+		$("#x-orig-view").html(X + " / " + MAP.info.width)
+		$("#y-orig-view").html(Y + " / " + MAP.info.height)
+		
+		for (var i=0; i < MAP.places.length; i++) {
+			drawPlace(MAP.places[i]);
+		}
+	
+	});
+};
+
+function drawPlace(p) {
+	var x = (p.x - VIEW.x) * 48 - 24 + (p.sx * 65)/100;
+	var y = (p.y - VIEW.y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
+	VIEW.context.drawImage(MAP.things[p.thing_id].image, x, y, 65, 56);
+}
