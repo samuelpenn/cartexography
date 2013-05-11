@@ -9,6 +9,7 @@
 package uk.org.glendale.hexweb.services
 
 import uk.org.glendale.hexweb.Thing
+import uk.org.glendale.hexweb.Place
 
 class ThingService {
 	def getThingByNameOrId(int id) {
@@ -28,4 +29,20 @@ class ThingService {
 		return Thing.findByName(name)
 	}
 
+	def getPlaceByNameOrId(int id) {
+		return Place.findById(id)
+	}
+
+	def getPlaceByNameOrId(String name) {
+		if (name == null) {
+			throw new IllegalArgumentException("Place name cannot be null")
+		}
+		try {
+			int id = Integer.parseInt(name)
+			return getPlaceByNameOrId(id)
+		} catch (NumberFormatException e) {
+			// Not an integer, so try by name.
+		}
+		return Place.findByName(name)
+	}
 }

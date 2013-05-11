@@ -55,8 +55,8 @@ function refreshMap() {
 			}
 		}
 		
-		$("#x-orig-view").html(X + " / " + MAP.info.width)
-		$("#y-orig-view").html(Y + " / " + MAP.info.height)
+		$("#x-orig-view").html(VIEW.x + " / " + MAP.info.width)
+		$("#y-orig-view").html(VIEW.y + " / " + MAP.info.height)
 		
 		for (var i=0; i < MAP.places.length; i++) {
 			drawPlace(MAP.places[i]);

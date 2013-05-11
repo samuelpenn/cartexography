@@ -3,14 +3,10 @@
 		<title>Map</title>
 		<g:javascript library="jquery"/>
 		<g:javascript src="hexweb.js"/>
+		<g:javascript src="editor.js"/>
 		
 		<g:javascript>
 			var		BASE_PATH = "/hexweb/images/style/standard/";
-			var		MAP_ID = ${mapInfo.id};
-			var		X = 0;
-			var		Y = 0;
-			var		WIDTH = 32;
-			var		HEIGHT = 20;
 			
 			MAP.info = { id: ${mapInfo.id}, 
 						 name: "${mapInfo.name}",
@@ -19,102 +15,13 @@
 						 height: ${mapInfo.height} }; 
 			
 	
-			var 	PAINT_MODE_TERRAIN = "TERRAIN";
-			var		PAINT_MODE_THING_NEW = "THING_NEW"
-			
-			var		PAINT_MODE = PAINT_MODE_TERRAIN;
-			
 			var		imagesToLoad = 0;
 
-			
-			function selectTerrain(id) {
-				VIEW.brushMode = BRUSH_MODE.TERRAIN;
-				VIEW.editMode = EDIT_MODE.PAINT;
-
-				$("#t"+VIEW.terrainBrush).removeClass("selected");
-				VIEW.terrainBrush = id;
-				$("#t"+VIEW.terrainBrush).addClass("selected");
-			}
-			
-			function selectThing(id) {
-				VIEW.brushMode = BRUSH_MODE.THING;
-				VIEW.editMode = EDIT_MODE.ADD;
-
-				$("#th"+VIEW.thingBrush).removeClass("selected");
-				VIEW.thingBrush = id;
-				$("#th"+VIEW.thingBrush).addClass("selected");
-			}
-			
-			var MOUSE_DOWN = 0;
-			function unclickMap(event) {
-				MOUSE_DOWN = 0;
-			}
-			
-			function clickMap(event) {
-				MOUSE_DOWN = 1;
-				drawMap(event);
-			}
-			
-			function drawMap(event) {
-				if (MOUSE_DOWN == 0) {
-					return;
-				}
-				
-				if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
-					var	px, py;
-					var canoffset = $("#map").offset();
-					px = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
-					py = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1;
-					
-					px -= 8;
-					py -= 8;
-					var x = Math.floor(px / 48);
-					if (x %2 == 1) {
-						py -= 28;
-					} 
-					var y = Math.floor(py / 56);
-					
-					if (y < 0 || x < 0 || y >= MAP.info.height || x >= MAP.info.width) {
-						return;
-					}
-					
-					VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
-					
-					$.getJSON("/hexweb/api/map/"+MAP_ID+"/update?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&terrain="+VIEW.terrainBrush);
-				} else if (PAINT_MODE == PAINT_MODE_THING_NEW) {
-					MOUSE_DOWN = 0; // Only paint one thing per click
-					var	px, py;
-					var canoffset = $("#map").offset();
-					px = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
-					py = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1;
-					
-					px -= 8;
-					py -= 8;
-					var x = Math.floor(px / 48);
-					var sx = Math.floor(((px - x*48.0) * 100.0) / 48.0);
-					if (x %2 == 1) {
-						py -= 28;
-					} 
-					var y = Math.floor(py / 56);
-					var sy = Math.floor(((py - y*56.0) * 100.0) / 56.0);
-
-					if (y < 0 || x < 0 || y >= MAP.info.height || x >= MAP.info.width) {
-						return;
-					}
-
-					//context.drawImage(images[TERRAIN].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
-					$.getJSON("/hexweb/api/map/"+MAP_ID+"/place?x="+(X+x)+"&y="+(Y+y)+"&sx="+sx+"&sy="+sy+"&thingId="+THING, function (data) {
-						MAP.places.push(data);
-						drawPlace(data);
-					});
-					
-				}
-			}
 
 			window.onload = function() {
 				VIEW.context = document.getElementById("map").getContext("2d");
 				
-				$.getJSON("/hexweb/api/map/"+MAP_ID+"/info", function(data) {
+				$.getJSON("/hexweb/api/map/"+MAP.info.id+"/info", function(data) {
 					MAP.info = data.info;
 					MAP.images = {}; // Hex images
 					MAP.things = {}; // Thing data
@@ -142,7 +49,7 @@
 						h +="</li>";
 						$("#terrainPalette").append(h);
 					}
-					selectTerrain(TERRAIN);
+					selectTerrain(VIEW.terrainBrush);
 					
 					for (var i=0; i < data.things.length; i++) {
 						imagesToLoad++;
@@ -263,10 +170,10 @@
 				<ul id="thingPalette" class="palette">
 				</ul>
 			</div>
+			<div id="debug" style="width: 200px"/>
 		</div>
 		<canvas id="map" width="1600px" height="1200px"></canvas>
 		
-		<div id="debug" style="clear: both"/>
 	
 	</body>
 </html>

@@ -236,4 +236,18 @@ class MapAPIController {
 		
 		render place as JSON
 	}
+	
+	def updatePlace(String id, String placeId, int x, int y, int sx, int sy) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		Place		place = thingService.getPlaceByNameOrId(placeId)
+		
+		println "Updating place ${place.name}"
+		place.tileX = x;
+		place.tileY = y;
+		place.subX = sx;
+		place.subY = sy;
+		place.save();
+		
+		render place as JSON
+	}
 }
