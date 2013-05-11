@@ -281,6 +281,9 @@
 				<img src="${resource(dir: 'images/icons', file: 'down.png')}" alt="Down" onclick="moveMap(0, +4)"/>
 				<img src="${resource(dir: 'images/icons', file: 'left.png')}" alt="Left" onclick="moveMap(-4, 0)"/>
 				<img src="${resource(dir: 'images/icons', file: 'right.png')}" alt="Right" onclick="moveMap(+4, 0)"/>
+				<span style="width: 32px; display: inline-block"> </span>
+				<img src="${resource(dir: 'images/icons', file: 'paint.png')}" alt="Paint" onclick="mode_paint()"/>
+				<img src="${resource(dir: 'images/icons', file: 'select.png')}" alt="Paint" onclick="mode_select()"/>
 			</div>
 			<div>
 				<p><b>X: </b> <span id="x-orig-view">?</span></p>
