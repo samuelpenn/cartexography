@@ -52,7 +52,10 @@ create table thing(id int not null auto_increment,
 	version int,
 	primary key(id));
 
-insert into thing values(1, 1, 'town', "Town", 2, 0);
+insert into thing values(1, 1, 'village', "Village", 1, 0);
+insert into thing values(2, 1, 'town', "Town", 2, 0);
+insert into thing values(3, 1, 'city', "City", 3, 0);
+insert into thing values(4, 1, 'castle', "Castle", 2, 0);
 
 create table place(id int not null auto_increment,
 	mapinfo_id int,

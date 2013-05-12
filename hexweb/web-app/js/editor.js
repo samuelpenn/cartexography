@@ -45,6 +45,10 @@ function clickMap(event) {
 	drawMap(event);
 }
 
+function dblclickMap(event) {
+	// Not yet supported.
+}
+
 function paintTerrain(event, px, py) {
 	var x = Math.floor(px / 48);
 	if (x %2 == 1) {
@@ -137,15 +141,20 @@ function drawMap(event) {
 		recordSubPosition(event, px, py);
 
 		var place = findNearestPlace(oldRecordX, oldRecordY);
-		if (place != null) {
+		if (place != null && Math.abs(oldRecordX - VIEW.recordX) > 15 && Math.abs(oldRecordY - VIEW.recordY) > 15) {
+			// Click and drag event.
 			place.x = Math.floor(VIEW.recordX / 100);
 			place.y = Math.floor(VIEW.recordY / 100);
 			place.sx = VIEW.recordX % 100;
 			place.sy = VIEW.recordY % 100;
 			$.getJSON("/hexweb/api/map/"+MAP.info.id+"/place/"+place.id+"?x="+(VIEW.x+place.x)+"&y="+(VIEW.y+place.y)+"&sx="+place.sx+"&sy="+place.sy, function (data) {
 				refreshMap();
-			});			
-		} else if (Math.abs(oldRecordX - VIEW.recordX) < 50 && Math.abs(oldRecordY - VIEW.recordY) < 50) {
+			});
+		} else if (place != null) {
+			// Simple click next to an existing place.
+			debug("Edit place " + place.id);
+			openEditPlaceDialog(place);
+		} else if (place == null && Math.abs(oldRecordX - VIEW.recordX) < 50 && Math.abs(oldRecordY - VIEW.recordY) < 50) {
 			// Paint a new object if the mouse hasn't moved that far.
 			$.getJSON("/hexweb/api/map/"+MAP.info.id+"/place?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+"&thingId="+VIEW.thingBrush, function (data) {
 				MAP.places.push(data);
@@ -158,4 +167,8 @@ function drawMap(event) {
 
 		
 	}
+}
+
+function openEditPlaceDialog(place) {
+	
 }

@@ -78,6 +78,7 @@
 				document.getElementById("map").addEventListener("mouseup", unclickMap, false);
 				document.getElementById("map").addEventListener("mouseout", unclickMap, false);
 				document.getElementById("map").addEventListener("mousemove", drawMap, false);
+				document.getElementById("map").addEventListener("dblclick", dblclickMap, false);
 			};
 			
 			
