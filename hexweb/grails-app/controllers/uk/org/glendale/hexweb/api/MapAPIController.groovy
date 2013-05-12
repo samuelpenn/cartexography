@@ -237,17 +237,30 @@ class MapAPIController {
 		render place as JSON
 	}
 	
-	def updatePlace(String id, String placeId, int x, int y, int sx, int sy) {
+	def updatePlace(String id, String placeId, String name, String title, int x, int y, int sx, int sy) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		Place		place = thingService.getPlaceByNameOrId(placeId)
 		
-		println "Updating place ${place.name}"
-		place.tileX = x;
-		place.tileY = y;
-		place.subX = sx;
-		place.subY = sy;
-		place.save();
-		
+		println "Updating place [${place.name}] to [${name}/${title}]"
+		if (name != null) {
+			place.name = name;
+		}
+		if (title != null) {
+			place.title = title;
+		}
+		if (x >= 0 && y >= 0) {
+			place.tileX = x;
+			place.tileY = y;
+			place.subX = sx;
+			place.subY = sy;
+			place.save();
+		}
 		render place as JSON
+	}
+	
+	def deletePlace(String id, String placeId) {
+		println "Delete " + placeId
+		Place		place = thingService.getPlaceByNameOrId(placeId)
+		place.delete()
 	}
 }

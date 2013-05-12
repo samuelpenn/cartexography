@@ -55,12 +55,12 @@ class UrlMappings {
 
 		"/api/map/$id/place" {
 			controller = "mapAPI"
-			action = "addPlace"
+			action = [ POST: "addPlace" ]
 		}
 
 		"/api/map/$id/place/$placeId" {
 			controller = "mapAPI"
-			action = "updatePlace"
+			action = [ PUT: "updatePlace", DELETE: "deletePlace" ]
 		}
 
 		"/api/map/$id/fill" {

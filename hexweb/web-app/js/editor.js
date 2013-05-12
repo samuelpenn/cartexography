@@ -147,28 +147,69 @@ function drawMap(event) {
 			place.y = Math.floor(VIEW.recordY / 100);
 			place.sx = VIEW.recordX % 100;
 			place.sy = VIEW.recordY % 100;
-			$.getJSON("/hexweb/api/map/"+MAP.info.id+"/place/"+place.id+"?x="+(VIEW.x+place.x)+"&y="+(VIEW.y+place.y)+"&sx="+place.sx+"&sy="+place.sy, function (data) {
-				refreshMap();
+			$.ajax({
+				type: "PUT",
+				url: "/hexweb/api/map/"+MAP.info.id+"/place/"+place.id+"?x="+(VIEW.x+place.x)+"&y="+(VIEW.y+place.y)+"&sx="+place.sx+"&sy="+place.sy
 			});
+			refreshMap();
 		} else if (place != null) {
 			// Simple click next to an existing place.
 			debug("Edit place " + place.id);
 			openEditPlaceDialog(place);
 		} else if (place == null && Math.abs(oldRecordX - VIEW.recordX) < 50 && Math.abs(oldRecordY - VIEW.recordY) < 50) {
 			// Paint a new object if the mouse hasn't moved that far.
-			$.getJSON("/hexweb/api/map/"+MAP.info.id+"/place?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+"&thingId="+VIEW.thingBrush, function (data) {
-				MAP.places.push(data);
-				drawPlace(data);
+			$.ajax({
+				type: "POST",
+				url: "/hexweb/api/map/"+MAP.info.id+"/place?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+"&thingId="+VIEW.thingBrush,
+				async: false
 			});
+			refreshMap();
 		}
 
 		VIEW.recordX = -1;
 		VIEW.recordY = -1;
-
-		
 	}
 }
 
 function openEditPlaceDialog(place) {
-	
+	$("#placeDialog").remove();
+
+	$("body").append("<div id='placeDialog' class='floating'></div>");
+	$("#placeDialog").append("<h4>Edit place</h4>");
+	$("#placeDialog").append("<p>Name: <input id='placeName' type='text' width='24' value='"+place.name+"'/></p>");
+	$("#placeDialog").append("<p>Title: <input id='placeTitle' type='text' width='40' value='"+place.title+"'/></p>");
+	$("#placeDialog").append("<input id='placeId' type='hidden' value='"+place.id+"'/>");
+	$("#placeDialog").append("<p><button onclick='deletePlace()'>Delete</button> <button onclick='saveEditPlaceDialog()'>Save</button></p>");
+}
+
+function deletePlace() {
+	var id = $("#placeId").val();
+	debug("Delete " + id);
+	$.ajax({
+		type: "DELETE",
+		url: "/hexweb/api/map/"+MAP.info.id+"/place/"+id
+	});
+
+	$("#placeDialog").remove();
+	refreshMap();
+}
+
+function saveEditPlaceDialog() {
+	var id = $("#placeId").val();
+	var name = $("#placeName").val();
+	var title = $("#placeTitle").val();
+
+	$.ajax({
+		type: "PUT",
+		url: "/hexweb/api/map/"+MAP.info.id+"/place/"+id + "?name="+name+"&title="+title+"&x=-1",
+		data: {
+			"name": name,
+			"title": title,
+			"x": -1,
+			"y": -1
+		}
+	});
+	refreshMap();
+
+	$("#placeDialog").remove();
 }

@@ -144,6 +144,17 @@
 			margin-left: 0px;
 			padding-left: 0px;
 		}
+		div.floating {
+			position: absolute;
+			z-index: 1
+			top: 200px;
+			left: 500px;
+			width: 300px;
+			height: 200px;
+			border: 1px solid black;
+			background-color: #ffffff;
+			opacity: 0.75;
+		}
 		
 	</style>
 	

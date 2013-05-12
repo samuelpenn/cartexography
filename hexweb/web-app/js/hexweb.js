@@ -72,4 +72,7 @@ function drawPlace(p) {
 	var x = (p.x - VIEW.x) * 48 - 24 + (p.sx * 65)/100;
 	var y = (p.y - VIEW.y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
 	VIEW.context.drawImage(MAP.things[p.thing_id].image, x, y, 65, 56);
+	VIEW.context.font = "12px Arial";
+	var w = VIEW.context.measureText(p.title).width;
+	VIEW.context.fillText(p.title, x + 32 - w / 2, y + 50);
 }
