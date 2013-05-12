@@ -38,6 +38,13 @@ VIEW.editMode = EDIT_MODE.PAINT;
 VIEW.terrainBrush = 0;
 VIEW.thingBrush = 0;
 
+VIEW.zoom = 0;
+VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12 },
+               { column: 24, row: 28, width: 32, height: 28, font: 6 },
+               { column: 12, row: 14, width: 16, height: 14, font: 3  } 
+             ];
+
+
 /**
  * Download the map data for the current view and display it in the
  * canvas.
