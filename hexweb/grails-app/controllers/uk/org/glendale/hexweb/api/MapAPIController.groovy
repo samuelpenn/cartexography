@@ -149,6 +149,19 @@ class MapAPIController {
 	 */
 	def map(String id, int x, int y, int w, int h) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
+		
+		if (x < 0) {
+			x = 0;
+		}
+		if (y < 0) {
+			y = 0;
+		}
+		if (x + w > info.width) {
+			w = info.width - x;
+		}
+		if (y + h > info.height) {
+			h = info.height - y;
+		}
 
 		int[][]		map = new int[h][w]
 		
@@ -168,7 +181,7 @@ class MapAPIController {
 			map[hex[1] - y][hex[0] - x] = hex[2]
 		}
 		
-		println "Size: " + list.size()
+		println "Size: ${list.size()} x ${x} y ${y} w ${w} h ${h}" 
 		
 		List places = Place.findAll ({
 			eq('mapInfo', info)
@@ -179,6 +192,7 @@ class MapAPIController {
 		Map data = new HashMap();
 		data.put("map", map)
 		data.put("places", places)
+		data.put("info", [ "x": x, "y": y, "width": w, "height": h ]);
 		
 		render data as JSON
 	}
