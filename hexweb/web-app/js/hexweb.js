@@ -47,36 +47,53 @@ VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12 },
              ];
 
 
+function setViewPort() {
+	VIEW.port.width = $("body").width() - 320;
+	VIEW.port.height = $("body").height() - 16;
+	
+	var		tileWidth = VIEW.scale[VIEW.zoom].column;
+	var		tileHeight = VIEW.scale[VIEW.zoom].height;
+	VIEW.width = parseInt(VIEW.port.width / tileWidth) - 1;
+	VIEW.height = parseInt(VIEW.port.height / tileHeight) - 1;
+}
+
 /**
  * Download the map data for the current view and display it in the
  * canvas.
  */
 function refreshMap() {
+	setViewPort();
+
 	var		startX = VIEW.x;
 	var 	startY = VIEW.y;
 	var		mapWidth = VIEW.width;
 	var		mapHeight = VIEW.height;
-	
+
+	if (VIEW.port.width != VIEW.port.lastWidth || VIEW.port.height != VIEW.port.lastHeight) {
+		$("#map").attr("width", VIEW.port.width);
+		$("#map").attr("height", VIEW.port.height);
+		VIEW.port.lastWidth = VIEW.port.width;
+		VIEW.port.lastHeight = VIEW.port.height;
+	}
 	var		tileWidth = VIEW.scale[VIEW.zoom].column;
 	var		tileHeight = VIEW.scale[VIEW.zoom].height;
 
 	mapWidth = parseInt(VIEW.port.width / tileWidth) - 1;
 	mapHeight = parseInt(VIEW.port.height / tileHeight) - 1;
-	
+
 	var 	imageWidth = VIEW.scale[VIEW.zoom].width;
 	var 	imageHeight = VIEW.scale[VIEW.zoom].height;
 	var		halfOffset = parseInt(imageHeight / 2);
-	
-	
+
 	$.getJSON("/hexweb/api/map/"+MAP.info.id+"/map?x="+startX+"&y="+startY+"&w="+mapWidth+"&h="+mapHeight, function(data) {
 		MAP.map = data.map;
 		MAP.places = data.places;
-		
+
 		startX = data.info.x;
 		startY = data.info.Y;
 		mapWidth = data.info.width;
 		mapHeight = data.info.height;
-		
+
 		for (var y=0; y < mapHeight; y++) {
 			for (var x=0; x < mapWidth; x++) {
 				var t = MAP.map[y][x];
@@ -87,14 +104,13 @@ function refreshMap() {
 						px, py, imageWidth, imageHeight);
 			}
 		}
-		
+
 		$("#x-orig-view").html(VIEW.x + " / " + MAP.info.width)
 		$("#y-orig-view").html(VIEW.y + " / " + MAP.info.height)
 		
 		for (var i=0; i < MAP.places.length; i++) {
 			drawPlace(MAP.places[i]);
 		}
-	
 	});
 };
 

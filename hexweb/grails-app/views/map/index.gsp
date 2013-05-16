@@ -97,8 +97,7 @@
 				} 
 				
 				refreshMap();
-			};
-			
+			};			
 		</g:javascript>
 		
 		<r:layoutResources/>
@@ -112,6 +111,8 @@
 			position: absolute;
 			top: 8px;
 			left: 320px;
+			right: 8px;
+			bottom: 8px;
 		}
 		#panel {
 			background-color: #f0f0f0;
@@ -184,7 +185,8 @@
 			</div>
 			<div id="debug" style="width: 200px"/>
 		</div>
-		<canvas id="map" width="1600px" height="1200px"></canvas>
+		<canvas id="map" width="100%"></canvas>
+		<!--  <canvas id="map" width="1600px" height="1200px"></canvas> -->
 		
 	
 	</body>
