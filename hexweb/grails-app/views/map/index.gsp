@@ -71,8 +71,8 @@
 					
 				});
 
-				while (imagesToLoad > 0) {
-				}
+				//while (imagesToLoad > 0) {
+				//}
 				refreshMap();
 				document.getElementById("map").addEventListener("mousedown", clickMap, false);
 				document.getElementById("map").addEventListener("mouseup", unclickMap, false);
@@ -83,8 +83,8 @@
 			
 			
 			function moveMap(mx, my) {
-				VIEW.x += mx;
-				VIEW.y += my;
+				VIEW.x += mx * VIEW.currentScale.step;
+				VIEW.y += my * VIEW.currentScale.step;
 				
 				if (VIEW.x < 0) VIEW.x = 0;
 				if (VIEW.y < 0) VIEW.y = 0;
@@ -163,13 +163,16 @@
 	
 		<div id="panel">
 			<div>
-				<img src="${resource(dir: 'images/icons', file: 'up.png')}" alt="Up" onclick="moveMap(0, -4)"/>
-				<img src="${resource(dir: 'images/icons', file: 'down.png')}" alt="Down" onclick="moveMap(0, +4)"/>
-				<img src="${resource(dir: 'images/icons', file: 'left.png')}" alt="Left" onclick="moveMap(-4, 0)"/>
-				<img src="${resource(dir: 'images/icons', file: 'right.png')}" alt="Right" onclick="moveMap(+4, 0)"/>
-				<span style="width: 32px; display: inline-block"> </span>
-				<img src="${resource(dir: 'images/icons', file: 'paint.png')}" alt="Paint" onclick="mode_paint()"/>
-				<img src="${resource(dir: 'images/icons', file: 'select.png')}" alt="Paint" onclick="mode_select()"/>
+				<img src="${resource(dir: 'images/icons', file: 'up.png')}" alt="Up" onclick="moveMap(0, -1)"/>
+				<img src="${resource(dir: 'images/icons', file: 'down.png')}" alt="Down" onclick="moveMap(0, +1)"/>
+				<span style="width: 16px; display: inline-block"> </span>
+				<img src="${resource(dir: 'images/icons', file: 'zoom_0.png')}" alt="Large" onclick="setZoom(0)"/>
+				<img src="${resource(dir: 'images/icons', file: 'zoom_1.png')}" alt="Medium" onclick="setZoom(1)"/>
+				<img src="${resource(dir: 'images/icons', file: 'zoom_2.png')}" alt="Small" onclick="setZoom(2)"/>
+				<img src="${resource(dir: 'images/icons', file: 'zoom_3.png')}" alt="Tiny" onclick="setZoom(3)"/>
+				<br/>
+				<img src="${resource(dir: 'images/icons', file: 'left.png')}" alt="Left" onclick="moveMap(-1, 0)"/>
+				<img src="${resource(dir: 'images/icons', file: 'right.png')}" alt="Right" onclick="moveMap(+1, 0)"/>
 			</div>
 			<div>
 				<p><b>X: </b> <span id="x-orig-view">?</span></p>

@@ -50,17 +50,20 @@ function dblclickMap(event) {
 }
 
 function paintTerrain(event, px, py) {
-	var x = Math.floor(px / 48);
+	var x = Math.floor(px / VIEW.currentScale.column);
 	if (x %2 == 1) {
-		py -= 28;
+		py -= VIEW.currentScale.row / 2;
 	} 
-	var y = Math.floor(py / 56);
+	var y = Math.floor(py / VIEW.currentScale.row);
 	
 	if (y < 0 || x < 0 || y >= MAP.info.height || x >= MAP.info.width) {
 		return;
 	}
 	
-	VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, x * 48 + 8, y*56 + (x%2 * 28) + 8, 65, 56);
+	VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
+			x * VIEW.currentScale.column + 8, 
+			y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
+			VIEW.currentScale.width, VIEW.currentScale.height);
 	
 	$.getJSON("/hexweb/api/map/"+MAP.info.id+"/update?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&terrain="+VIEW.terrainBrush);
 

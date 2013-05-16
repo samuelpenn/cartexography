@@ -41,11 +41,19 @@ VIEW.thingBrush = 0;
 VIEW.zoom = 0;
 VIEW.port= { width: 1600, height: 1200 };
 
-VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12 },
-               { column: 24, row: 28, width: 32, height: 28, font: 6 },
-               { column: 12, row: 14, width: 16, height: 14, font: 3  } 
+VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 4 },
+               { column: 24, row: 28, width: 33, height: 28, font: 9 , step: 8},
+               { column: 12, row: 14, width: 17, height: 14, font: 6 , step: 16 }, 
+               { column: 6, row: 7, width: 9, height: 7, font: 4, step: 32  }, 
              ];
+VIEW.currentScale = VIEW.scale[0];
 
+function setZoom(zoom) {
+	VIEW.zoom = zoom;
+	VIEW.currentScale = VIEW.scale[VIEW.zoom];
+	VIEW.port.lastWidth = -1;
+	refreshMap();
+}
 
 function setViewPort() {
 	VIEW.port.width = $("body").width() - 320;
@@ -84,6 +92,12 @@ function refreshMap() {
 	var 	imageWidth = VIEW.scale[VIEW.zoom].width;
 	var 	imageHeight = VIEW.scale[VIEW.zoom].height;
 	var		halfOffset = parseInt(imageHeight / 2);
+	
+	VIEW.imageWidth = imageWidth;
+	VIEW.imageHeight = imageHeight;
+	VIEW.halfOffset = halfOffset;
+	VIEW.tileWidth = tileWidth;
+	VIEW.tileHeight = tileHeight;
 
 	$.getJSON("/hexweb/api/map/"+MAP.info.id+"/map?x="+startX+"&y="+startY+"&w="+mapWidth+"&h="+mapHeight, function(data) {
 		MAP.map = data.map;
@@ -120,8 +134,16 @@ function refreshMap() {
 function drawPlace(p) {
 	var x = (p.x - VIEW.x) * 48 - 24 + (p.sx * 65)/100;
 	var y = (p.y - VIEW.y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
-	VIEW.context.drawImage(MAP.things[p.thing_id].image, x, y, 65, 56);
-	VIEW.context.font = "12px Arial";
+	
+	var tileWidth = VIEW.currentScale.column;
+	var tileHeight = VIEW.currentScale.row;
+	
+	var x = (p.x - VIEW.x) * tileWidth - tileWidth/2 + (p.sx * VIEW.imageWidth)/100 + 8;
+	var y = (p.y - VIEW.y) * tileHeight + (p.x %2 * VIEW.halfOffset) - tileHeight/2 + (p.sy * VIEW.imageHeight)/100 + 8;
+
+	VIEW.context.drawImage(MAP.things[p.thing_id].image, x, y, 
+			VIEW.imageWidth, VIEW.imageHeight);
+	VIEW.context.font = VIEW.currentScale.font + "px Arial";
 	var w = VIEW.context.measureText(p.title).width;
-	VIEW.context.fillText(p.title, x + 32 - w / 2, y + 50);
+	VIEW.context.fillText(p.title, x + VIEW.imageWidth/2 - w / 2, y + VIEW.imageHeight);
 }
