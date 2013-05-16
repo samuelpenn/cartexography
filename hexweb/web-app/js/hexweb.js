@@ -132,6 +132,9 @@ function refreshMap() {
  * Draw the specified place on the map.
  */
 function drawPlace(p) {
+	if (p.importance < VIEW.zoom) {
+		return;
+	}
 	var x = (p.x - VIEW.x) * 48 - 24 + (p.sx * 65)/100;
 	var y = (p.y - VIEW.y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
 	

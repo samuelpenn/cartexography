@@ -244,6 +244,7 @@ class MapAPIController {
 		Place	place = new Place(mapInfo: info, thing: thing, tileX: x, tileY: y, subX: sx, subY: sy)
 		place.name = thing.name
 		place.title = thing.title
+		place.importance = thing.importance
 		place.save()
 		place.name = thing.name + "-" + place.id
 		place.save()

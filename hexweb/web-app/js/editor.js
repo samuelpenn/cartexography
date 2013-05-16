@@ -70,13 +70,13 @@ function paintTerrain(event, px, py) {
 }
 
 function recordSubPosition(event, px, py) {
-	var x = Math.floor(px / 48);
-	var sx = Math.floor(((px - x*48.0) * 100.0) / 48.0);
+	var x = Math.floor(px / VIEW.currentScale.column);
+	var sx = Math.floor(((px - x * VIEW.currentScale.column) * 100.0) / VIEW.currentScale.column);
 	if (x %2 == 1) {
-		py -= 28;
+		py -= VIEW.currentScale.row / 2;
 	} 
-	var y = Math.floor(py / 56);
-	var sy = Math.floor(((py - y*56.0) * 100.0) / 56.0);
+	var y = Math.floor(py / VIEW.currentScale.row);
+	var sy = Math.floor(((py - y * VIEW.currentScale.row) * 100.0) / VIEW.currentScale.row);
 
 	VIEW.recordX = x * 100 + sx;
 	VIEW.recordY = y * 100 + sy;
@@ -90,12 +90,19 @@ function recordSubPosition(event, px, py) {
 function findNearestPlace(x, y) {
 	var nearestPlace = null;
 	var minDistance = 10000;
+	
+	x += VIEW.x * 100;
+	y += VIEW.y * 100;
 
 	for (var i=0; i < MAP.places.length; i++) {
 		var p = MAP.places[i];
 		var px = p.x * 100 + p.sx;
 		var py = p.y * 100 + p.sy;
-		
+
+		if (p.importance < VIEW.zoom) {
+			continue;
+		}
+
 		// Distance is actually square of distance.
 		var d = (x - px) * (x - px) + (y - py) * (y - py);
 		if (d < minDistance) {
