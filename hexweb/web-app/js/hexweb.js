@@ -49,10 +49,18 @@ VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 4 }
 VIEW.currentScale = VIEW.scale[0];
 
 function setZoom(zoom) {
+	$("#zoomBtn"+VIEW.zoom).removeClass("selectedButton");
 	VIEW.zoom = zoom;
+	$("#zoomBtn"+VIEW.zoom).addClass("selectedButton");
 	VIEW.currentScale = VIEW.scale[VIEW.zoom];
 	VIEW.port.lastWidth = -1;
 	refreshMap();
+}
+
+function setBrush(size) {
+	$("#brushBtn"+VIEW.brushSize).removeClass("selectedButton");
+	VIEW.brushSize = size;
+	$("#brushBtn"+VIEW.brushSize).addClass("selectedButton");
 }
 
 function setViewPort() {
