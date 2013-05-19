@@ -15,7 +15,13 @@ class UrlMappings {
 			action = "editMap"
 			view = "index"
 		}
-		
+
+		"/view/$id" {
+			controller = "view"
+			action = "viewMap"
+			view = "index"
+		}
+
 		"/map/$id/view" {
 			controller = "map"
 			action = "viewMap"

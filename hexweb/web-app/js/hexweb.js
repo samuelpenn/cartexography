@@ -64,8 +64,8 @@ function setBrush(size) {
 }
 
 function setViewPort() {
-	VIEW.port.width = $("body").width() - 320;
-	VIEW.port.height = $("body").height() - 16;
+	VIEW.port.width = $("body").width() - VIEW.xMargins;
+	VIEW.port.height = $("body").height() - VIEW.yMargins;
 	
 	var		tileWidth = VIEW.scale[VIEW.zoom].column;
 	var		tileHeight = VIEW.scale[VIEW.zoom].height;

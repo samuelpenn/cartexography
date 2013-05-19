@@ -71,9 +71,8 @@
 					
 				});
 
-				//while (imagesToLoad > 0) {
-				//}
-				refreshMap();
+				VIEW.xMargins = 320;
+				VIEW.yMargins = 16;
 				document.getElementById("map").addEventListener("mousedown", clickMap, false);
 				document.getElementById("map").addEventListener("mouseup", unclickMap, false);
 				document.getElementById("map").addEventListener("mouseout", unclickMap, false);
