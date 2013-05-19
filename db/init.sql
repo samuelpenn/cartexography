@@ -51,6 +51,8 @@ insert into terrain values(26, 1, 'broadleaf_hills', 'Broadleaf Hills', false, '
 insert into terrain values(27, 1, 'boreal_forest', 'Boreal Forest', false, '#77FF77', 0);
 insert into terrain values(28, 1, 'taiga', 'Taiga', false, '#77FF77', 0);
 insert into terrain values(29, 1, 'mountains_ice', 'Ice Mountains', false, '#444444', 0);
+insert into terrain values(30, 1, 'rainforest_tropical', 'Tropical Rainforest', false, '#77FF77', 0);
+insert into terrain values(31, 1, 'jungle', 'Jungle', false, '#77FF77', 0);
 
 create table thing(id int not null auto_increment,
 	mapinfo_id int,
