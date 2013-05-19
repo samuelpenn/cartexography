@@ -27,7 +27,7 @@ insert into terrain values( 2, 1, 'sea', 'Sea', true, '#7777FF', 0);
 insert into terrain values( 3, 1, 'grass', 'Grassland', false, '#77FF77', 0);
 insert into terrain values( 4, 1, 'hills', 'Hills', false, '#55EE55', 0);
 insert into terrain values( 5, 1, 'woods', 'Woodland', false, '#44AA44', 0);
-insert into terrain values( 6, 1, 'mixed_forest', 'Mixed Forest', false, '#338833', 0);
+insert into terrain values( 6, 1, 'broadleaf_forest', 'Broadleaf Forest', false, '#338833', 0);
 insert into terrain values( 7, 1, 'cropland', 'Cropland', false, '#88FF88', 0);
 insert into terrain values( 8, 1, 'heath', 'Heath', false, '#77EE77', 0);
 insert into terrain values( 9, 1, 'moors', 'Moors', false, '#55EE55', 0);
@@ -43,6 +43,8 @@ insert into terrain values(18, 1, 'snow', 'Snow', false, '#EEEEEE', 0);
 insert into terrain values(19, 1, 'ice', 'Ice', true, '#F0F0F0', 0);
 insert into terrain values(20, 1, 'dry', 'Dry Grassland', false, '#AAFF77', 0);
 insert into terrain values(21, 1, 'desert', 'Desert', false, '#FFFF77', 0);
+insert into terrain values(22, 1, 'needleleaf_forest', 'Needleleaf Forest', false, '#338833', 0);
+
 
 create table thing(id int not null auto_increment,
 	mapinfo_id int,
