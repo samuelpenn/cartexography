@@ -35,16 +35,22 @@ insert into terrain values(10, 1, 'dense_forest', 'Dense Forest', false, '#22772
 insert into terrain values(11, 1, 'foothills', 'Foothills', false, '#44AA44', 0);
 insert into terrain values(12, 1, 'mountains', 'Mountains', false, '#444444', 0);
 insert into terrain values(13, 1, 'montane_forest', 'Montane Forest', false, '#447744', 0);
-insert into terrain values(14, 1, 'alpine_forest', 'Alpine Forest', false, '#447744', 0);
+insert into terrain values(14, 1, 'mountains_high', 'High Mountains', false, '#444444', 0);
 insert into terrain values(15, 1, 'marsh', 'Mashes', false, '#77FF77', 0);
 insert into terrain values(16, 1, 'swamp', 'Swamp', false, '#77FF77', 0);
 insert into terrain values(17, 1, 'tundra', 'Tundra', false, '#77FF77', 0);
 insert into terrain values(18, 1, 'snow', 'Snow', false, '#EEEEEE', 0);
 insert into terrain values(19, 1, 'ice', 'Ice', true, '#F0F0F0', 0);
 insert into terrain values(20, 1, 'dry', 'Dry Grassland', false, '#AAFF77', 0);
-insert into terrain values(21, 1, 'desert', 'Desert', false, '#FFFF77', 0);
+insert into terrain values(21, 1, 'desert_sand', 'Sandy Desert', false, '#FFFF77', 0);
 insert into terrain values(22, 1, 'needleleaf_forest', 'Needleleaf Forest', false, '#338833', 0);
-
+insert into terrain values(23, 1, 'desert_rock', 'Rocky Desert', false, '#FFFF77', 0);
+insert into terrain values(24, 1, 'sandbanks', 'Sandbanks', true, '#7777FF', 0);
+insert into terrain values(25, 1, 'volcano', 'Volcano', false, '#ff4444', 0);
+insert into terrain values(26, 1, 'broadleaf_hills', 'Broadleaf Hills', false, '#338833', 0);
+insert into terrain values(27, 1, 'boreal_forest', 'Boreal Forest', false, '#77FF77', 0);
+insert into terrain values(28, 1, 'taiga', 'Taiga', false, '#77FF77', 0);
+insert into terrain values(29, 1, 'mountains_ice', 'Ice Mountains', false, '#444444', 0);
 
 create table thing(id int not null auto_increment,
 	mapinfo_id int,
