@@ -14,6 +14,7 @@ import uk.org.glendale.hexweb.MapInfo
 import uk.org.glendale.hexweb.Place
 import uk.org.glendale.hexweb.Terrain
 import uk.org.glendale.hexweb.Thing
+import uk.org.glendale.hexweb.Area
 
 import groovy.sql.Sql
 
@@ -303,5 +304,9 @@ class MapAPIController {
 		println "Delete " + placeId
 		Place		place = thingService.getPlaceByNameOrId(placeId)
 		place.delete()
+	}
+	
+	def areas() {
+		render Area.findAll() as JSON
 	}
 }

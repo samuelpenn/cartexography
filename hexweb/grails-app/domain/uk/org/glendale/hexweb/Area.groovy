@@ -9,25 +9,23 @@
 package uk.org.glendale.hexweb
 
 /**
- * A Hex is an individual tile on the map. Each hex has an x,y coordinate,
- * and there can only ever be zero or one hex with a particular coordinate
- * on a map.
+ * A named area of a map. Each tile may have an area associated with it.
+ * 
  */
-class Hex {
+class Area {
 	MapInfo		mapInfo
-	int			x
-	int			y
-	Terrain		terrain
-	int			areaId
+	String		name
 	
-    static constraints = {
-    }
+	static hasMany = [children: Area]
+	static belongsTo = [parent: Area]
 	
-	static mapping = {
-		table "map"
+	static constraints = {
+		parent(nullable:true)
+	}
+
+    static mapping = {
+		table "area"
 		version false
 		mapInfo column: "mapinfo_id"
-		terrain column: "terrain_id"
-		areaId column: "area_id"
-	}
+    }
 }

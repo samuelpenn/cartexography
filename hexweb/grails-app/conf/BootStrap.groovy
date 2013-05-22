@@ -19,6 +19,14 @@ class BootStrap {
 			
 			return map
 		}
+		JSON.registerObjectMarshaller(Area) {
+			def map = [:]
+			map['id'] = it.id
+			map['name'] = it.name
+			map['parent'] = (it.parent != null)?it.parent.id:0
+			
+			return map
+		}
     }
     def destroy = {
     }
