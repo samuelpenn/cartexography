@@ -79,8 +79,10 @@
 				document.getElementById("map").addEventListener("mousemove", drawMap, false);
 				document.getElementById("map").addEventListener("dblclick", dblclickMap, false);
 				
-				setZoom(0);
 				setBrush(1);
+				setTimeout(function () {
+						setZoom(0);
+					}, 500);
 			};
 			
 			

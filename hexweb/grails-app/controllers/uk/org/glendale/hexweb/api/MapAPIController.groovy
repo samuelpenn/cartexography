@@ -243,14 +243,10 @@ class MapAPIController {
 			eq("y", y)
 		});
 		if (hex == null) {
-			println "Nothing found"
 			hex = new Hex(x: x, y: y, mapInfo: info)
-		} else {
-			println "Found " + hex.x + "," + hex.y
 		}
 		hex.terrain = Terrain.findById(terrain);
 		hex.save();
-		println "Saved"
 	}
 	
 	/**
