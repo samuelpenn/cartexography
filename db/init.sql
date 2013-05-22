@@ -54,6 +54,12 @@ insert into terrain values(29, 1, 'mountains_ice', 'Ice Mountains', false, '#444
 insert into terrain values(30, 1, 'rainforest_tropical', 'Tropical Rainforest', false, '#77FF77', 0);
 insert into terrain values(31, 1, 'jungle', 'Jungle', false, '#77FF77', 0);
 
+create table area (id int not null auto_increment,
+        mapinfo_id int,
+        name varchar(64),
+        parent_id int,
+        primary key(id));
+
 create table thing(id int not null auto_increment,
 	mapinfo_id int,
 	name varchar(32),
