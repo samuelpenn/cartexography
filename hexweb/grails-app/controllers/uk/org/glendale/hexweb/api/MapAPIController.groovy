@@ -200,11 +200,43 @@ class MapAPIController {
 	/**
 	 * Updates a hex with a new terrain.
 	 */
-	def update(String id, int x, int y, int terrain) {
+	def update(String id, int x, int y, int radius, int terrain) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		println "Update: ${id}-${x},${y}"
+		println "Update: ${id}-${x},${y} radius ${radius}"
+		if (radius < 1) {
+			radius == 1;
+		} else if (radius %2 == 0) {
+			radius--;
+		}
+		
+		int ox = x;
+		int oy = y;
+		for (int px = 0; px < (int)Math.floor(radius / 2) + 1; px++) {
+			int	 h = radius - px;
+			
+			for (int py = 0; py < h; py ++) {
+				y = oy + py - (int)Math.floor(h / 2);
+				if (px%2 == 1) {
+					y += ox%2;
+				}
+				
+				x = ox + px;
+				setHex(info, x, y, terrain);
+				x = ox - px;
+				setHex(info, x, y, terrain);
+			}
+		}
+	
+		
+		render terrain
+	}
 
+	/**
+	 * Set a specific hex to be of the specified terrain type.
+	 * TODO: Can we make this more efficient?
+	 */
+	private void setHex(MapInfo info, int x, int y, int terrain) {
 		Hex hex = Hex.find ({
 			eq("mapInfo", info)
 			eq("x", x)
@@ -219,8 +251,6 @@ class MapAPIController {
 		hex.terrain = Terrain.findById(terrain);
 		hex.save();
 		println "Saved"
-		
-		render terrain
 	}
 	
 	/**

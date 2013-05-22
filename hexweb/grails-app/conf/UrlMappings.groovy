@@ -56,7 +56,7 @@ class UrlMappings {
 		
 		"/api/map/$id/update" {
 			controller = "mapAPI"
-			action = "update"
+			action = [ PUT: "update" ]
 		}
 
 		"/api/map/$id/place" {

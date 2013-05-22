@@ -61,47 +61,36 @@ function paintTerrain(event, px, py) {
 	} 
 	var y = Math.floor(py / VIEW.currentScale.row);
 	
-	var grid = [ ];
-	
 	var ox = x;
 	var oy = y;
-
-	switch (VIEW.brushSize) {
-	case 1:
-		grid = [ { x: 0, y: 0 } ];
-		break;
-	case 3:
-		grid = [ { x: 0, y: 0 }, { x: 0, y: -1}, { x: 0, y: +1 },
-		         { x: -1, y: 0 + ox%2 }, { x: -1, y: -1 + ox%2 },
-		         { x: +1, y: 0 + ox%2 }, { x: +1, y: -1 + ox%2 }
-		       ];
-		break;
-	case 5:
-		grid = [ { x: 0, y: 0 }, { x: 0, y: -1}, { x: 0, y: +1 }, { x: 0, y: -2 }, { x: 0, y: +2 },
-		         { x: -1, y: 0 + ox%2 }, { x: -1, y: -1 + ox%2 }, { x: -1, y: 1 + ox%2 }, { x: -1, y: -2 + ox%2 },
-		         { x: +1, y: 0 + ox%2 }, { x: +1, y: -1 + ox%2 }, { x: +1, y: 1 + ox%2 }, { x: +1, y: -2 + ox%2 },
-		         { x: -2, y: -1 }, { x: -2, y: 0 }, { x: -2, y: +1 },
-		         { x: +2, y: -1 }, { x: +2, y: 0 }, { x: +2, y: +1 }
-		       ];
-		break;
-	}
 	
-	
-	for (var s=0; s < grid.length; s++) {
-		x = ox + grid[s].x;
-		y = oy + grid[s].y;
-
-		if (y < 0 || x < 0 || y >= MAP.info.height || x >= MAP.info.width) {
-			continue;
-		}
-		VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
-				x * VIEW.currentScale.column + 8, 
-				y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
-				VIEW.currentScale.width, VIEW.currentScale.height);
+	$.ajax({
+		type: "PUT",
+		url: "/hexweb/api/map/"+MAP.info.id+"/update?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+
+			"&radius="+VIEW.brushSize+"&terrain="+VIEW.terrainBrush,
+		async: true
+	});
+	for (var px = 0; px < parseInt(VIEW.brushSize / 2 + 1); px++) {
+		var	 h = VIEW.brushSize - px;
 		
-		$.getJSON("/hexweb/api/map/"+MAP.info.id+"/update?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&terrain="+VIEW.terrainBrush);
+		for (var py = 0; py < h; py ++) {
+			y = oy + py - parseInt(h/2);
+			if (px%2 == 1) {
+				y += ox%2;
+			}
+			
+			x = ox + px;
+			VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
+					x * VIEW.currentScale.column + 8, 
+					y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
+					VIEW.currentScale.width, VIEW.currentScale.height);
+			x = ox - px;
+			VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
+					x * VIEW.currentScale.column + 8, 
+					y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
+					VIEW.currentScale.width, VIEW.currentScale.height);
+		}
 	}
-	
 }
 
 function recordSubPosition(event, px, py) {
