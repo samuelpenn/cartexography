@@ -41,9 +41,10 @@ class ScaleService {
 			// Trivial case, they are the same.
 			return [ "x": x, "y": y ]
 		} else if (srcScale == destScale * 2) {
-			return getScale2(x, y);
+			return getScale2(x, y)
+		} else if (srcScale == destScale * 3) {
+			return getScale3(x, y)
 		}
-		
 		
     }
 	
@@ -52,16 +53,43 @@ class ScaleService {
 		if (x % 2 != 0) {
 			offset = 1
 		}
+		println "getScale2: ${x},${y}"
 		List h = [
-			[ "x" : x*2, "y": y*2 + offset ],
-			[ "x" : x*2, "y": y*2+1 + offset ],
-			[ "x" : x*2+1, "y": y*2 + offset ],
-			[ "x" : x*2+1, "y": y*2+1 + offset ]
+			[ "x" : x*2, "y": (y*2) + offset ],
+			[ "x" : x*2, "y": (y*2) + 1 + offset ],
+			[ "x" : x*2+1, "y": (y*2) + offset ],
+			[ "x" : x*2+1, "y": (y*2) + 1 + offset ]
+		 ]
+		
+		if (y == 0 && offset != 0) {
+			h.add([ "x": x*2, "y": 0 ])
+			h.add([ "x": x*2+1, "y": 0 ])
+		}
+
+		return h;
+	}
+	
+	def getScale3(int x, int y) {
+		int offset = 0;
+		if (x % 2 != 0) {
+			offset = 1
+		}
+		List h = [
+			[ "x" : x*3, "y": y*3+0 + offset ],
+			[ "x" : x*3, "y": y*3+1 + offset ],
+			[ "x" : x*3, "y": y*3+2 + offset ],
+			[ "x" : x*3+1, "y": y*3+0 + offset ],
+			[ "x" : x*3+1, "y": y*3+1 + offset ],
+			[ "x" : x*3+1, "y": y*3+2 + offset ],
+			[ "x" : x*3+2, "y": y*3+0 + offset ],
+			[ "x" : x*3+2, "y": y*3+1 + offset ],
+			[ "x" : x*3+2, "y": y*3+2 + offset ]
 		 ]
 		
 		if (y == 0 && offset == 1) {
-			h.add([ "x": x*2, "y": 0 ])
-			h.add([ "x": x*2+1, "y": 0 ])
+			h.add([ "x": x*3, "y": 0 ])
+			h.add([ "x": x*3+1, "y": 0 ])
+			h.add([ "x": x*3+2, "y": 0 ])
 		}
 
 		return h;

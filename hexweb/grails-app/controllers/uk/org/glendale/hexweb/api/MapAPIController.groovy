@@ -16,6 +16,7 @@ import uk.org.glendale.hexweb.Terrain
 import uk.org.glendale.hexweb.Thing
 import uk.org.glendale.hexweb.Area
 
+
 import groovy.sql.Sql
 
 class MapAPIController {
@@ -23,7 +24,7 @@ class MapAPIController {
 	def mapService
 	def terrainService
 	def thingService
-
+	def scaleService
 	
 	/**
 	 * Returns information about this map. Includes the map metadata, list of
@@ -312,5 +313,53 @@ class MapAPIController {
 	
 	def areas() {
 		render Area.findAll() as JSON
+	}
+	
+	def copy(int src, int dest) {
+		MapInfo		srcInfo = mapService.getMapByNameOrId(src)
+		MapInfo		destInfo = mapService.getMapByNameOrId(dest)
+		
+		if (srcInfo == null || destInfo == null) {
+			throw new IllegalArgumentException("Maps not found")
+		}
+		
+		int width = srcInfo.width
+		int height = srcInfo.height
+		
+		for (int sx = 0; sx < width; sx++) {
+			for (int sy = 0; sy < height; sy++) {
+				Hex hex = Hex.find ({
+					eq("mapInfo", srcInfo)
+					eq("x", sx)
+					eq("y", sy)			
+				});
+
+				List list = scaleService.getScaledHexes(sx, sy, srcInfo.scale, destInfo.scale)
+				list.each {
+					int xx = it.x
+					int yy = it.y
+					if (xx < 0 || yy < 0 || xx >= destInfo.width || yy >= destInfo.height) {
+						// Skip.
+					} else {
+						println "${sx},${sy} -> ${xx},${yy}" 
+						Hex.findAll ({
+							eq("mapInfo", destInfo)
+							eq("x", xx)
+							eq("y", yy)
+						}).each {
+							it.delete()
+						}
+		
+						Hex n = new Hex(hex)
+						n.mapInfo = destInfo
+						n.x = xx
+						n.y = yy
+						n.save()
+					}
+					
+				}
+			}
+		}
+		render "Done"
 	}
 }

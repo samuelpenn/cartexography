@@ -74,6 +74,11 @@ class UrlMappings {
 			action = "fillMap"
 		}
 
+		"/api/map/copy" {
+			controller = "mapAPI"
+			action = "copy"
+		}
+
 		"/api/map/$id/area" {
 			controller = "mapAPI"
 			action = "areas"

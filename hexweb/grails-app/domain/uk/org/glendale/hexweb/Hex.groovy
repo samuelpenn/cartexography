@@ -20,6 +20,15 @@ class Hex {
 	Terrain		terrain
 	int			areaId
 	
+	
+	Hex(Hex h) {
+		this.mapInfo = h.mapInfo
+		this.x = h.x
+		this.y = h.y
+		this.terrain = h.terrain
+		this.areaId = h.areaId
+	}
+	
     static constraints = {
     }
 	

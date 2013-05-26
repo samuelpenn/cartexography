@@ -47,6 +47,9 @@ class AppAPIController {
 	 * @return			New MapInfo object as JSON
 	 */
 	def createMap(String name, String title, int width, int height, int scale, String template) {
+		
+		println "Creating a new map [${name}]"
+		
 		MapInfo		info = MapInfo.findByName(name)
 		MapInfo		templateInfo = mapService.getMapByNameOrId(template)
 		
