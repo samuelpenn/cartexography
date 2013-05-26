@@ -165,6 +165,7 @@ class MapAPIController {
 		}
 
 		int[][]		map = new int[h][w]
+		int[][]		area = new int[h][w]
 		
 		List list = Hex.findAll ({
 			eq('mapInfo', info)
@@ -175,11 +176,13 @@ class MapAPIController {
 				property("x")
 				property("y")
 				property("terrain.id")
+				property("areaId")
 			}
 		})
 		
 		list.each { hex ->
 			map[hex[1] - y][hex[0] - x] = hex[2]
+			area[hex[1] - y][hex[0] - x] = hex[3]
 		}
 		
 		println "Size: ${list.size()} x ${x} y ${y} w ${w} h ${h}" 
@@ -192,6 +195,7 @@ class MapAPIController {
 		
 		Map data = new HashMap();
 		data.put("map", map)
+		data.put("area", area)
 		data.put("places", places)
 		data.put("info", [ "x": x, "y": y, "width": w, "height": h ]);
 		
@@ -241,7 +245,7 @@ class MapAPIController {
 		Hex hex = Hex.find ({
 			eq("mapInfo", info)
 			eq("x", x)
-			eq("y", y)
+			eq("y", y)			
 		});
 		if (hex == null) {
 			hex = new Hex(x: x, y: y, mapInfo: info)
