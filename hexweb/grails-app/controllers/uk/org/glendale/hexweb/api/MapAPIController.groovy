@@ -334,7 +334,7 @@ class MapAPIController {
 					eq("y", sy)			
 				});
 
-				List list = scaleService.getScaledHexes(sx, sy, srcInfo.scale, destInfo.scale)
+				List list = scaleService.getScaledHexes(sx, sy, srcInfo, destInfo)
 				list.each {
 					int xx = it.x
 					int yy = it.y
