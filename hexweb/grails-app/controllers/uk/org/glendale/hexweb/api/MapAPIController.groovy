@@ -315,7 +315,15 @@ class MapAPIController {
 		render Area.findAll() as JSON
 	}
 	
-	def copy(int src, int dest) {
+	/**
+	 * Copy one map into another map. If the new map is a different scale, then
+	 * scaling is also performed.
+	 * 
+	 * @param src	Source map to copy from.
+	 * @param dest	Destination map to copy to.
+	 * @return
+	 */
+	def copy(String src, String dest) {
 		MapInfo		srcInfo = mapService.getMapByNameOrId(src)
 		MapInfo		destInfo = mapService.getMapByNameOrId(dest)
 		

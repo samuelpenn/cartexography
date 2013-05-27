@@ -51,6 +51,8 @@ class ScaleService {
 			return getScale3(x, y, src.width, src.height)
 		} else if (srcScale == destScale * 4) {
 			return getScale4(x, y, src.width, src.height)
+		} else if (srcScale == destScale * 5) {
+			return getScale5(x, y, src.width, src.height)
 		}
     }
 	
@@ -165,6 +167,68 @@ class ScaleService {
 			}
 			h.add([ "x": x*4+3, "y": y*4+0 + offset ])
 			h.add([ "x": x*4+3, "y": y*4+3 + offset ])
+		}
+
+		return h;
+	}
+	
+	/**
+	 * Get hexes in map of five fold size. Each hex in source converts
+	 * to sixteen hexes in the destination.
+	 * 
+	 * @param x		X coordinate in source.
+	 * @param y		Y coordinate in source.
+	 * @return		List of x,y coordinates in destination.
+	 */
+	def getScale5(int x, int y, int width, int height) {
+		int offset = 0;
+		if (x % 2 != 0) {
+			offset = 2
+		}
+		List h = [
+			[ "x" : x*5-1, "y": y*5+2 + offset ],
+			[ "x" : x*5, "y": y*5+1 + offset ],
+			[ "x" : x*5, "y": y*5+2 + offset ],
+			[ "x" : x*5, "y": y*5+3 + offset ],
+			[ "x" : x*5, "y": y*5+4 + offset ],
+			[ "x" : x*5+1, "y": y*5+0 + offset ],
+			[ "x" : x*5+1, "y": y*5+1 + offset ],
+			[ "x" : x*5+1, "y": y*5+2 + offset ],
+			[ "x" : x*5+1, "y": y*5+3 + offset ],
+			[ "x" : x*5+1, "y": y*5+4 + offset ],
+			[ "x" : x*5+2, "y": y*5+0 + offset ],
+			[ "x" : x*5+2, "y": y*5+1 + offset ],
+			[ "x" : x*5+2, "y": y*5+2 + offset ],
+			[ "x" : x*5+2, "y": y*5+3 + offset ],
+			[ "x" : x*5+2, "y": y*5+4 + offset ],
+			[ "x" : x*5+3, "y": y*5+1 + offset ],
+			[ "x" : x*5+3, "y": y*5+2 + offset ],
+			[ "x" : x*5+3, "y": y*5+3 + offset ],
+			[ "x" : x*5+3, "y": y*5+4 + offset ],
+			[ "x" : x*5+3, "y": y*5+5 + offset ],
+			[ "x" : x*5+4, "y": y*5+1 + offset ],
+			[ "x" : x*5+4, "y": y*5+2 + offset ],
+			[ "x" : x*5+4, "y": y*5+3 + offset ],
+			[ "x" : x*5+4, "y": y*5+4 + offset ],
+			[ "x" : x*5+5, "y": y*5+1 + offset ],
+		 ]
+		
+		if (y == 0 && offset != 0) {
+			h.add([ "x": x*5-1, "y": 0 ])
+			h.add([ "x": x*5+0, "y": 0 ])
+			h.add([ "x": x*5+1, "y": 0 ])
+			h.add([ "x": x*5+2, "y": 0 ])
+			h.add([ "x": x*5+3, "y": 0 ])
+			h.add([ "x": x*5+0, "y": 1 ])
+			h.add([ "x": x*5+1, "y": 1 ])
+			h.add([ "x": x*5+2, "y": 1 ])
+		}
+		if (x == width-1) {
+			if (y == 0) {
+				h.add([ "x": x*5+3, "y": y*5-1 + offset ])
+			}
+			h.add([ "x": x*5+3, "y": y*5+0 + offset ])
+			h.add([ "x": x*5+3, "y": y*5+3 + offset ])
 		}
 
 		return h;
