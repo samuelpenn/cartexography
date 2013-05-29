@@ -158,6 +158,9 @@ class MapAPIController {
 		if (y < 0) {
 			y = 0;
 		}
+		if (x%2 == 1) {
+			x --
+		}
 		if (x + w > info.width) {
 			w = info.width - x;
 		}

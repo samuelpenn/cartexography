@@ -181,54 +181,72 @@ class ScaleService {
 	 * @return		List of x,y coordinates in destination.
 	 */
 	def getScale5(int x, int y, int width, int height) {
-		int offset = 0;
+		int offset = 0, m = 0;
 		if (x % 2 != 0) {
 			offset = 2
+			m = 1
 		}
 		List h = [
-			[ "x" : x*5-1, "y": y*5+2 + offset ],
+			[ "x" : x*5-2, "y": y*5+2 + offset ],
+			
+			[ "x" : x*5-1, "y": y*5+1 + offset + m ],
+			[ "x" : x*5-1, "y": y*5+2 + offset + m ],
+			[ "x" : x*5-1, "y": y*5+3 + offset + m ],
+			[ "x" : x*5-1, "y": y*5+4 + offset + m ],
+			
+			[ "x" : x*5, "y": y*5+0 + offset ],
 			[ "x" : x*5, "y": y*5+1 + offset ],
 			[ "x" : x*5, "y": y*5+2 + offset ],
 			[ "x" : x*5, "y": y*5+3 + offset ],
 			[ "x" : x*5, "y": y*5+4 + offset ],
-			[ "x" : x*5+1, "y": y*5+0 + offset ],
-			[ "x" : x*5+1, "y": y*5+1 + offset ],
-			[ "x" : x*5+1, "y": y*5+2 + offset ],
-			[ "x" : x*5+1, "y": y*5+3 + offset ],
-			[ "x" : x*5+1, "y": y*5+4 + offset ],
-			[ "x" : x*5+2, "y": y*5+0 + offset ],
+
+			[ "x" : x*5+1, "y": y*5+0 + offset + m ],
+			[ "x" : x*5+1, "y": y*5+1 + offset + m ],
+			[ "x" : x*5+1, "y": y*5+2 + offset + m ],
+			[ "x" : x*5+1, "y": y*5+3 + offset + m ],
+			[ "x" : x*5+1, "y": y*5+4 + offset + m ],
+			
 			[ "x" : x*5+2, "y": y*5+1 + offset ],
 			[ "x" : x*5+2, "y": y*5+2 + offset ],
 			[ "x" : x*5+2, "y": y*5+3 + offset ],
 			[ "x" : x*5+2, "y": y*5+4 + offset ],
-			[ "x" : x*5+3, "y": y*5+1 + offset ],
-			[ "x" : x*5+3, "y": y*5+2 + offset ],
-			[ "x" : x*5+3, "y": y*5+3 + offset ],
-			[ "x" : x*5+3, "y": y*5+4 + offset ],
-			[ "x" : x*5+3, "y": y*5+5 + offset ],
-			[ "x" : x*5+4, "y": y*5+1 + offset ],
-			[ "x" : x*5+4, "y": y*5+2 + offset ],
-			[ "x" : x*5+4, "y": y*5+3 + offset ],
-			[ "x" : x*5+4, "y": y*5+4 + offset ],
-			[ "x" : x*5+5, "y": y*5+1 + offset ],
+			[ "x" : x*5+2, "y": y*5+5 + offset ],
+
+			[ "x" : x*5+3, "y": y*5+0 + offset + m ],
+			[ "x" : x*5+3, "y": y*5+1 + offset + m ],
+			[ "x" : x*5+3, "y": y*5+2 + offset + m ],
+			[ "x" : x*5+3, "y": y*5+3 + offset + m ],
+
+			[ "x" : x*5+4, "y": y*5+3 + offset ]
 		 ]
 		
 		if (y == 0 && offset != 0) {
 			h.add([ "x": x*5-1, "y": 0 ])
+			h.add([ "x": x*5-1, "y": 1 ])
+			h.add([ "x": x*5-1, "y": 2 ])
 			h.add([ "x": x*5+0, "y": 0 ])
-			h.add([ "x": x*5+1, "y": 0 ])
-			h.add([ "x": x*5+2, "y": 0 ])
-			h.add([ "x": x*5+3, "y": 0 ])
 			h.add([ "x": x*5+0, "y": 1 ])
+			h.add([ "x": x*5+1, "y": 0 ])
 			h.add([ "x": x*5+1, "y": 1 ])
+			h.add([ "x": x*5+1, "y": 2 ])
+			h.add([ "x": x*5+2, "y": 0 ])
 			h.add([ "x": x*5+2, "y": 1 ])
+			h.add([ "x": x*5+2, "y": 2 ])
+			h.add([ "x": x*5+3, "y": 0 ])
+			h.add([ "x": x*5+3, "y": 1 ])
+			h.add([ "x": x*5+3, "y": 2 ])
+			h.add([ "x": x*5+4, "y": 0 ])
 		}
 		if (x == width-1) {
 			if (y == 0) {
-				h.add([ "x": x*5+3, "y": y*5-1 + offset ])
+				h.add([ "x": x*5+4, "y": y*5-1 + offset ])
 			}
-			h.add([ "x": x*5+3, "y": y*5+0 + offset ])
-			h.add([ "x": x*5+3, "y": y*5+3 + offset ])
+			h.add([ "x": x*5+3, "y": y*5+4 + offset + m ])
+			h.add([ "x": x*5+4, "y": y*5+0 + offset ])
+			h.add([ "x": x*5+4, "y": y*5+1 + offset ])
+			h.add([ "x": x*5+4, "y": y*5+2 + offset ])
+			h.add([ "x": x*5+4, "y": y*5+4 + offset ])
+			h.add([ "x": x*5+4, "y": y*5+5 + offset ])
 		}
 
 		return h;
