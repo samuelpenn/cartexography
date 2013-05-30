@@ -53,5 +53,7 @@ grails.project.dependency.resolution = {
         runtime ":database-migration:1.2.1"
 
         compile ':cache:1.0.1'
+		compile ':modernizr:1.7.2'
+		compile ':uploadr:0.7.2'
     }
 }
