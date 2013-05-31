@@ -102,7 +102,7 @@ class MapAPIController {
 		for (int y=0; y < info.height; y++) {
 			for (int x=0; x < info.width; x++) {
 				if (mapService.getHex(info, x, y) == null) {
-					Hex hex = new Hex(mapInfo: info, x: x, y: y, terrain: fill)
+					Hex hex = new Hex(mapInfo: info, x: x, y: y, terrainId: fill.id)
 					hex.save()
 				}
 			}
@@ -123,7 +123,7 @@ class MapAPIController {
 				if ((int)(Math.random()*3) == 0) {
 					t = land
 				}
-				Hex hex = new Hex(mapInfo: info, x: x, y: y, terrain: t)
+				Hex hex = new Hex(mapInfo: info, x: x, y: y, terrainId: t.id)
 				hex.save()
 			}
 		}
@@ -179,7 +179,7 @@ class MapAPIController {
 			projections {
 				property("x")
 				property("y")
-				property("terrain.id")
+				property("terrainId")
 				property("areaId")
 			}
 		})
@@ -254,7 +254,7 @@ class MapAPIController {
 		if (hex == null) {
 			hex = new Hex(x: x, y: y, mapInfo: info)
 		}
-		hex.terrain = Terrain.findById(terrain);
+		hex.terrainId = terrain
 		hex.save();
 	}
 	

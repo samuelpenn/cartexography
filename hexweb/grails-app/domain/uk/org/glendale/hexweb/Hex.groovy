@@ -17,7 +17,7 @@ class Hex {
 	MapInfo		mapInfo
 	int			x
 	int			y
-	Terrain		terrain
+	int			terrainId
 	int			areaId
 	
 	
@@ -25,7 +25,7 @@ class Hex {
 		this.mapInfo = h.mapInfo
 		this.x = h.x
 		this.y = h.y
-		this.terrain = h.terrain
+		this.terrainId = h.terrainId
 		this.areaId = h.areaId
 	}
 	
@@ -36,7 +36,7 @@ class Hex {
 		table "map"
 		version false
 		mapInfo column: "mapinfo_id"
-		terrain column: "terrain_id"
+		terrainId column: "terrain_id"
 		areaId column: "area_id"
 	}
 }
