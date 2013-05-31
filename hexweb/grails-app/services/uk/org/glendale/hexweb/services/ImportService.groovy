@@ -96,6 +96,8 @@ class ImportService {
 				}
 			}
 		}
+		// Make sure that the map is empty before we import.
+		mapService.clearMap(mapInfo)
 		
 		// Read blob data.
 		mapcraft.tileset.tiles.column.each { column ->
@@ -105,7 +107,6 @@ class ImportService {
 				int t = getTerrainCode(blob)
 				int a = getAreaCode(blob)
 				
-				println "${x},${y} ${t} ${a}"
 				t = terrainMap.get(t)
 				if (a > 0) {
 					a = areaMap.get(a)

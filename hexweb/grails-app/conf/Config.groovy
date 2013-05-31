@@ -88,7 +88,9 @@ mapcraft {
 		forest.jungle = "rainforest_tropical"
 		forest.alpine = "needleleaf_forest"
 		plains.wetland = "marsh"
+		otherwise = "grass"
 	}
+	
 	things {
 		settlement.village = "village"
 		settlement.town = "town"
@@ -100,6 +102,16 @@ mapcraft {
 		settlement.largecity = "city"
 		misc.peak = "peak"
 		misc.label = "label"
+	}
+	features {
+		clear.height = 0
+		lowhills.height = 1
+		highhills.height = 1
+		foothills.height = 2
+		lowmnts.height = 3
+		highmnts.height = 4
+		marsh.height = 0
+		ice.height = 0
 	}
 	
 }

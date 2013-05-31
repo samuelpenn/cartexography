@@ -11,11 +11,18 @@ package uk.org.glendale.hexweb.services
 import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.MapInfo
 
+import java.sql.Connection
+import java.sql.Statement
+import org.hibernate.Session
+import org.hibernate.SessionFactory;
+import org.hibernate.jdbc.Work
+
 /**
  * Services needed by Map.
  */
 class MapService {
-
+	def SessionFactory		sessionFactory
+	
 	/**
 	 * Gets the map details for the map specified by unique id.
 	 * 
@@ -59,6 +66,23 @@ class MapService {
 			eq("x", x)
 			eq("y", y)
 		});
+	}
+
+	/**
+	 * Removes all hex data from a map. Uses raw SQL for performance.
+	 * 
+	 * @param info
+	 * @return
+	 */
+	def clearMap(MapInfo info) {
+		def session = sessionFactory.getCurrentSession()
+		
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				Statement stmnt = connection.createStatement()
+				stmnt.executeUpdate("DELETE FROM map WHERE mapinfo_id=${info.id}")
+			}
+		})
 	}
 	
 }
