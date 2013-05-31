@@ -58,6 +58,7 @@ class ImportController {
 		}
 		
 		println "${width}x${height} at ${scale}"
+		importService.importMap(mapInfo, map)
 		
 		
 	}

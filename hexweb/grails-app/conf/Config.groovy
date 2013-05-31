@@ -69,6 +69,41 @@ environments {
     }
 }
 
+mapcraft {
+	terrain {
+		xnull = "unknown"
+		water.sea = "sea"
+		water.ocean = "ocean"
+		plains.cropland = "cropland"
+		plains.grassland = "grass"
+		plains.dry = "dry"
+		plains.desert.rock = "desert_rock"
+		plains.desert.sand = "desert_sand"
+		plains.tundra = "tundra"
+		plains.snow = "snow"
+		plains.heath = "heath"
+		plains.moor = "moors"
+		forest.woodland = "woods"
+		forest.forest = "broadleaf_forest"
+		forest.jungle = "rainforest_tropical"
+		forest.alpine = "needleleaf_forest"
+		plains.wetland = "marsh"
+	}
+	things {
+		settlement.village = "village"
+		settlement.town = "town"
+		settlement.keep = "keep"
+		settlement.castle = "castle"
+		settlement.ruins = "ruins"
+		settlement.mines = "mines"
+		settlement.city = "city"
+		settlement.largecity = "city"
+		misc.peak = "peak"
+		misc.label = "label"
+	}
+	
+}
+
 // log4j configuration
 log4j = {
     // Example of changing the log pattern for the default console appender:
