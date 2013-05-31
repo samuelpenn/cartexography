@@ -9,10 +9,15 @@
 package uk.org.glendale.hexweb.ui
 
 import com.sun.org.apache.xerces.internal.parsers.XMLParser
+import uk.org.glendale.hexweb.MapInfo
 
+/**
+ * Controller for the import and conversion of Mapcraft v1 maps.
+ */
 class ImportController {
 	def mapService
-	
+	def importService
+
 	def config = [ 'water.sea': 'sea' ]
 	
 	def upload() {
@@ -35,6 +40,24 @@ class ImportController {
 		String mapName = map.header.name.text()
 		String mapTitle = mapName
 		
+		int scale = (map.tileset.dimensions.scale.text() as int) * 1000
+		int width = map.tileset.dimensions.width.text() as int
+		int height = map.tileset.dimensions.height.text() as int
+		
+		
+		MapInfo mapInfo = MapInfo.findByName(mapName)
+		if (mapInfo == null) {
+			mapInfo = new MapInfo()
+			mapInfo.name = mapName
+			mapInfo.title = mapName
+			mapInfo.scale = scale
+			mapInfo.width = width
+			mapInfo.height = height
+			mapInfo.template = 1
+			mapInfo.save()
+		}
+		
+		println "${width}x${height} at ${scale}"
 		
 		
 	}
