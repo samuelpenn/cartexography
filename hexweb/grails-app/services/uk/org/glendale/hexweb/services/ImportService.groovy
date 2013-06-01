@@ -41,19 +41,19 @@ class ImportService {
 		return value
 	}
 	
-	private int getTerrainCode(String blob) {
+	int getTerrainCode(String blob) {
 		return fromBase64(blob[0..1])
 	}
 	
-	private int getHeightCode(String blob) {
+	int getHeightCode(String blob) {
 		return fromBase64(blob[2..3])
 	}
 	
-	private int getFeatureCode(String blob) {
+	int getFeatureCode(String blob) {
 		return fromBase64(blob[4..5])
 	}
 	
-	private int getAreaCode(String blob) {
+	int getAreaCode(String blob) {
 		return fromBase64(blob[6..7])
 	}
 
@@ -68,6 +68,7 @@ class ImportService {
 		MapInfo	template = mapService.getMapByNameOrId(mapInfo.template)
 		def  areaMap = [:]
 		def	 terrainMap = [:]
+		def  featureMap = [:]
 		
 		// Read areas.
 		mapcraft.areas.area.each { a ->
@@ -91,8 +92,13 @@ class ImportService {
 					int  	terrainId = t.'@id' as int
 					String 	name = t.name.text()
 					
-					Terrain terrain = terrainService.getTerrainFromName(template, name)
-					terrainMap.put(terrainId, terrain.id)
+					terrainMap.put(terrainId, name)
+				}
+			} else if (set.'@id' == "features") {
+				set.terrain.each { t ->
+					int		featureId = t.'@id' as int
+					String	name = t.name.text()
+					featureMap.put(featureId, name)
 				}
 			}
 		}
@@ -103,16 +109,20 @@ class ImportService {
 		mapcraft.tileset.tiles.column.each { column ->
 			int x = column.'@x' as int
 			int y = 0
+			println "Column ${x}"
 			column.text().split().each { blob ->
 				int t = getTerrainCode(blob)
+				int f = getFeatureCode(blob)
 				int a = getAreaCode(blob)
 				
-				t = terrainMap.get(t)
+				Terrain terrain = terrainService.getTerrainFromName(template, 
+										terrainMap.get(t), featureMap.get(f))
+				
 				if (a > 0) {
 					a = areaMap.get(a)
 				}
 				
-				Hex hex = new Hex(mapInfo: mapInfo, x: x, y: y, terrainId: t, areaId: a)
+				Hex hex = new Hex(mapInfo: mapInfo, x: x, y: y, terrainId: terrain.id, areaId: a)
 				hex.save()
 				y++
 			}

@@ -50,18 +50,43 @@ class TerrainService {
 		})
 	}
 
-	def getTerrainFromName(MapInfo map, String name) {
-		if (name == "null") {
-			name = "xnull"
+	def terrainCache = [:]
+	
+	/**
+	 * Gets the type of terrain based on the Mapcraft terrain and feature type.
+	 *
+	 * @param map
+	 * @param terrain
+	 * @param feature
+	 * @return
+	 */
+	def getTerrainFromName(MapInfo map, String terrain, String feature) {
+		if (terrain == "null") {
+			terrain = "xnull"
+		}
+		if (terrainCache["${terrain}.${feature}"] != null) {
+			return terrainCache["${terrain}.${feature}"]
 		}
 		def confMap = grailsApplication.getFlatConfig()
-		def img = confMap["mapcraft.terrain.${name}"] as String
-		println "Converting [${name}] to [${img}]"
-		Terrain terrain = getTerrainByNameOrId(map, img)
-		if (terrain == null) {
+		def img = confMap["mapcraft.terrain.${terrain}.${feature}"] as String
+		if (img == null || img == "[:]") {
+			img = confMap["mapcraft.terrain.${terrain}.clear"] as String
+		}
+		if (img == null || img == "[:]") {
+			img = confMap["mapcraft.terrain.otherwise.${feature}"] as String
+		}
+		if (img == null || img == "[:]") {
+			img = confMap["mapcraft.terrain.otherwise.clear"] as String
+		}
+		if (feature != "clear") {
+			println "Converting [${terrain}+${feature}] to [${img}]"
+		}
+		Terrain t = getTerrainByNameOrId(map, img)
+		if (t == null) {
 			println "No terrain [${img}] found."
 		}
-		
-		return terrain
+		terrainCache["${terrain}.${feature}"] = t
+
+		return t
 	}
 }

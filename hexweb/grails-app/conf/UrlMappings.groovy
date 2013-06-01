@@ -34,6 +34,11 @@ class UrlMappings {
 			action = "info"
 		}
 
+		"/api/app/test" {
+			controller = "appAPI"
+			action = "test"
+		}
+
 		"/api/app/create" {
 			controller = "appAPI"
 			action = [ POST: "createMap" ]

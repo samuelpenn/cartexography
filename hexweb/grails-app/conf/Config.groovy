@@ -71,24 +71,100 @@ environments {
 
 mapcraft {
 	terrain {
-		xnull = "unknown"
-		water.sea = "sea"
-		water.ocean = "ocean"
-		plains.cropland = "cropland"
-		plains.grassland = "grass"
-		plains.dry = "dry"
-		plains.desert.rock = "desert_rock"
-		plains.desert.sand = "desert_sand"
-		plains.tundra = "tundra"
-		plains.snow = "snow"
-		plains.heath = "heath"
-		plains.moor = "moors"
-		forest.woodland = "woods"
-		forest.forest = "broadleaf_forest"
-		forest.jungle = "rainforest_tropical"
-		forest.alpine = "needleleaf_forest"
-		plains.wetland = "marsh"
-		otherwise = "grass"
+		xnull {
+			clear = "unknown"
+		}
+		water {
+			sea {
+				clear = "sea"
+				ice = "ice"
+			}
+			ocean {
+				clear = "ocean"
+				ice = "ice"
+			}
+		}
+		plains {
+			cropland {
+				clear = "cropland"
+			}
+			grassland {
+				clear = "grass"
+				lowhills = "hills"
+				highhills = "hills"
+				foothills = "foothills"
+				lowmnts = "mountains"
+				highmnts = "mountains_high"
+			}
+			dry {
+				clear = "dry"
+				lowmnts = "mountains"
+				highmnts = "mountains_high"
+			}
+			desert {
+				rock {
+					clear = "desert_rock"
+					lowmnts = "mountains"
+					highmnts = "mountains_high"
+				}
+				sand {
+					clear = "desert_sand"
+					lowmnts = "mountains"
+					highmnts = "mountains_high"
+				}
+			}
+			tundra {
+				clear = "tundra"
+				lowmnts = "mountains_ice"
+				highmnts = "mountains_ice"
+			}
+			snow {
+				clear = "snow"
+				lowmnts = "mountains_ice"
+				highmnts = "mountains_ice"
+			}
+			heath {
+				clear = "heath"
+			}
+			moor {
+				clear = "moors"
+			}
+			wetland {
+				clear = "marsh"
+			}
+		}
+		forest {
+			woodland {
+				clear = "woods"
+				lowhills = "broadleaf_hills"
+				highhills = "broadleaf_hills"
+				lowmnts = "montane_forest"
+				highmnts = "montane_forest"
+			}
+			forest {
+				clear = "broadleaf_forest"
+				lowhills = "broadleaf_hills"
+				highhills = "broadleaf_hills"
+				lowmnts = "montane_forest"
+				highmnts = "montane_forest"
+			}
+			jungle {
+				clear = "rainforest_tropical"
+			}
+			alpine {
+				clear = "needleleaf_forest"
+			}
+		}
+		otherwise {
+			clear = "grass"
+			lowhills = "hills"
+			highhills = "hills"
+			foothills = "foothills"
+			lowmnts = "mountains"
+			highmnts = "mountains_high"
+			march = "marsh"
+			ice = "snow"
+		}
 	}
 	
 	things {

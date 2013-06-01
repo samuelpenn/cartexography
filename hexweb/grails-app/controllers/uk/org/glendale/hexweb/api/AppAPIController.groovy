@@ -10,6 +10,7 @@ package uk.org.glendale.hexweb.api
 
 import grails.converters.JSON
 import uk.org.glendale.hexweb.MapInfo
+import uk.org.glendale.hexweb.Terrain
 
 /**
  * Controller for high level events, such as listing all the resources, or
@@ -18,6 +19,7 @@ import uk.org.glendale.hexweb.MapInfo
 class AppAPIController {
 	
 	def mapService
+	def terrainService
 
 	/**
 	 * Gets a list of all the maps defined on this system. Information about each
@@ -78,5 +80,12 @@ class AppAPIController {
 		info.save()
 		
 		render info as JSON
+	}
+	
+	def test(String map, String terrain, String feature) {
+		MapInfo	info = mapService.getMapByNameOrId(map)
+		Terrain t = terrainService.getTerrainFromName(info, terrain, feature)
+		
+		render t.name
 	}
 }
