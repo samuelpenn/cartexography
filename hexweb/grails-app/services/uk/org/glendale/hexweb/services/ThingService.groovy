@@ -8,10 +8,13 @@
  */
 package uk.org.glendale.hexweb.services
 
+import uk.org.glendale.hexweb.MapInfo;
 import uk.org.glendale.hexweb.Thing
 import uk.org.glendale.hexweb.Place
 
 class ThingService {
+	def grailsApplication
+
 	def getThingByNameOrId(int id) {
 		return Thing.findById(id)
 	}
@@ -45,4 +48,25 @@ class ThingService {
 		}
 		return Place.findByName(name)
 	}
+	
+	/**
+	 * Convert a Mapcraft Thing to a Hexweb Thing.
+	 * @param map
+	 * @param thing
+	 * @return
+	 */
+	def getThingFromName(MapInfo map, String thing) {
+		if (thing == "null") {
+			return null
+		}
+		def confMap = grailsApplication.getFlatConfig()
+		def img = confMap["mapcraft.thing.${thing}"] as String
+		Thing t = getThingByNameOrId(img)
+		if (t == null) {
+			println "No thing [${img}] found."
+		}
+
+		return t
+	}
+
 }

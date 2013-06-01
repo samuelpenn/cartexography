@@ -70,6 +70,24 @@ environments {
 }
 
 mapcraft {
+	thing {
+		settlement {
+			village = "village"
+			town = "town"
+			city = "city"
+			largecity = "largecity"
+		}
+		castle {
+			keep = "keep"
+			castle = "castle"
+		}
+		misc {
+			mines = "mines"
+			ruins = "ruins"
+			label = "label"
+			peak = "peak"
+		}
+	}
 	terrain {
 		xnull {
 			clear = "unknown"

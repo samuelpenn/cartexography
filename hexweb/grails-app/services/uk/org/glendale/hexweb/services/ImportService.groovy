@@ -11,7 +11,9 @@ package uk.org.glendale.hexweb.services
 import uk.org.glendale.hexweb.Area
 import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.MapInfo
+import uk.org.glendale.hexweb.Place
 import uk.org.glendale.hexweb.Terrain
+import uk.org.glendale.hexweb.Thing
 
 /**
  * Provides services for the import and conversion of Mapcraft v1 maps.
@@ -29,6 +31,7 @@ class ImportService {
 	def areaService
 	def terrainService
 	def mapService
+	def thingService
 	
 	private static String BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 	private int fromBase64(String code) {
@@ -69,6 +72,7 @@ class ImportService {
 		def  areaMap = [:]
 		def	 terrainMap = [:]
 		def  featureMap = [:]
+		def	 thingMap = [:]
 		
 		// Read areas.
 		mapcraft.areas.area.each { a ->
@@ -100,6 +104,12 @@ class ImportService {
 					String	name = t.name.text()
 					featureMap.put(featureId, name)
 				}
+			} else if (set.'@id' == "things") {
+				set.terrain.each { t ->
+					int		thingId = t.'@id' as int
+					String	name = t.name.text()
+					thingMap.put(thingId, thingService.getThingFromName(mapInfo, name))
+				}	
 			}
 		}
 		// Make sure that the map is empty before we import.
@@ -128,5 +138,32 @@ class ImportService {
 				y++
 			}
 		}
+		println "Done tiles"
+		
+		// Import places
+		mapcraft.tileset.things.thing.each { thing ->
+			int type = thing.'@type' as int
+			int x = thing.'@x' as int
+			int y = thing.'@y' as int
+			String name = thing.name.text()
+			String description = thing.description.text()
+			int importance = thing.importance.text() as int
+			
+			println "Importing [${name}] of type [${type}]"
+			
+			Thing	t = thingMap.get(type)
+			if (t != null) {
+				Place place = new Place(mapInfo: mapInfo, thing: t, name: name, title: name)
+				place.importance = importance
+				place.tileX = x / 100
+				place.tileY = y / 100
+				place.subX = x % 100
+				place.subY = y % 100
+				place.save()
+			} else {
+				println "Unrecognised thing [${name}]"
+			}
+		}
+		println "Done places"
     }
 }
