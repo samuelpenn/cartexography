@@ -68,10 +68,17 @@ create table thing(id int not null auto_increment,
 	version int,
 	primary key(id));
 
-insert into thing values(1, 1, 'village', "Village", 1, 0);
-insert into thing values(2, 1, 'town', "Town", 2, 0);
-insert into thing values(3, 1, 'city', "City", 3, 0);
-insert into thing values(4, 1, 'castle', "Castle", 2, 0);
+insert into thing values(1, 1, 'village', 'Village', 1, 0);
+insert into thing values(2, 1, 'town', 'Town', 2, 0);
+insert into thing values(3, 1, 'city', 'City', 3, 0);
+insert into thing values(4, 1, 'castle', 'Castle', 2, 0);
+insert into thing values(5, 1, 'keep', 'Keep', 1, 0);
+insert into thing values(6, 1, 'largecity', 'Large city', 3, 0);
+insert into thing values(7, 1, 'ruins', 'Ruins', 2, 0);
+insert into thing values(8, 1, 'mine', 'Mine', 1, 0);
+insert into thing values(9, 1, 'peak', 'Peak', 3, 0);
+insert into thing values(10, 1, 'monument', 'Monument', 2, 0);
+insert into thing values(11, 1, 'label', 'Label', 3, 0);
 
 create table place(id int not null auto_increment,
 	mapinfo_id int,
