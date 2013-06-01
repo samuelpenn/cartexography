@@ -104,6 +104,7 @@ class ImportService {
 		}
 		// Make sure that the map is empty before we import.
 		mapService.clearMap(mapInfo)
+		terrainService.terrainCache = [:]
 		
 		// Read blob data.
 		mapcraft.tileset.tiles.column.each { column ->

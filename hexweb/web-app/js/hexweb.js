@@ -109,6 +109,7 @@ function refreshMap() {
 
 	$.getJSON("/hexweb/api/map/"+MAP.info.id+"/map?x="+startX+"&y="+startY+"&w="+mapWidth+"&h="+mapHeight, function(data) {
 		MAP.map = data.map;
+		MAP.area = data.area;
 		MAP.places = data.places;
 
 		startX = data.info.x;
@@ -126,7 +127,47 @@ function refreshMap() {
 						px, py, imageWidth, imageHeight);
 			}
 		}
-
+		VIEW.context.strokeStyle = '#ff0000';
+		VIEW.context.lineWidth = 3;
+		for (var y=0; y < mapHeight; y++) {
+			for (var x=0; x < mapWidth; x++) {
+				var px = x * tileWidth + 8;
+				var py = y * tileHeight + (x%2 * halfOffset) + 8;
+				if (y > 0 && MAP.area[y][x] != MAP.area[y-1][x]) {
+					VIEW.context.beginPath();
+					VIEW.context.moveTo(px + tileWidth/3, py);
+					VIEW.context.lineTo(px + tileWidth, py);
+					VIEW.context.stroke();
+				}
+				if (x%2 == 1) {
+					if (x > 0 && MAP.area[y][x] != MAP.area[y][x-1]) {
+						VIEW.context.beginPath();
+						VIEW.context.moveTo(px, py + tileHeight/2);
+						VIEW.context.lineTo(px + tileWidth/3, py);
+						VIEW.context.stroke();					
+					}
+					if (x > 0 && y < mapHeight - 1 && MAP.area[y][x] != MAP.area[y+1][x-1]) {
+						VIEW.context.beginPath();
+						VIEW.context.moveTo(px, py + tileHeight/2);
+						VIEW.context.lineTo(px + tileWidth/3, py + tileHeight);
+						VIEW.context.stroke();					
+					}
+				} else {
+					if (x > 0 && y > 0 && MAP.area[y][x] != MAP.area[y-1][x-1]) {
+						VIEW.context.beginPath();
+						VIEW.context.moveTo(px, py + tileHeight/2);
+						VIEW.context.lineTo(px + tileWidth/3, py);
+						VIEW.context.stroke();					
+					}
+					if (x > 0 && MAP.area[y][x] != MAP.area[y][x-1]) {
+						VIEW.context.beginPath();
+						VIEW.context.moveTo(px, py + tileHeight/2);
+						VIEW.context.lineTo(px + tileWidth/3, py + tileHeight);
+						VIEW.context.stroke();					
+					}					
+				}
+			}
+		}
 		$("#x-orig-view").html(VIEW.x + " / " + MAP.info.width)
 		$("#y-orig-view").html(VIEW.y + " / " + MAP.info.height)
 		
