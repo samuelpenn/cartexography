@@ -44,18 +44,42 @@ class ImportService {
 		return value
 	}
 	
+	/**
+	 * Gets the terrain id part of the tile blob.
+	 *
+	 * @param blob	Base64 data blob for the tile.
+	 * @return		Terrain id.
+	 */
 	int getTerrainCode(String blob) {
 		return fromBase64(blob[0..1])
 	}
-	
+
+	/**
+	 * Gets the height value part of the tile blob.
+	 * 	
+	 * @param blob	Base64 data blob for the tile.
+	 * @return		Height, in metres.
+	 */
 	int getHeightCode(String blob) {
 		return fromBase64(blob[2..3])
 	}
 	
+	/**
+	 * Gets the feature id part of the tile blob.
+	 * 
+	 * @param blob	Base64 data blob for the tile.
+	 * @return		Feature id.
+	 */
 	int getFeatureCode(String blob) {
 		return fromBase64(blob[4..5])
 	}
 	
+	/**
+	 * Gets the area id part of the tile blob.
+	 * 
+	 * @param blob  Base 64 data blob for the tile.
+	 * @return		Area id.
+	 */
 	int getAreaCode(String blob) {
 		return fromBase64(blob[6..7])
 	}
@@ -75,17 +99,22 @@ class ImportService {
 		def	 thingMap = [:]
 		
 		// Read areas.
+		areaService.clearAreas(mapInfo)
 		mapcraft.areas.area.each { a ->
 			int areaId = a.'@id' as int
 			String areaName = a.'@name' as String
+			String areaUri = a.'@uri' as String
+			if (areaUri == null) {
+				areaUri = areaName.toLowerCase()
+			}
 			println areaName
 			
-			Area area = areaService.getAreaByName(mapInfo, areaName)
+			Area area = areaService.getAreaByName(mapInfo, areaUri)
 			if (area == null) {
-				area = new Area(mapInfo: mapInfo, name: areaName)
+				area = new Area(mapInfo: mapInfo, name: areaUri, title: areaName)
 				area.save()
 			}
-			println "Mapping [${areaId}] to [${area.id}]"
+			println "Mapping [${areaName}] to [${area.id}]"
 			areaMap.put(areaId, area.id)
 		}
 		
@@ -129,8 +158,10 @@ class ImportService {
 				Terrain terrain = terrainService.getTerrainFromName(template, 
 										terrainMap.get(t), featureMap.get(f))
 				
-				if (a > 0) {
+				if (a > 0 && areaMap.get(a) != null) {
 					a = areaMap.get(a)
+				} else {
+					a = 0
 				}
 				
 				Hex hex = new Hex(mapInfo: mapInfo, x: x, y: y, terrainId: terrain.id, areaId: a)

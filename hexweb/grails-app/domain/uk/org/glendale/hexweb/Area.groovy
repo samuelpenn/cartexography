@@ -15,6 +15,7 @@ package uk.org.glendale.hexweb
 class Area {
 	MapInfo		mapInfo
 	String		name
+	String		title
 	
 	static hasMany = [children: Area]
 	static belongsTo = [parent: Area]

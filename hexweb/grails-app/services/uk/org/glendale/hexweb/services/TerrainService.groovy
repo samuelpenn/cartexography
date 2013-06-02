@@ -54,6 +54,10 @@ class TerrainService {
 	
 	/**
 	 * Gets the type of terrain based on the Mapcraft terrain and feature type.
+	 * Mappings are read from the Grails configuration file. If an exact match is
+	 * not found, then a number of other alternatives are tried. Since Mapcraft
+	 * uses two tile layers, and Hexweb only uses one, some mangling is required
+	 * when performing the conversion. 
 	 *
 	 * @param map
 	 * @param terrain
