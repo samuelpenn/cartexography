@@ -56,7 +56,8 @@ insert into terrain values(31, 1, 'jungle', 'Jungle', false, '#77FF77', 0);
 
 create table area (id int not null auto_increment,
         mapinfo_id int,
-        name varchar(64),
+        name varchar(32),
+	title varchar(256),
         parent_id int,
         primary key(id));
 
