@@ -182,13 +182,28 @@ class MapAPIController {
 				property("terrainId")
 				property("areaId")
 			}
+			order("y")
+			order("x")
 		})
 		
 		list.each { hex ->
 			map[hex[1] - y][hex[0] - x] = hex[2]
 			area[hex[1] - y][hex[0] - x] = hex[3]
 		}
+		if (list.size() != w * h) {
+			// We have gaps in the data, so blank the whole map first. There's
+			// no point doing this if there are no gaps.
+			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
 		
+			for (int xx=0; xx < w; xx++) {
+				for (int yy=0; yy < h; yy++) {
+					if (map[yy][xx] == 0) {
+						map[yy][xx] = unknown.id
+					}
+				}
+			}
+		}
+
 		println "Size: ${list.size()} x ${x} y ${y} w ${w} h ${h}" 
 		
 		List places = Place.findAll ({
