@@ -16,13 +16,18 @@ class MapController {
 	def mapService
 
     def editMap(String id) {
-		MapInfo info = mapService.getMapByNameOrId(id)
-		
-		if (info == null) {
-			throw new IllegalArgumentException("Map [${id}] not found")
+		if (id != null && id.length() > 0) {
+			MapInfo info = mapService.getMapByNameOrId(id)
+			
+			if (info == null) {
+				throw new IllegalArgumentException("Map [${id}] not found")
+			}
+			
+			render(view: "index", model: [mapInfo: info]) 
+		} else {
+			List<MapInfo> list = MapInfo.findAll()
+			
+			render(view: "select", model: [maps: list])
 		}
-		
-		println "view: ${id}"
-		render(view: "index", model: [mapInfo: info]) 
 	}
 }

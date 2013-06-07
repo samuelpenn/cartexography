@@ -12,6 +12,7 @@ import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.MapInfo
 
 import java.sql.Connection
+import java.sql.ResultSet
 import java.sql.Statement
 import org.hibernate.Session
 import org.hibernate.SessionFactory;
@@ -83,6 +84,32 @@ class MapService {
 				stmnt.executeUpdate("DELETE FROM map WHERE mapinfo_id=${info.id}")
 			}
 		})
+	}
+	
+	/**
+	 * Get terrain data from the map for generating a thumbnail. Uses raw SQL
+	 * in order to get the data as quickly as possible.
+	 * 
+	 * @param info
+	 * @param resolution
+	 * @return
+	 */
+	def getThumbData(MapInfo info, int resolution) {
+		List	list = new ArrayList()
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("select x, y, terrain_id from map where mapinfo_id=%d and "+
+					                       "x mod %d = 0 and y mod %d = 0 order by y, x",
+										   info.id, resolution, resolution)
+				Statement stmnt = connection.prepareStatement(sql)
+				ResultSet rs = stmnt.executeQuery(sql)
+				while (rs.next()) {
+					list.add([ "x": rs.getInt(1), "y": rs.getInt(2), "t": rs.getInt(3)])
+				}
+				rs.close()
+			}
+		})
+		return list
 	}
 	
 }

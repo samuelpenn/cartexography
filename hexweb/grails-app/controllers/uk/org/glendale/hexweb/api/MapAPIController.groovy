@@ -9,6 +9,7 @@
 package uk.org.glendale.hexweb.api
 
 import grails.converters.JSON
+import uk.org.glendale.graphics.SimpleImage
 import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.MapInfo
 import uk.org.glendale.hexweb.Place
@@ -18,6 +19,8 @@ import uk.org.glendale.hexweb.Area
 
 
 import groovy.sql.Sql
+import java.awt.Image
+import javax.servlet.ServletOutputStream
 
 class MapAPIController {
 	/** Common services for maps */
@@ -387,5 +390,58 @@ class MapAPIController {
 			}
 		}
 		render "Done"
+	}
+	
+	/**
+	 * Display a thumbnail of the map. The thumbnail is generated for the specified
+	 * width. Larger thumbnails will take longer to render.
+	 * @param id
+	 * @param w
+	 * @return
+	 */
+	def thumb(String id, int w) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		
+		int			step = info.width / w
+		if (info.height > info.width) {
+			step = info.height / w
+		}
+		if (step < 1) {
+			step = 1;
+		}
+		
+		int			width = info.width / step
+		int			height = info.height / step
+		
+		List        terrain = mapService.getThumbData(info,  step)
+		
+		SimpleImage	img = new SimpleImage(width * 2, height * 2)
+		
+		Map colours = [:]
+		terrain.each { hex ->
+			int tid = hex.t
+			int x = hex.x
+			int y = hex.y
+
+			String colour = colours.get(tid)
+			if (colour == null) {
+				Terrain t = Terrain.findById(tid)
+				colours.put(tid, t.colour)
+				colour = t.colour
+			}
+			int px = x / step * 2
+			int py = y / step * 2
+			img.rectangleFill(px, py, 2, 2, colour)
+		}
+		
+		byte[] data = img.save().toByteArray()
+		img.save(new File("/home/sam/thumbnail.jpg"))
+		
+		response.setContentType("image/jpeg")
+		response.setContentLength(data.length)
+		OutputStream	out = response.getOutputStream();
+		out.write(data)
+		out.close()
+		return null
 	}
 }

@@ -88,5 +88,10 @@ class UrlMappings {
 			controller = "mapAPI"
 			action = "areas"
 		}
+
+		"/api/map/$id/thumb" {
+			controller = "mapAPI"
+			action = "thumb"
+		}
 	}
 }
