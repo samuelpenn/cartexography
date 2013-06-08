@@ -402,10 +402,10 @@ class MapAPIController {
 	def thumb(String id, int w) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		int			step = info.width / w
-		if (info.height > info.width) {
-			step = info.height / w
-		}
+		int			min = Math.min(info.width, info.height)
+		int			max = Math.max(info.width, info.height)
+		
+		int			step = max / w
 		if (step < 1) {
 			step = 1;
 		}
@@ -415,7 +415,8 @@ class MapAPIController {
 		
 		List        terrain = mapService.getThumbData(info,  step)
 		
-		SimpleImage	img = new SimpleImage(width * 2, height * 2)
+		SimpleImage	img = new SimpleImage(width, height)
+		
 		
 		Map colours = [:]
 		terrain.each { hex ->
@@ -429,13 +430,26 @@ class MapAPIController {
 				colours.put(tid, t.colour)
 				colour = t.colour
 			}
-			int px = x / step * 2
-			int py = y / step * 2
-			img.rectangleFill(px, py, 2, 2, colour)
+			int px = x / step
+			int py = y / step
+			img.rectangleFill(px, py, 1, 1, colour)
 		}
 		
-		byte[] data = img.save().toByteArray()
-		img.save(new File("/home/sam/thumbnail.jpg"))
+		// Work out accurate width/height.
+		double scale = (1.0 * w) / Math.max(width, height)
+		println "${info.name}: ${width}x${height} ${step} ${scale}"
+		
+		width = width * scale
+		height = height * scale
+		
+		SimpleImage scaled = img.getScaled(width, height)
+		if (height < w) {
+			SimpleImage tmp = new SimpleImage(width, w, "#ffffff")
+			tmp.paint(scaled.getImage(), 0, 0, width, height)
+			scaled = tmp
+		}
+		byte[] data = scaled.save().toByteArray()
+		//scaled.save(new File("/home/sam/thumbnail.jpg"))
 		
 		response.setContentType("image/jpeg")
 		response.setContentLength(data.length)

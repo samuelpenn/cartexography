@@ -456,6 +456,10 @@ public class SimpleImage implements ImageObserver {
 
 		return out;
 	}
+	
+	public SimpleImage getScaled(int width, int height) throws IOException {
+		return new SimpleImage(getBufferedImage().getScaledInstance(width, height, BufferedImage.SCALE_SMOOTH));
+	}
 
 	/**
 	 * Return the specified image. If the path starts with '#', then the image

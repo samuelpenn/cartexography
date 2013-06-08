@@ -1,122 +1,74 @@
-<!DOCTYPE html>
 <html>
 	<head>
-		<meta name="layout" content="main"/>
-		<title>Welcome to Grails</title>
-		<style type="text/css" media="screen">
-			#status {
-				background-color: #eee;
-				border: .2em solid #fff;
-				margin: 2em 2em 1em;
-				padding: 1em;
-				width: 12em;
-				float: left;
-				-moz-box-shadow: 0px 0px 1.25em #ccc;
-				-webkit-box-shadow: 0px 0px 1.25em #ccc;
-				box-shadow: 0px 0px 1.25em #ccc;
-				-moz-border-radius: 0.6em;
-				-webkit-border-radius: 0.6em;
-				border-radius: 0.6em;
-			}
-
-			.ie6 #status {
-				display: inline; /* float double margin fix http://www.positioniseverything.net/explorer/doubled-margin.html */
-			}
-
-			#status ul {
-				font-size: 0.9em;
-				list-style-type: none;
-				margin-bottom: 0.6em;
-				padding: 0;
-			}
-            
-			#status li {
-				line-height: 1.3;
-			}
-
-			#status h1 {
-				text-transform: uppercase;
-				font-size: 1.1em;
-				margin: 0 0 0.3em;
-			}
-
-			#page-body {
-				margin: 2em 1em 1.25em 18em;
-			}
-
-			h2 {
-				margin-top: 1em;
-				margin-bottom: 0.3em;
-				font-size: 1em;
-			}
-
-			p {
-				line-height: 1.5;
-				margin: 0.25em 0;
-			}
-
-			#controller-list ul {
-				list-style-position: inside;
-			}
-
-			#controller-list li {
-				line-height: 1.3;
-				list-style-position: inside;
-				margin: 0.25em 0;
-			}
-
-			@media screen and (max-width: 480px) {
-				#status {
-					display: none;
-				}
-
-				#page-body {
-					margin: 0 1em 1em;
-				}
-
-				#page-body h1 {
-					margin-top: 0;
-				}
-			}
-		</style>
+		<title>HexWeb</title>
+		<g:javascript library="jquery"/>
+		<g:javascript src="hexweb.js"/>
+		
+		<g:javascript>
+			var		BASE_PATH = "/hexweb/images/style/standard/";
+			
+			LIST = ${maps};
+			
+			
+		</g:javascript>
+		
+		<r:layoutResources/>
+		<r:layoutResources disposition="defer"/>
 	</head>
+	
+	<style>
+		div#header {
+			background-image: url('/hexweb/images/img/hexweb.png');
+			background-repeat: no-repeat;
+			height: 72px;
+		}
+		#header h1 {
+			padding-top: 12px;
+			margin-left: 80px;
+			border-bottom: 3px solid #777777;
+		}
+		
+		div.inline {
+			display: inline-block;
+			margin-right: 1em;
+			margin-bottom: 1em;
+			border: 3px solid #777777;
+			border-radius: 5px;
+			width: 160px;
+			height: 180px;
+			text-align: center;
+			background-color: white;
+		}
+		
+		div.inline h4 {
+			margin: 0px;
+		}
+		div.inline img {
+		}
+		
+	</style>
+	
 	<body>
-		<a href="#page-body" class="skip"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-		<div id="status" role="complementary">
-			<h1>Application Status</h1>
-			<ul>
-				<li>App version: <g:meta name="app.version"/></li>
-				<li>Grails version: <g:meta name="app.grails.version"/></li>
-				<li>Groovy version: ${org.codehaus.groovy.runtime.InvokerHelper.getVersion()}</li>
-				<li>JVM version: ${System.getProperty('java.version')}</li>
-				<li>Reloading active: ${grails.util.Environment.reloadingAgentEnabled}</li>
-				<li>Controllers: ${grailsApplication.controllerClasses.size()}</li>
-				<li>Domains: ${grailsApplication.domainClasses.size()}</li>
-				<li>Services: ${grailsApplication.serviceClasses.size()}</li>
-				<li>Tag Libraries: ${grailsApplication.tagLibClasses.size()}</li>
-			</ul>
-			<h1>Installed Plugins</h1>
-			<ul>
-				<g:each var="plugin" in="${applicationContext.getBean('pluginManager').allPlugins}">
-					<li>${plugin.name} - ${plugin.version}</li>
-				</g:each>
-			</ul>
-		</div>
-		<div id="page-body" role="main">
-			<h1>Welcome to Grails</h1>
-			<p>Congratulations, you have successfully started your first Grails application! At the moment
-			   this is the default page, feel free to modify it to either redirect to a controller or display whatever
-			   content you may choose. Below is a list of controllers that are currently deployed in this application,
-			   click on each to execute its default action:</p>
-
-			<div id="controller-list" role="navigation">
-				<h2>Available Controllers:</h2>
-				<ul>
-					<g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
-						<li class="controller"><g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link></li>
-					</g:each>
-				</ul>
+		<div id="header">
+			<h1>HexWeb</h1>
+		</div>	
+		
+		<div>
+			<div class="inline">
+				<h4 style="color: #888888">new map</h4>
+				<img src="/hexweb/images/icons/newmap.png"/>
+				<br/>
+				&nbsp;
 			</div>
+			<g:each in="${maps}">
+				<div class="inline">
+					<h4>${it.title}</h4>
+					<a href="map/${it.name}"><img src="/hexweb/api/map/${it.id}/thumb?w=128"/></a>
+					<br/>
+					(${it.width}x${it.height})
+				</div>
+			</g:each>
 		</div>
+	
 	</body>
 </html>

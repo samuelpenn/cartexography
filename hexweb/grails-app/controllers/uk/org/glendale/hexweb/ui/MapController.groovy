@@ -25,9 +25,14 @@ class MapController {
 			
 			render(view: "index", model: [mapInfo: info]) 
 		} else {
-			List<MapInfo> list = MapInfo.findAll()
-			
-			render(view: "select", model: [maps: list])
+			println "Redirect"
+			redirect(uri: "/")
 		}
+	}
+	
+	def index() {
+		List<MapInfo> list = MapInfo.findAll()
+		
+		render(view: "/index", model: [maps: list])
 	}
 }
