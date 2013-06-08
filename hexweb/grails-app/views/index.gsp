@@ -56,7 +56,7 @@
 		<div>
 			<div class="inline">
 				<h4 style="color: #888888">new map</h4>
-				<img src="/hexweb/images/icons/newmap.png"/>
+				<a href="admin/create"><img src="/hexweb/images/icons/newmap.png"/></a>
 				<br/>
 				&nbsp;
 			</div>

@@ -8,8 +8,12 @@ class UrlMappings {
 		}
 
 		"/" {
-			controller = "map"
+			controller = "admin"
 			action = "index"
+		}
+		"/admin/create" {
+			controller = "admin"
+			action = "create"
 		}
 		"500"(view:'/error')
 		

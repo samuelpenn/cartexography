@@ -29,10 +29,4 @@ class MapController {
 			redirect(uri: "/")
 		}
 	}
-	
-	def index() {
-		List<MapInfo> list = MapInfo.findAll()
-		
-		render(view: "/index", model: [maps: list])
-	}
 }
