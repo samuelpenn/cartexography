@@ -9,7 +9,42 @@
 				$("#t"+id).addClass("selected");
 			}
 			
-			
+			function validate() {
+				var name = $("#mapName").val();
+				var title = $("#mapTitle").val();
+				var width = $("#mapWidth").val();
+				var height = $("#mapHeight").val();
+				var scale = $("#mapScale").val();
+				
+				$(".invalid").removeClass("invalid");
+				
+				var error = 0;
+				if (name.length == 0 || !name.match(/^[a-z][a-z0-9]+$/)) {
+					$("#mapName").addClass("invalid");
+					error++;
+				}
+				if (title.length == 0) {
+					$("#mapTitle").addClass("invalid");
+					error++;
+				}
+				if (width.length == 0 || !width.match(/^[0-9]+$/)) {
+					$("#mapWidth").addClass("invalid");
+					error++;
+				}
+				if (height.length == 0 || !height.match(/^[0-9]+$/)) {
+					$("#mapHeight").addClass("invalid");
+					error++;
+				}
+				if (scale.length == 0 || !scale.match(/^[0-9]+$/)) {
+					$("#mapScale").addClass("invalid");
+					error++;
+				}
+				
+				if (error == 0) {
+					return true;
+				}
+				return false;
+			}
 		</g:javascript>
 		
 		<r:layoutResources/>
@@ -56,6 +91,10 @@
 			border: 5px solid red;
 		}
 		
+		.invalid {
+			background-color: #ff7777;
+		}
+		
 	</style>
 	
 	<body onload="selectTemplate(1)">
@@ -93,7 +132,7 @@
 					<br/>
 					<h5>Scale (m)</h5> <input id="mapScale" name="scale"></input>
 				</p>
-				<button type="submit">Create</button>
+				<g:submitButton name="submit" value="Create" onclick="return validate()"/>
 			</g:form>
 			
 		</div>
