@@ -100,5 +100,6 @@ create table map (id bigint not null auto_increment,
         x int,
         y int,
         terrain_id int,
-        primary key(id));
+        primary key(id),
+	unique key (mapinfo_id, x, y));
 
