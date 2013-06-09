@@ -114,28 +114,7 @@ class MapAPIController {
 		render "Done"
 	}
 	
-	def randomFill(String id) {
-		MapInfo		info = mapService.getMapByNameOrId(id)
-		
-		Terrain		ocean = Terrain.findById(1)
-		Terrain 	land = Terrain.findById(3)
-		
-		for (int y=0; y < info.height; y++) {
-			for (int x=0; x < info.width; x++) {
-				Terrain t = ocean
-				if ((int)(Math.random()*3) == 0) {
-					t = land
-				}
-				Hex hex = new Hex(mapInfo: info, x: x, y: y, terrainId: t.id)
-				hex.save()
-			}
-		}
-		
-		render "Done"
-	}
-	
 
-	
 	def sessionFactory
 	
 	/**
@@ -224,12 +203,35 @@ class MapAPIController {
 		render data as JSON
 	}
 	
+	static int lastId = -1
+	static int lastX = -1
+	static int lastY = -1
+	static int lastRadius = -1
+	static int lastTerrain = -1
+	
+	private synchronized boolean isdup(id, x, y, radius, terrain) {
+		if (x == lastX && y == lastY && radius == lastRadius && terrain == lastTerrain && id == lastId) {
+			return true
+		}
+		lastX = x
+		lastY = y
+		lastTerrain = terrain
+		lastRadius = radius
+		lastId = id
+
+		return false
+	}
+	
 	/**
 	 * Updates a hex with a new terrain.
 	 */
 	def update(String id, int x, int y, int radius, int terrain) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
+		if (isdup(id, x, y, radius, terrain)) {
+			render terrain
+			return
+		}		
 		println "Update: ${id}-${x},${y} radius ${radius}"
 		if (radius < 1) {
 			radius == 1;
@@ -247,11 +249,18 @@ class MapAPIController {
 				if (px%2 == 1) {
 					y += ox%2;
 				}
+				if (y < 0 || y >= info.height) {
+					continue
+				}
 				
 				x = ox + px;
-				setHex(info, x, y, terrain);
+				if (x >= 0 && x < info.width) {
+					setHex(info, x, y, terrain);
+				}
 				x = ox - px;
-				setHex(info, x, y, terrain);
+				if (x >= 0 && x < info.width) {
+					setHex(info, x, y, terrain);
+				}
 			}
 		}
 	

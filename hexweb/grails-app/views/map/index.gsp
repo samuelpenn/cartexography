@@ -20,6 +20,7 @@
 
 			window.onload = function() {
 				VIEW.context = document.getElementById("map").getContext("2d");
+				document.getElementById("map").onselectstart = function() { return false; };
 				
 				$.getJSON("/hexweb/api/map/"+MAP.info.id+"/info", function(data) {
 					MAP.info = data.info;
