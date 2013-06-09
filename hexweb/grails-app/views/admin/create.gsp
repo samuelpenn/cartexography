@@ -5,8 +5,11 @@
 		<g:javascript src="hexweb.js"/>
 		
 		<g:javascript>
+			var templateId = 0;
+
 			function selectTemplate(id) {
 				$("#t"+id).addClass("selected");
+				templateId = id;
 			}
 			
 			function validate() {
@@ -39,6 +42,7 @@
 					$("#mapScale").addClass("invalid");
 					error++;
 				}
+				$("#mapTemplate").val(templateId)
 				
 				if (error == 0) {
 					return true;
@@ -82,7 +86,7 @@
 		}
 		div#info h5 {
 			font-family: sans;
-			width: 6em;
+			width: 7em;
 			display: inline-block;
 			margin-bottom: 0px;
 		}
@@ -131,7 +135,10 @@
 					<h5>Height</h5> <input id="mapHeight" name="height"></input>
 					<br/>
 					<h5>Scale (m)</h5> <input id="mapScale" name="scale"></input>
+					<br/>
+					<h5>World Map</h5> <input id="mapWorld" name="world" type="checkbox"></input>
 				</p>
+				<input type="hidden" id="mapTemplate" name="template"></input>
 				<g:submitButton name="submit" value="Create" onclick="return validate()"/>
 			</g:form>
 			
