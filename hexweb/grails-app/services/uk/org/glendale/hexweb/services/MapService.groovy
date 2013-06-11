@@ -112,4 +112,37 @@ class MapService {
 		return list
 	}
 	
+	/**
+	 * Returns true if the coordinates are out of bounds of the world surface.
+	 * This is used on world maps, where the map is a flattened icosohedron.
+	 * The tiles 'outside' of this surface should be marked as such, and cannot
+	 * be set either.
+	 * 
+	 * A world map looks something like this:
+	 * 
+	 *    /\  /\  /\  /\  /\
+	 *   /  \/  \/  \/  \/  \
+	 *   \                   \
+	 *    \                   \
+	 *     \  /\  /\  /\  /\  /
+	 *      \/  \/  \/  \/  \/
+	 * 
+	 * @param info	Map.
+	 * @param x		X coordinate of tile to check.
+	 * @param y		Y coordinate of tile to check.
+	 * @return		True iff location is out of bounds.
+	 */
+	def isOut(MapInfo info, x, y) {
+		if (info.world) {
+			// Only bother to check if this is a world map.
+			// There a
+			int topThird = info.height / 3
+			int bottomThird = (info.height * 2) / 3
+			
+			if (y < topThird) {
+				
+			}
+		} 
+		return false
+	}
 }
