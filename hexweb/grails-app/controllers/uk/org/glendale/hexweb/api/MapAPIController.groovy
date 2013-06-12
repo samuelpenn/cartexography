@@ -99,19 +99,39 @@ class MapAPIController {
 	
 	def fillMap(String id, String terrainId) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
-		
 		Terrain		fill = terrainService.getTerrainByNameOrId(terrainId)
 		
-		for (int y=0; y < info.height; y++) {
-			for (int x=0; x < info.width; x++) {
-				if (mapService.getHex(info, x, y) == null) {
-					Hex hex = new Hex(mapInfo: info, x: x, y: y, terrainId: fill.id)
-					hex.save()
+		if (info.world) {
+			fillWorldMap(info, fill)
+		} else {
+			for (int y=0; y < info.height; y++) {
+				for (int x=0; x < info.width; x++) {
+					if (mapService.getHex(info, x, y) == null) {
+						Hex hex = new Hex(mapInfo: info, x: x, y: y, terrainId: fill.id)
+						hex.save()
+					}
 				}
 			}
 		}
 		
 		render "Done"
+	}
+	
+	private void fillWorldMap(MapInfo info, Terrain fill) {
+		int		oob = terrainService.getTerrainByNameOrId("oob").id
+		int		ib = fill.id
+		
+		// Wipe the map clean.
+		mapService.clearMap(info)
+		for (int y=0; y < info.height; y++) {
+			for (int x=0; x < info.width; x++) {
+				if (mapService.isOut(info, x, y)) {
+					mapService.insertToMap(info, x, y, 0, oob)
+				} else {
+					mapService.insertToMap(info, x, y, 0, ib)
+				}
+			}
+		}
 	}
 	
 
@@ -228,7 +248,7 @@ class MapAPIController {
 	def update(String id, int x, int y, int radius, int terrain) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		if (isdup(id, x, y, radius, terrain)) {
+		if (isdup(info.id, x, y, radius, terrain)) {
 			render terrain
 			return
 		}		

@@ -112,6 +112,17 @@ class MapService {
 		return list
 	}
 	
+	def insertToMap(MapInfo info, int x, int y, int areaId, int terrainId) {
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("insert into map (mapinfo_id, x, y, area_id, terrain_id) values(%d, %d, %d, %d, %d)",
+										   info.id, x, y, areaId, terrainId)
+				Statement stmnt = connection.prepareStatement(sql)
+				stmnt.executeUpdate(sql)
+			}
+		})
+	}
+	
 	/**
 	 * Returns true if the coordinates are out of bounds of the world surface.
 	 * This is used on world maps, where the map is a flattened icosohedron.
@@ -135,12 +146,18 @@ class MapService {
 	def isOut(MapInfo info, x, y) {
 		if (info.world) {
 			// Only bother to check if this is a world map.
-			// There a
 			int topThird = info.height / 3
 			int bottomThird = (info.height * 2) / 3
 			
-			if (y < topThird) {
-				
+			int span = (info.height / 5)
+			
+			if (y < topThird && x > span * 10) {
+				return true
+			} else if (y < topThird) {
+				int d = Math.abs(((x) % (span * 2)) - span) * 1.5
+				if (y < d) {
+					return true
+				}
 			}
 		} 
 		return false

@@ -82,6 +82,14 @@ class AdminController {
 		}
 		println "Using template [${templateInfo.name}]"
 		
+		if (world) {
+			// If a world map, then there are restrictions on the size.
+			if (width%22 > 0) {
+				width += (22 - width % 22)
+			}
+			height = width / 2
+		}
+		
 		info = new MapInfo(name: name, title: title, width: width, height: height, scale: scale, world: world, template: templateInfo.id)
 		info.save()
 
