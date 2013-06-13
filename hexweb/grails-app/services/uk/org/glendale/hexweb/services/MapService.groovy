@@ -153,9 +153,22 @@ class MapService {
 			
 			if (y < topThird && x > span * 10) {
 				return true
-			} else if (y < topThird) {
+			} else if (y < topThird - 1) {
 				int d = Math.abs(((x) % (span * 2)) - span) * 1.5
 				if (y < d) {
+					return true
+				}
+			} else if (y < bottomThird) {
+				if (x <  (2 * (y - topThird)) / 3) {
+					return true
+				} else if (x-1 > span * 10 + (2 * (y - topThird) + 2) / 3) {
+					return true
+				}
+			} else if (x > span * 12) {
+				return true
+			} else {
+				int d = Math.abs(((x - span  - 3) % (span * 2)) - span) * 1.5
+				if ((info.height - y) < d) {
 					return true
 				}
 			}
