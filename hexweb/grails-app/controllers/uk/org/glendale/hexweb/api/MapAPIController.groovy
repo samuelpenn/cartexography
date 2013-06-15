@@ -154,6 +154,8 @@ class MapAPIController {
 	def map(String id, int x, int y, int w, int h) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
+		println("map: ${id} ${x},${y}+${w}+${h}")
+		
 		if (x < 0) {
 			x = 0;
 		}
@@ -194,15 +196,15 @@ class MapAPIController {
 		}
 		long start = System.currentTimeMillis()
 		if (info.world || list.size() != w * h) {
-			println "Filtering map"
+			println "Filtering map ${list.size()}"
 			// We have gaps in the data, so blank the whole map first. There's
 			// no point doing this if there are no gaps. If it is a world map,
 			// then we always need to do this.
 			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
-		
+			List bounds = mapService.getBounds(info, x, w)
 			for (int xx=0; xx < w; xx++) {
 				for (int yy=0; yy < h; yy++) {
-					if (mapService.isOut(info,  xx + x, yy + y)) {
+					if (yy+y < bounds[xx].min || yy+y > bounds[xx].max) {
 						map[yy][xx] = info.oob
 					} else {
 						if (map[yy][xx] == 0) {

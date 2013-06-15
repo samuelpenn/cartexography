@@ -142,6 +142,27 @@ class MapService {
 			}
 		})
 	}
+	
+	def getBounds(MapInfo info, int x, int width) {
+		List	list = new ArrayList()
+		println "getBounds: ${info.id} ${x} ${width}"
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("select min, max from bound where mapinfo_id=%d and "+
+										   "x >= %d and x < %d order by x",
+										   info.id, x, x + width)
+				Statement stmnt = connection.prepareStatement(sql)
+				ResultSet rs = stmnt.executeQuery(sql)
+				while (rs.next()) {
+					list.add([ "min": rs.getInt(1), "max": rs.getInt(2)])
+				}
+				rs.close()
+			}
+		})
+		println "Bounds size ${list.size()}"
+		return list
+
+	}
 
 	/**
 	 * Returns true if the coordinates are out of bounds of the world surface.
@@ -205,7 +226,8 @@ class MapService {
 			if (width%44 != 0) {
 				width += 44 - (width % 44)
 			}
-			height = ((width / 11) * 1.5) * 3 as int
+			width += 2
+			height = 2 + ((width / 11) * 1.5 * 3) as int
 		}
 		
 		MapInfo info = new MapInfo(name: name, title: title, width: width, height: height, scale: scale, world: world, template: template.id)
