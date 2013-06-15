@@ -146,29 +146,39 @@ class MapService {
 	def isOut(MapInfo info, x, y) {
 		if (info.world) {
 			// Only bother to check if this is a world map.
-			int topThird = info.height / 3
-			int bottomThird = (info.height * 2) / 3
+			int span = (info.width / 11)
+			if (span %4 != 0) {
+				span -= span%4
+			}
+			int topThird = span * 1.5
+			int bottomThird = topThird * 2
 			
-			int span = (info.width / 5)
+			//span = 16
+			//topThird = 24
+			
+			bottomThird = topThird * 2
+			
 			
 			if (y < topThird && x > span * 10) {
 				return true
-			} else if (y < topThird - 1) {
+			} else if (y < topThird) {
 				int d = Math.abs(((x) % (span * 2)) - span) * 1.5
 				if (y < d) {
 					return true
 				}
-			} else if (y < bottomThird) {
+			} else if (y <= bottomThird) {
 				if (x <  (2 * (y - topThird)) / 3) {
 					return true
-				} else if (x-1 > span * 10 + (2 * (y - topThird) + 2) / 3) {
+				//} else if (x + 1 > span * 10 + (2 * (y - topThird) + 2 + x%2) / 3) {
+				} else if (x - span*10 > (2 * (y - topThird) + 1) / 3) {
 					return true
 				}
-			} else if (x > span * 12) {
+			} else if (x > span * 11 + 1) {
 				return true
 			} else {
-				int d = Math.abs(((x - span  - 3) % (span * 2)) - span) * 1.5
-				if ((info.height - y) < d) {
+				int h = topThird * 3 + 1;
+				int d = Math.abs(((x - span - 1) % (span * 2)) - span) * 1.5
+				if ((h - y) < d) {
 					return true
 				}
 			}
