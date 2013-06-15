@@ -86,6 +86,9 @@ function setViewPort() {
 	var		tileHeight = VIEW.scale[VIEW.zoom].height;
 	VIEW.width = parseInt(VIEW.port.width / tileWidth) - 1;
 	VIEW.height = parseInt(VIEW.port.height / tileHeight) - 1;
+	if (VIEW.width % 2 == 1) {
+		VIEW.width = VIEW.width + 1;
+	}
 	
 	var canvas = document.getElementById("map");
 	VIEW.context.save();
@@ -139,6 +142,8 @@ function refreshMap() {
 
 	mapWidth = parseInt(VIEW.port.width / tileWidth) - 1;
 	mapHeight = parseInt(VIEW.port.height / tileHeight) - 1;
+	mapWidth = VIEW.width;
+	mapHeight = VIEW.height;
 
 	var 	imageWidth = VIEW.scale[VIEW.zoom].width;
 	var 	imageHeight = VIEW.scale[VIEW.zoom].height;

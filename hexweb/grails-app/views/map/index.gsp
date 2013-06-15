@@ -91,15 +91,22 @@
 				VIEW.x += mx * VIEW.currentScale.step;
 				VIEW.y += my * VIEW.currentScale.step;
 				
+				if (VIEW.x %2 == 1) {
+					VIEW.x --;
+				}
+
 				if (VIEW.x < 0) VIEW.x = 0;
 				if (VIEW.y < 0) VIEW.y = 0;
 				
 				if (VIEW.x > MAP.info.width - VIEW.width) {
 					VIEW.x = MAP.info.width - VIEW.width;
+					if (VIEW.x %2 == 1) {
+						VIEW.x --;						
+					}
 				}
 				if (VIEW.y > MAP.info.height - VIEW.height) {
 					VIEW.y = MAP.info.height - VIEW.height;
-				} 
+				}
 				
 				refreshMap();
 			};			
