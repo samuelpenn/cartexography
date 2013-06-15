@@ -173,15 +173,17 @@
 			<div style="padding: 3px">
 				<img src="${resource(dir: 'images/icons', file: 'up.png')}" alt="Up" onclick="moveMap(0, -1)"/>
 				<img src="${resource(dir: 'images/icons', file: 'down.png')}" alt="Down" onclick="moveMap(0, +1)"/>
-				<span style="width: 16px; display: inline-block"> </span>
+				<span style="width: 12px; display: inline-block"> </span>
 				<img id="zoomBtn0" src="${resource(dir: 'images/icons', file: 'zoom_0.png')}" alt="Large" onclick="setZoom(0)"/>
 				<img id="zoomBtn1" src="${resource(dir: 'images/icons', file: 'zoom_1.png')}" alt="Medium" onclick="setZoom(1)"/>
 				<img id="zoomBtn2" src="${resource(dir: 'images/icons', file: 'zoom_2.png')}" alt="Small" onclick="setZoom(2)"/>
 				<img id="zoomBtn3" src="${resource(dir: 'images/icons', file: 'zoom_3.png')}" alt="Tiny" onclick="setZoom(3)"/>
+				<span style="width: 12px; display: inline-block"> </span>
+				<img id="showGrid" src="${resource(dir: 'images/icons', file: 'grid.png')}" alt="Grid" onclick="toggleGrid()"/>
 				<br/>
 				<img src="${resource(dir: 'images/icons', file: 'left.png')}" alt="Left" onclick="moveMap(-1, 0)"/>
 				<img src="${resource(dir: 'images/icons', file: 'right.png')}" alt="Right" onclick="moveMap(+1, 0)"/>
-				<span style="width: 16px; display: inline-block"> </span>
+				<span style="width: 12px; display: inline-block"> </span>
 				<img id="brushBtn1" src="${resource(dir: 'images/icons', file: 'brush_1.png')}" title="Small Brush (1)" alt="Small (1)" onclick="setBrush(1)"/>
 				<img id="brushBtn3" src="${resource(dir: 'images/icons', file: 'brush_3.png')}" title="Medium Brush (3)" alt="Medium (3)" onclick="setBrush(3)"/>
 				<img id="brushBtn5" src="${resource(dir: 'images/icons', file: 'brush_5.png')}" title="Large Brush (5)" alt="Large (5)" onclick="setBrush(5)"/>

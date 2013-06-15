@@ -37,6 +37,7 @@ VIEW.editMode = EDIT_MODE.PAINT;
 
 VIEW.terrainBrush = 0;
 VIEW.thingBrush = 0;
+VIEW.showGrid = false;
 
 VIEW.zoom = 0;
 VIEW.port= { width: 1600, height: 1200 };
@@ -63,6 +64,20 @@ function setBrush(size) {
 	$("#brushBtn"+VIEW.brushSize).addClass("selectedButton");
 }
 
+function toggleGrid() {
+	if (VIEW.showGrid) {
+		// Switch off
+		VIEW.showGrid = false;
+		$("#showGrid").removeClass("selectedButton");
+	} else {
+		// Switch on
+		VIEW.showGrid = true;
+		$("#showGrid").addClass("selectedButton");
+	}
+	setViewPort();
+	refreshMap();
+}
+
 function setViewPort() {
 	VIEW.port.width = $("body").width() - VIEW.xMargins;
 	VIEW.port.height = $("body").height() - VIEW.yMargins;
@@ -71,6 +86,34 @@ function setViewPort() {
 	var		tileHeight = VIEW.scale[VIEW.zoom].height;
 	VIEW.width = parseInt(VIEW.port.width / tileWidth) - 1;
 	VIEW.height = parseInt(VIEW.port.height / tileHeight) - 1;
+	
+	var canvas = document.getElementById("map");
+	VIEW.context.save();
+	VIEW.context.setTransform(1, 0, 0, 1, 0, 0);
+	VIEW.context.clearRect(0, 0, canvas.width, canvas.height);
+	VIEW.context.restore();
+}
+
+function drawHexGrid(x, y) {
+	var tileWidth = VIEW.tileWidth;
+	var tileHeight = VIEW.tileHeight;
+	var halfOffset = VIEW.halfOffset
+
+	var px = x * tileWidth + 8;
+	var py = y * tileHeight + (x%2 * halfOffset) + 8;
+	
+	VIEW.context.strokeStyle = '#444444';
+	VIEW.context.lineWidth = 1;			
+	
+	VIEW.context.beginPath();
+	VIEW.context.moveTo(px + tileWidth/3, py);
+	VIEW.context.lineTo(px + tileWidth, py);
+	VIEW.context.lineTo(px + tileWidth + tileWidth/3, py + tileHeight/2);
+	VIEW.context.lineTo(px + tileWidth, py + tileHeight);
+	VIEW.context.lineTo(px + tileWidth/3, py + tileHeight);
+	VIEW.context.lineTo(px, py + tileHeight/2);
+	VIEW.context.lineTo(px + tileWidth/3, py);
+	VIEW.context.stroke();
 }
 
 /**
@@ -125,6 +168,13 @@ function refreshMap() {
 				
 				VIEW.context.drawImage(MAP.images[t].image, 
 						px, py, imageWidth, imageHeight);
+			}
+		}
+		if (VIEW.showGrid) {
+			for (var y=0; y < mapHeight; y++) {
+				for (var x=0; x < mapWidth; x++) {
+					drawHexGrid(x, y);
+				}
 			}
 		}
 		VIEW.context.strokeStyle = '#ff0000';

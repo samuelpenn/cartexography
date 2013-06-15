@@ -149,7 +149,7 @@ class MapService {
 			int topThird = info.height / 3
 			int bottomThird = (info.height * 2) / 3
 			
-			int span = (info.height / 5)
+			int span = (info.width / 5)
 			
 			if (y < topThird && x > span * 10) {
 				return true

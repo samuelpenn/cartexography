@@ -84,11 +84,17 @@ function paintTerrain(event, px, py) {
 					x * VIEW.currentScale.column + 8, 
 					y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
 					VIEW.currentScale.width, VIEW.currentScale.height);
+			if (VIEW.showGrid) {
+				drawHexGrid(x, y);
+			}
 			x = ox - px;
 			VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
 					x * VIEW.currentScale.column + 8, 
 					y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
 					VIEW.currentScale.width, VIEW.currentScale.height);
+			if (VIEW.showGrid) {
+				drawHexGrid(x, y);
+			}
 		}
 	}
 }
