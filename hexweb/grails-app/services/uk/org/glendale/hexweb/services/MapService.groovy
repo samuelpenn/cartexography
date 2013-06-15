@@ -111,7 +111,16 @@ class MapService {
 		})
 		return list
 	}
-	
+
+	/**
+	 * Fast map insert, using raw SQL.	
+	 * @param info
+	 * @param x
+	 * @param y
+	 * @param areaId
+	 * @param terrainId
+	 * @return
+	 */
 	def insertToMap(MapInfo info, int x, int y, int areaId, int terrainId) {
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
@@ -122,7 +131,18 @@ class MapService {
 			}
 		})
 	}
-	
+
+	def insertToBound(MapInfo info, int x, int min, int max) {
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("insert into bound (mapinfo_id, x, min, max) values(%d, %d, %d, %d)",
+										   info.id, x, min, max)
+				Statement stmnt = connection.prepareStatement(sql)
+				stmnt.executeUpdate(sql)
+			}
+		})
+	}
+
 	/**
 	 * Returns true if the coordinates are out of bounds of the world surface.
 	 * This is used on world maps, where the map is a flattened icosohedron.
@@ -145,44 +165,70 @@ class MapService {
 	 */
 	def isOut(MapInfo info, x, y) {
 		if (info.world) {
-			// Only bother to check if this is a world map.
 			int span = (info.width / 11)
 			if (span %4 != 0) {
 				span -= span%4
 			}
 			int topThird = span * 1.5
 			int bottomThird = topThird * 2
-			
-			//span = 16
-			//topThird = 24
-			
-			bottomThird = topThird * 2
-			
-			
-			if (y < topThird && x > span * 10) {
-				return true
-			} else if (y < topThird) {
-				int d = Math.abs(((x) % (span * 2)) - span) * 1.5
-				if (y < d) {
-					return true
-				}
-			} else if (y <= bottomThird) {
-				if (x <  (2 * (y - topThird)) / 3) {
-					return true
-				//} else if (x + 1 > span * 10 + (2 * (y - topThird) + 2 + x%2) / 3) {
-				} else if (x - span*10 > (2 * (y - topThird) + 1) / 3) {
-					return true
-				}
-			} else if (x > span * 11 + 1) {
-				return true
-			} else {
-				int h = topThird * 3 + 1;
-				int d = Math.abs(((x - span - 1) % (span * 2)) - span) * 1.5
-				if ((h - y) < d) {
-					return true
-				}
+
+			int min = Math.abs(((x) % (span * 2)) - span) * 1.5
+			int max = (topThird * 3 + 2 - x%2) - Math.abs(((x - span - 1) % (span * 2)) - span) * 1.5
+			if (x > span * 11 + 1) {
+				min = max + 1
+			} else if (x > span * 10) {
+				min = topThird + (x - span*10) * 1.5
 			}
-		} 
-		return false
+			
+			if (y < min || y > max) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Create a new map, and generate any required supporting data.
+	 * 
+	 * @param name
+	 * @param title
+	 * @param width
+	 * @param height
+	 * @param scale
+	 * @param world
+	 * @param template
+	 * @return
+	 */
+	def createMap(String name, String title, int width, int height, int scale, boolean world, MapInfo template) {
+		if (world) {
+			// If a world map, then there are restrictions on the size.
+			if (width%44 != 0) {
+				width += 44 - (width % 44)
+			}
+			height = ((width / 11) * 1.5) * 3 as int
+		}
+		
+		MapInfo info = new MapInfo(name: name, title: title, width: width, height: height, scale: scale, world: world, template: template.id)
+		info.save()
+
+		if (world) {
+			int span = (info.width / 11)
+			if (span %4 != 0) {
+				span -= span%4
+			}
+			int topThird = span * 1.5
+			int bottomThird = topThird * 2
+
+			for (int x=0; x < width; x++) {
+				int min = Math.abs(((x) % (span * 2)) - span) * 1.5
+				int max = (topThird * 3 + 2 - x%2) - Math.abs(((x - span - 1) % (span * 2)) - span) * 1.5
+				if (x > span * 11 + 1) {
+					min = max + 1
+				} else if (x > span * 10) {
+					min = topThird + (x - span*10) * 1.5
+				}
+				insertToBound(info, x, min, max)
+			}
+		}
 	}
 }

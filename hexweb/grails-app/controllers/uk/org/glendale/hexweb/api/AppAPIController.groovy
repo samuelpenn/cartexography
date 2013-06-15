@@ -48,7 +48,7 @@ class AppAPIController {
 	 * 
 	 * @return			New MapInfo object as JSON
 	 */
-	def createMap(String name, String title, int width, int height, int scale, String template) {
+	def createMap(String name, String title, int width, int height, int scale, boolean world, String template) {
 		
 		println "Creating a new map [${name}]"
 		
@@ -75,8 +75,15 @@ class AppAPIController {
 			println "Map must have a scale of at least 1"
 		}
 		println "Using template [${templateInfo.name}]"
+		if (world) {
+			if (width%44 != 0) {
+				width += 44 - (width % 44)
+			}
+			height = ((width / 11) * 1.5) * 3 as int
+		}
+		println "Creating map width ${width} height ${height}"
 		
-		info = new MapInfo(name: name, title: title, width: width, height: height, scale: scale, world: false, template: templateInfo.id)
+		info = new MapInfo(name: name, title: title, width: width, height: height, scale: scale, world: world, template: templateInfo.id)
 		info.save()
 		
 		render info as JSON

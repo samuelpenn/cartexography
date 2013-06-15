@@ -69,16 +69,17 @@ function toggleGrid() {
 		// Switch off
 		VIEW.showGrid = false;
 		$("#showGrid").removeClass("selectedButton");
+		setViewPort(true);
 	} else {
 		// Switch on
 		VIEW.showGrid = true;
 		$("#showGrid").addClass("selectedButton");
+		setViewPort(false);
 	}
-	setViewPort();
 	refreshMap();
 }
 
-function setViewPort() {
+function setViewPort(forceClear) {
 	VIEW.port.width = $("body").width() - VIEW.xMargins;
 	VIEW.port.height = $("body").height() - VIEW.yMargins;
 	
@@ -90,11 +91,13 @@ function setViewPort() {
 		VIEW.width = VIEW.width + 1;
 	}
 	
-	var canvas = document.getElementById("map");
-	VIEW.context.save();
-	VIEW.context.setTransform(1, 0, 0, 1, 0, 0);
-	VIEW.context.clearRect(0, 0, canvas.width, canvas.height);
-	VIEW.context.restore();
+	if (forceClear) {
+		var canvas = document.getElementById("map");
+		VIEW.context.save();
+		VIEW.context.setTransform(1, 0, 0, 1, 0, 0);
+		VIEW.context.clearRect(0, 0, canvas.width, canvas.height);
+		VIEW.context.restore();
+	}
 }
 
 function drawHexGrid(x, y) {

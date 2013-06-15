@@ -192,19 +192,27 @@ class MapAPIController {
 			map[hex[1] - y][hex[0] - x] = hex[2]
 			area[hex[1] - y][hex[0] - x] = hex[3]
 		}
-		if (list.size() != w * h) {
+		long start = System.currentTimeMillis()
+		if (info.world || list.size() != w * h) {
+			println "Filtering map"
 			// We have gaps in the data, so blank the whole map first. There's
-			// no point doing this if there are no gaps.
+			// no point doing this if there are no gaps. If it is a world map,
+			// then we always need to do this.
 			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
 		
 			for (int xx=0; xx < w; xx++) {
 				for (int yy=0; yy < h; yy++) {
-					if (map[yy][xx] == 0) {
-						map[yy][xx] = unknown.id
+					if (mapService.isOut(info,  xx + x, yy + y)) {
+						map[yy][xx] = info.oob
+					} else {
+						if (map[yy][xx] == 0) {
+							map[yy][xx] = info.background
+						}
 					}
 				}
 			}
 		}
+		println "Filter time = ${System.currentTimeMillis() - start}"
 
 		println "Size: ${list.size()} x ${x} y ${y} w ${w} h ${h}" 
 		

@@ -25,6 +25,8 @@ class MapInfo {
 	int			scale   	// Width of each hex, in metres.
 	boolean		world   	// Is this a world map? If so, will be discontinuous.
 	int			template  	// Use the specified map as a template. If zero, ignored.
+	int			background  // Default backgroup terrain id.
+	int			oob			// Out of Bounds terrain id.
 
     static constraints = {
     }
