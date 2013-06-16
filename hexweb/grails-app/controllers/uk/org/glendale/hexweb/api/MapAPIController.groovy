@@ -237,6 +237,40 @@ class MapAPIController {
 		render data as JSON
 	}
 	
+	/**
+	 * Get low resolution data for a large scale map. Only every nth tile is
+	 * actually returned, so the map covers a much larger area for course
+	 * editing. The x/y coordinate must be aligned to the precision.
+	 * 
+	 * Only terrain data is returned. Places and areas are ignored at this
+	 * level of detail.
+	 */
+	def largeMap(String id, int x, int y, int w, int h, int precision) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		
+		println("largeMap: ${id} ${x},${y}+${w}+${h}")
+		
+		if (x < 0) {
+			x = 0;
+		}
+		if (y < 0) {
+			y = 0;
+		}
+		x -= x % precision;
+		y -= y % precision;
+
+		if (x + w > info.width) {
+			w = info.width - x;
+		}
+		if (y + h > info.height) {
+			h = info.height - y;
+		}
+
+		int[][]		map = new int[h][w]
+		List l = mapService.getThumbData(info, precision)
+
+	}
+	
 	static int lastId = -1
 	static int lastX = -1
 	static int lastY = -1

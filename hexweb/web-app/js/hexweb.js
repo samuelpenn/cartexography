@@ -42,10 +42,11 @@ VIEW.showGrid = false;
 VIEW.zoom = 0;
 VIEW.port= { width: 1600, height: 1200 };
 
-VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 4 },
-               { column: 24, row: 28, width: 33, height: 28, font: 9 , step: 8},
-               { column: 12, row: 14, width: 17, height: 14, font: 6 , step: 16 }, 
-               { column: 6, row: 7, width: 9, height: 7, font: 4, step: 32  }, 
+VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 4, precision: 1 },
+               { column: 24, row: 28, width: 33, height: 28, font: 9 , step: 8, precision: 1 },
+               { column: 12, row: 14, width: 17, height: 14, font: 6 , step: 16, precision: 1 }, 
+               { column: 6, row: 7, width: 9, height: 7, font: 4, step: 32, precision: 1  }, 
+               { column: 2, row: 2, width: 2, height: 2, font: 0, step: 100, precision: 10 }
              ];
 VIEW.currentScale = VIEW.scale[0];
 
@@ -128,7 +129,57 @@ function drawHexGrid(x, y) {
  */
 function refreshMap() {
 	setViewPort();
+	if (VIEW.x < 0) {
+		VIEW.x = 0;
+	}
+	if (VIEW.y < 0) {
+		VIEW.y = 0;
+	}
 
+	if (VIEW.currentScale.precision == 1) {
+		drawSmallScale();
+	} else {
+		drawLargeScale();
+	}
+}
+
+/**
+ * Draw a map where we only display every nth tile, and they are
+ * displayed as flat colour squares.
+ */
+function drawLargeScale() {
+	var		startX = VIEW.x;
+	var 	startY = VIEW.y;
+	var		mapWidth = VIEW.width;
+	var		mapHeight = VIEW.height;
+
+	if (VIEW.port.width != VIEW.port.lastWidth || VIEW.port.height != VIEW.port.lastHeight) {
+		$("#map").attr("width", VIEW.port.width);
+		$("#map").attr("height", VIEW.port.height);
+		VIEW.port.lastWidth = VIEW.port.width;
+		VIEW.port.lastHeight = VIEW.port.height;
+	}
+	var		tileWidth = VIEW.currentScale.column;
+	var		tileHeight = VIEW.currentScale.height;
+
+	mapWidth = parseInt(VIEW.port.width / tileWidth) - 1;
+	mapHeight = parseInt(VIEW.port.height / tileHeight) - 1;
+	mapWidth = VIEW.width;
+	mapHeight = VIEW.height;
+	
+	VIEW.imageWidth = tileWidth;
+	VIEW.imageHeight = tileHeight;
+	VIEW.halfOffset = 0;
+	VIEW.tileWidth = tileWidth;
+	VIEW.tileHeight = tileHeight;
+
+}
+
+/**
+ * Draw a map where every tile is displayed. Each tile is displayed
+ * as a proper hex image.
+ */
+function drawSmallScale() {
 	var		startX = VIEW.x;
 	var 	startY = VIEW.y;
 	var		mapWidth = VIEW.width;
