@@ -495,9 +495,27 @@ class MapAPIController {
 		List        terrain = mapService.getThumbData(info,  step)
 		
 		SimpleImage	img = new SimpleImage(width, height)
-		
-		
 		Map colours = [:]
+		
+		Terrain background = Terrain.findById(info.background)
+		colours.put(info.background, background.colour)
+		Terrain oob = Terrain.findById(info.oob)
+		colours.put(info.oob, oob.colour)
+		
+		for (int y=0; y < info.height; y+=step) {
+			for (int x=0; x < info.width; x+=step) {
+				int px = x / step
+				int py = y / step
+				if (info.world && mapService.isOut(info, x, y)) {
+					String colour = colours.get(info.oob)
+					img.rectangleFill(px, py, 1, 1, colour)
+				} else {
+					String colour = colours.get(info.background)
+					img.rectangleFill(px, py, 1, 1, colour)
+				}
+			}
+		}
+		
 		terrain.each { hex ->
 			int tid = hex.t
 			int x = hex.x
