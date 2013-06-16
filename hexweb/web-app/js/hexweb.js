@@ -162,6 +162,7 @@ function refreshMap() {
 		MAP.map = data.map;
 		MAP.area = data.area;
 		MAP.places = data.places;
+		MAP.bounds = data.bounds;
 
 		startX = data.info.x;
 		startY = data.info.Y;

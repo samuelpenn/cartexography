@@ -83,7 +83,7 @@ function paintTerrain(event, px, py) {
 			}
 			
 			x = ox + px;
-			if (x >= 0 && x < MAP.info.width) {
+			if (x >= 0 && x < MAP.info.width && isIn(x, y)) {
 				VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
 						x * VIEW.currentScale.column + 8, 
 						y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
@@ -93,7 +93,7 @@ function paintTerrain(event, px, py) {
 				}
 			}
 			x = ox - px;
-			if (x >= 0 && x < MAP.info.width) {
+			if (x >= 0 && x < MAP.info.width && isIn(x, y)) {
 				VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
 						x * VIEW.currentScale.column + 8, 
 						y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
@@ -104,6 +104,15 @@ function paintTerrain(event, px, py) {
 			}
 		}
 	}
+}
+
+function isIn(x, y) {
+	if (MAP.bounds != null) {
+		if (y + VIEW.y < MAP.bounds[x].min || y + VIEW.y > MAP.bounds[x].max) {
+			return false;
+		}
+	}
+	return true;
 }
 
 function recordSubPosition(event, px, py) {

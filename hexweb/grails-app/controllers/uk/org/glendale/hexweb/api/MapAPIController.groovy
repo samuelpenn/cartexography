@@ -195,13 +195,14 @@ class MapAPIController {
 			area[hex[1] - y][hex[0] - x] = hex[3]
 		}
 		long start = System.currentTimeMillis()
+		List bounds = null
 		if (info.world || list.size() != w * h) {
 			println "Filtering map ${list.size()}"
 			// We have gaps in the data, so blank the whole map first. There's
 			// no point doing this if there are no gaps. If it is a world map,
 			// then we always need to do this.
 			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
-			List bounds = mapService.getBounds(info, x, w)
+			bounds = mapService.getBounds(info, x, w)
 			for (int xx=0; xx < w; xx++) {
 				for (int yy=0; yy < h; yy++) {
 					if (yy+y < bounds[xx].min || yy+y > bounds[xx].max) {
@@ -229,6 +230,9 @@ class MapAPIController {
 		data.put("area", area)
 		data.put("places", places)
 		data.put("info", [ "x": x, "y": y, "width": w, "height": h ]);
+		if (bounds != null) {
+			data.put("bounds", bounds)
+		}
 		
 		render data as JSON
 	}
@@ -303,16 +307,18 @@ class MapAPIController {
 	 * TODO: Can we make this more efficient?
 	 */
 	private void setHex(MapInfo info, int x, int y, int terrain) {
-		Hex hex = Hex.find ({
-			eq("mapInfo", info)
-			eq("x", x)
-			eq("y", y)			
-		});
-		if (hex == null) {
-			hex = new Hex(x: x, y: y, mapInfo: info)
+		if (!mapService.isOut(info, x, y)) {
+			Hex hex = Hex.find ({
+				eq("mapInfo", info)
+				eq("x", x)
+				eq("y", y)
+			});
+			if (hex == null) {
+				hex = new Hex(x: x, y: y, mapInfo: info)
+			}
+			hex.terrainId = terrain
+			hex.save();
 		}
-		hex.terrainId = terrain
-		hex.save();
 	}
 	
 	/**
