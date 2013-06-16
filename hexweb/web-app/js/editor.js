@@ -83,7 +83,7 @@ function paintTerrain(event, px, py) {
 			}
 			
 			x = ox + px;
-			if (x >= 0 && x < MAP.info.width && isIn(x, y)) {
+			if (isIn(x, y)) {
 				VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
 						x * VIEW.currentScale.column + 8, 
 						y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
@@ -93,7 +93,7 @@ function paintTerrain(event, px, py) {
 				}
 			}
 			x = ox - px;
-			if (x >= 0 && x < MAP.info.width && isIn(x, y)) {
+			if (isIn(x, y)) {
 				VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
 						x * VIEW.currentScale.column + 8, 
 						y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
@@ -106,7 +106,17 @@ function paintTerrain(event, px, py) {
 	}
 }
 
+/**
+ * Returns true if the location is writable. This excludes anywhere outside
+ * the view rectangle, or those areas outside the icosohedron for world maps.
+ */
 function isIn(x, y) {
+	if (x < 0 || x >= VIEW.width) {
+		return false;
+	}
+	if (y < 0 || y >= VIEW.height) {
+		return false;
+	}
 	if (MAP.bounds != null) {
 		if (y + VIEW.y < MAP.bounds[x].min || y + VIEW.y > MAP.bounds[x].max) {
 			return false;
