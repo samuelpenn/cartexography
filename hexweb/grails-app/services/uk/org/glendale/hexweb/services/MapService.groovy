@@ -143,14 +143,41 @@ class MapService {
 		})
 	}
 	
-	def getBounds(MapInfo info, int x, int width) {
+	/**
+	 * Gets the minimum and maximum Y values for a map by X column. For a
+	 * rectangular (non-world) map, these values are always 0 and map height,
+	 * so we don't bother to store them. For a world map however, they vary
+	 * a lot because of out of bounds areas. We store these in the database
+	 * because it is faster to retrieve them, then it is to re-calculate them
+	 * each time.
+	 * 
+	 * Normally we don't get the whole range, just over the area being viewed
+	 * (which is what 'x' and 'width' define). If we are displaying a low
+	 * resolution map, then set resolution > 1, so we only get every 'resolution'
+	 * column.
+	 * 
+	 * @param info			Map to get them for.
+	 * @param x				X position to start from.
+	 * @param width			Width of range to get.
+	 * @param resolution	Step size, if > 1 only get every 'resolution' columns.
+	 * @return
+	 */
+	def getBounds(MapInfo info, int x, int width, int resolution) {
 		List	list = new ArrayList()
 		println "getBounds: ${info.id} ${x} ${width}"
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
-				String sql = String.format("select min, max from bound where mapinfo_id=%d and "+
-										   "x >= %d and x < %d order by x",
-										   info.id, x, x + width)
+				String sql = null;
+				
+				if (resolution < 2) {
+					sql = String.format("select min, max from bound where mapinfo_id=%d and "+
+											   "x >= %d and x < %d order by x",
+											   info.id, x, x + width)
+				} else {
+					sql = String.format("select min, max from bound where mapinfo_id=%d and "+
+											   "x >= %d and x < %d and x mod %d = 0 order by x",
+											   info.id, x, x + width, resolution)
+				}
 				Statement stmnt = connection.prepareStatement(sql)
 				ResultSet rs = stmnt.executeQuery(sql)
 				while (rs.next()) {

@@ -202,7 +202,7 @@ class MapAPIController {
 			// no point doing this if there are no gaps. If it is a world map,
 			// then we always need to do this.
 			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
-			bounds = mapService.getBounds(info, x, w)
+			bounds = mapService.getBounds(info, x, w, 1)
 			for (int xx=0; xx < w; xx++) {
 				for (int yy=0; yy < h; yy++) {
 					if (yy+y < bounds[xx].min || yy+y > bounds[xx].max) {
@@ -501,12 +501,15 @@ class MapAPIController {
 		colours.put(info.background, background.colour)
 		Terrain oob = Terrain.findById(info.oob)
 		colours.put(info.oob, oob.colour)
-		
+		List	bounds = null
+		if (info.world) {
+			bounds = mapService.getBounds(info, 0, info.width, step)
+		}
 		for (int y=0; y < info.height; y+=step) {
 			for (int x=0; x < info.width; x+=step) {
 				int px = x / step
 				int py = y / step
-				if (info.world && mapService.isOut(info, x, y)) {
+				if (info.world && (y < bounds[px].min || y > bounds[px].max)) {
 					String colour = colours.get(info.oob)
 					img.rectangleFill(px, py, 1, 1, colour)
 				} else {
