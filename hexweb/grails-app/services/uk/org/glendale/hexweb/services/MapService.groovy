@@ -68,6 +68,43 @@ class MapService {
 			eq("y", y)
 		});
 	}
+	
+	def getMapData(int x, int y, int w, int h, int resolution) {
+		List list = null
+		if (resolution < 2) {
+			// Full resolution, get every tile within the bounds.
+			list = Hex.findAll ({
+				eq('mapInfo', info)
+				between('x', x, x + w -1)
+				between('y', y, y + h - 1)
+				
+				projections {
+					property("x")
+					property("y")
+					property("terrainId")
+					property("areaId")
+				}
+				order("y")
+				order("x")
+			})
+		} else {
+			list = new ArrayList()
+			sessionFactory.currentSession.doWork(new Work() {
+				public void execute(Connection connection) {
+					String sql = String.format("select x, y, terrain_id, area_id from map where mapinfo_id=%d and "+
+											   "x >= %d AND x < %d AND y >= %d AND y < %d AND x mod %d = 0 and y mod %d = 0 order by y, x",
+											   info.id, x, x+w, y, y+h, resolution, resolution)
+					Statement stmnt = connection.prepareStatement(sql)
+					ResultSet rs = stmnt.executeQuery(sql)
+					while (rs.next()) {
+						list.add([ "x": rs.getInt(1), "y": rs.getInt(2), "t": rs.getInt(3), "a": rs.getInt(4)])
+					}
+					rs.close()
+				}
+			})
+		}
+		return list
+	}
 
 	/**
 	 * Removes all hex data from a map. Uses raw SQL for performance.
