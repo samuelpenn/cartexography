@@ -97,7 +97,7 @@ class MapService {
 					Statement stmnt = connection.prepareStatement(sql)
 					ResultSet rs = stmnt.executeQuery(sql)
 					while (rs.next()) {
-						list.add([ "x": rs.getInt(1), "y": rs.getInt(2), "t": rs.getInt(3), "a": rs.getInt(4)])
+						list.add([ rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4)])
 					}
 					rs.close()
 				}

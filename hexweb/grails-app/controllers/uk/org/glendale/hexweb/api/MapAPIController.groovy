@@ -267,7 +267,30 @@ class MapAPIController {
 		}
 
 		int[][]		map = new int[h][w]
-		List l = mapService.getThumbData(info, precision)
+		List list = mapService.getMapData(info, x, y, w, h, precision)
+		list.each { hex ->
+			map[hex[1] - y][hex[0] - x] = hex[2]
+		}
+		List bounds = null
+		if (info.world || list.size() != w * h) {
+			println "Filtering map ${list.size()}"
+			// We have gaps in the data, so blank the whole map first. There's
+			// no point doing this if there are no gaps. If it is a world map,
+			// then we always need to do this.
+			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
+			bounds = mapService.getBounds(info, x, w, precision)
+			for (int xx=0; xx < w; xx++) {
+				for (int yy=0; yy < h; yy++) {
+					if (yy+y < bounds[xx].min || yy+y > bounds[xx].max) {
+						map[yy][xx] = info.oob
+					} else {
+						if (map[yy][xx] == 0) {
+							map[yy][xx] = info.background
+						}
+					}
+				}
+			}
+		}
 
 	}
 	
