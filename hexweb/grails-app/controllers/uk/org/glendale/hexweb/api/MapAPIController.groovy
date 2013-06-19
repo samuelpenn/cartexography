@@ -245,10 +245,14 @@ class MapAPIController {
 	 * Only terrain data is returned. Places and areas are ignored at this
 	 * level of detail.
 	 */
-	def largeMap(String id, int x, int y, int w, int h, int precision) {
+	def largeMap(String id, int x, int y, int w, int h, int p) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		println("largeMap: ${id} ${x},${y}+${w}+${h}")
+		println("largeMap: ${id} ${x},${y}+${w}+${h} ${p}")
+		
+		if (p < 1) {
+			p = 1
+		}
 		
 		if (x < 0) {
 			x = 0;
@@ -256,8 +260,8 @@ class MapAPIController {
 		if (y < 0) {
 			y = 0;
 		}
-		x -= x % precision;
-		y -= y % precision;
+		x -= x % p;
+		y -= y % p;
 
 		if (x + w > info.width) {
 			w = info.width - x;
@@ -266,10 +270,12 @@ class MapAPIController {
 			h = info.height - y;
 		}
 
-		int[][]		map = new int[h][w]
-		List list = mapService.getMapData(info, x, y, w, h, precision)
+		int[][]		map = new int[h/p][w/p]
+		List list = mapService.getMapData(info, x, y, w, h, p)
 		list.each { hex ->
-			map[hex[1] - y][hex[0] - x] = hex[2]
+			int xx = (hex[0] - x) / p
+			int yy = (hex[1] - y) / p
+			map[yy][xx] = hex[2]
 		}
 		List bounds = null
 		if (info.world || list.size() != w * h) {
@@ -278,19 +284,29 @@ class MapAPIController {
 			// no point doing this if there are no gaps. If it is a world map,
 			// then we always need to do this.
 			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
-			bounds = mapService.getBounds(info, x, w, precision)
-			for (int xx=0; xx < w; xx++) {
-				for (int yy=0; yy < h; yy++) {
-					if (yy+y < bounds[xx].min || yy+y > bounds[xx].max) {
-						map[yy][xx] = info.oob
-					} else {
-						if (map[yy][xx] == 0) {
-							map[yy][xx] = info.background
+			bounds = mapService.getBounds(info, x, w, p)
+			if (bounds != null && bounds.size() > 0) {
+				for (int xx=0; xx < w/p; xx++) {
+					for (int yy=0; yy < h/p; yy++) {
+						if (yy+y < bounds[xx].min / p || yy+y > bounds[xx].max / p) {
+							map[yy][xx] = info.oob
+						} else {
+							if (map[yy][xx] == 0) {
+								map[yy][xx] = info.background
+							}
 						}
 					}
 				}
 			}
 		}
+		Map data = new HashMap();
+		data.put("map", map)
+		data.put("info", [ "x": x, "y": y, "width": w, "height": h ]);
+		if (bounds != null && bounds.size() > 0) {
+			data.put("bounds", bounds)
+		}
+		
+		render data as JSON
 
 	}
 	

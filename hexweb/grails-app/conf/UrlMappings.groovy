@@ -65,7 +65,12 @@ class UrlMappings {
 			controller = "mapAPI"
 			action = "map"
 		}
-		
+
+		"/api/map/$id/largemap" {
+			controller = "mapAPI"
+			action = "largeMap"
+		}
+
 		"/api/map/$id/update" {
 			controller = "mapAPI"
 			action = [ PUT: "update" ]

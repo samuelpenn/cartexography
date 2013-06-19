@@ -69,7 +69,7 @@ class MapService {
 		});
 	}
 	
-	def getMapData(int x, int y, int w, int h, int resolution) {
+	def getMapData(MapInfo info, int x, int y, int w, int h, int resolution) {
 		List list = null
 		if (resolution < 2) {
 			// Full resolution, get every tile within the bounds.
@@ -94,6 +94,7 @@ class MapService {
 					String sql = String.format("select x, y, terrain_id, area_id from map where mapinfo_id=%d and "+
 											   "x >= %d AND x < %d AND y >= %d AND y < %d AND x mod %d = 0 and y mod %d = 0 order by y, x",
 											   info.id, x, x+w, y, y+h, resolution, resolution)
+					println sql
 					Statement stmnt = connection.prepareStatement(sql)
 					ResultSet rs = stmnt.executeQuery(sql)
 					while (rs.next()) {

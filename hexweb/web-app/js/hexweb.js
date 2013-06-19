@@ -46,7 +46,8 @@ VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 4, 
                { column: 24, row: 28, width: 33, height: 28, font: 9 , step: 8, precision: 1 },
                { column: 12, row: 14, width: 17, height: 14, font: 6 , step: 16, precision: 1 }, 
                { column: 6, row: 7, width: 9, height: 7, font: 4, step: 32, precision: 1  }, 
-               { column: 2, row: 2, width: 2, height: 2, font: 0, step: 100, precision: 10 }
+               { column: 4, row: 4, width: 4, height: 4, font: 0, step: 100, precision: 2 },
+               { column: 2, row: 2, width: 2, height: 2, font: 0, step: 100, precision: 4 }
              ];
 VIEW.currentScale = VIEW.scale[0];
 
@@ -88,6 +89,8 @@ function setViewPort(forceClear) {
 	var		tileHeight = VIEW.scale[VIEW.zoom].height;
 	VIEW.width = parseInt(VIEW.port.width / tileWidth) - 1;
 	VIEW.height = parseInt(VIEW.port.height / tileHeight) - 1;
+	VIEW.width *= VIEW.currentScale.precision;
+	VIEW.height *= VIEW.currentScale.precision;
 	if (VIEW.width % 2 == 1) {
 		VIEW.width = VIEW.width + 1;
 	}
@@ -162,8 +165,6 @@ function drawLargeScale() {
 	var		tileWidth = VIEW.currentScale.column;
 	var		tileHeight = VIEW.currentScale.height;
 
-	mapWidth = parseInt(VIEW.port.width / tileWidth) - 1;
-	mapHeight = parseInt(VIEW.port.height / tileHeight) - 1;
 	mapWidth = VIEW.width;
 	mapHeight = VIEW.height;
 	
@@ -172,6 +173,31 @@ function drawLargeScale() {
 	VIEW.halfOffset = 0;
 	VIEW.tileWidth = tileWidth;
 	VIEW.tileHeight = tileHeight;
+	$.getJSON("/hexweb/api/map/"+MAP.info.id+"/largemap?x="+startX+"&y="+startY+"&w="+
+			  mapWidth+"&h="+mapHeight+"&p="+VIEW.currentScale.precision, function(data) {
+		MAP.map = data.map;
+		MAP.bounds = data.bounds;
+
+		startX = data.info.x;
+		startY = data.info.Y;
+		mapWidth = data.info.width / VIEW.currentScale.precision;
+		mapHeight = data.info.height / VIEW.currentScale.precision;
+
+		for (var y=0; y < mapHeight; y++) {
+			for (var x=0; x < mapWidth; x++) {
+				var t = MAP.map[y][x];
+				var px = x * tileWidth + 8;
+				var py = y * tileHeight + 8;
+				
+				VIEW.context.fillStyle = MAP.images[t].colour;
+				VIEW.context.fillRect(px, py, VIEW.imageWidth, VIEW.imageHeight);
+			}
+		}
+
+		$("#x-orig-view").html(VIEW.x + " / " + MAP.info.width)
+		$("#y-orig-view").html(VIEW.y + " / " + MAP.info.height)
+		
+	});
 
 }
 
