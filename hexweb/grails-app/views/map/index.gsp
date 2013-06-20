@@ -159,7 +159,6 @@
 		}
 		div.floating {
 			position: absolute;
-			z-index: 1
 			top: 200px;
 			left: 500px;
 			width: 300px;
