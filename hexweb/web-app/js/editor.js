@@ -67,7 +67,7 @@ function paintTerrain(event, px, py) {
 	$.ajax({
 		type: "PUT",
 		url: "/hexweb/api/map/"+MAP.info.id+"/update?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+
-			"&radius="+VIEW.brushSize+"&terrain="+VIEW.terrainBrush,
+			"&radius="+VIEW.brushSize+"&scale="+VIEW.currentScale.precision+"&terrain="+VIEW.terrainBrush,
 		async: true
 	});
 	for (var px = 0; px < parseInt(VIEW.brushSize / 2 + 1); px++) {

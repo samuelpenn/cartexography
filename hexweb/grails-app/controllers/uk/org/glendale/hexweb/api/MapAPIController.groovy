@@ -204,12 +204,19 @@ class MapAPIController {
 			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
 			bounds = mapService.getBounds(info, x, w, 1)
 			for (int xx=0; xx < w; xx++) {
+				int xx10 = xx - xx%10;
 				for (int yy=0; yy < h; yy++) {
-					if (yy+y < bounds[xx].min || yy+y > bounds[xx].max) {
+					if (bounds.size() > 0 && (yy+y < bounds[xx].min || yy+y > bounds[xx].max)) {
 						map[yy][xx] = info.oob
 					} else {
 						if (map[yy][xx] == 0) {
-							map[yy][xx] = info.background
+							int b = map[yy - yy%10][xx10]
+							println "${xx},${yy} = ${b}"
+							if (b != info.oob && b != 0) {
+								map[yy][xx] = b
+							} else {
+								map[yy][xx] = info.background
+							}
 						}
 					}
 				}
@@ -263,12 +270,14 @@ class MapAPIController {
 		x -= x % p;
 		y -= y % p;
 
-		if (x + w > info.width) {
-			w = info.width - x;
+		if (x + w*p > info.width) {
+			w = (info.width - x);
 		}
-		if (y + h > info.height) {
-			h = info.height - y;
+		w -= w % p
+		if (y + h*p > info.height) {
+			h = (info.height - y);
 		}
+		y -= y % p
 
 		int[][]		map = new int[h/p][w/p]
 		List list = mapService.getMapData(info, x, y, w, h, p)
@@ -279,19 +288,24 @@ class MapAPIController {
 		}
 		List bounds = null
 		if (info.world || list.size() != w * h) {
-			println "Filtering map ${list.size()}"
+			println "Filtering large map ${list.size()} of ${w * h}"
 			// We have gaps in the data, so blank the whole map first. There's
 			// no point doing this if there are no gaps. If it is a world map,
 			// then we always need to do this.
 			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
 			bounds = mapService.getBounds(info, x, w, p)
-			if (bounds != null && bounds.size() > 0) {
-				for (int xx=0; xx < w/p; xx++) {
-					for (int yy=0; yy < h/p; yy++) {
-						if (yy+y < bounds[xx].min / p || yy+y > bounds[xx].max / p) {
-							map[yy][xx] = info.oob
-						} else {
-							if (map[yy][xx] == 0) {
+			for (int xx=0; xx < w/p; xx++) {
+				int xx10 = xx - xx%10;
+				for (int yy=0; yy < h/p; yy++) {
+					if (bounds.size() > 0 && (yy+y < bounds[xx].min / p || yy+y > bounds[xx].max / p)) {
+						map[yy][xx] = info.oob
+					} else {
+						if (map[yy][xx] == 0) {
+							int b = map[yy - yy%10][xx10]
+							// If blank, fall back to '10th parent', else use background.
+							if (b != info.oob && b != 0) {
+								map[yy][xx] = b
+							} else {
 								map[yy][xx] = info.background
 							}
 						}
@@ -332,7 +346,7 @@ class MapAPIController {
 	/**
 	 * Updates a hex with a new terrain.
 	 */
-	def update(String id, int x, int y, int radius, int terrain) {
+	def update(String id, int x, int y, int radius, int terrain, int scale) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
 		if (isdup(info.id, x, y, radius, terrain)) {
@@ -341,36 +355,40 @@ class MapAPIController {
 		}		
 		println "Update: ${id}-${x},${y} radius ${radius}"
 		if (radius < 1) {
-			radius == 1;
+			radius == 1
 		} else if (radius %2 == 0) {
-			radius--;
+			radius--
 		}
-		
-		int ox = x;
-		int oy = y;
-		for (int px = 0; px < (int)Math.floor(radius / 2) + 1; px++) {
-			int	 h = radius - px;
-			
-			for (int py = 0; py < h; py ++) {
-				y = oy + py - (int)Math.floor(h / 2);
-				if (px%2 == 1) {
-					y += ox%2;
-				}
-				if (y < 0 || y >= info.height) {
-					continue
-				}
+		if (scale <= 1) {
+			int ox = x;
+			int oy = y;
+			for (int px = 0; px < (int)Math.floor(radius / 2) + 1; px++) {
+				int	 h = radius - px;
 				
-				x = ox + px;
-				if (x >= 0 && x < info.width) {
-					setHex(info, x, y, terrain);
-				}
-				x = ox - px;
-				if (x >= 0 && x < info.width) {
-					setHex(info, x, y, terrain);
+				for (int py = 0; py < h; py ++) {
+					y = oy + py - (int)Math.floor(h / 2);
+					if (px%2 == 1) {
+						y += ox%2;
+					}
+					if (y < 0 || y >= info.height) {
+						continue
+					}
+					
+					x = ox + px;
+					if (x >= 0 && x < info.width) {
+						setHex(info, x, y, terrain);
+					}
+					x = ox - px;
+					if (x >= 0 && x < info.width) {
+						setHex(info, x, y, terrain);
+					}
 				}
 			}
+		} else {
+			// Larger scale
+			int ox = x;
+			int oy = y;
 		}
-	
 		
 		render terrain
 	}
