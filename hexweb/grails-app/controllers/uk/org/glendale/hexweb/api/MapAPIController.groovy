@@ -211,7 +211,6 @@ class MapAPIController {
 					} else {
 						if (map[yy][xx] == 0) {
 							int b = map[yy - yy%10][xx10]
-							println "${xx},${yy} = ${b}"
 							if (b != info.oob && b != 0) {
 								map[yy][xx] = b
 							} else {
@@ -252,13 +251,13 @@ class MapAPIController {
 	 * Only terrain data is returned. Places and areas are ignored at this
 	 * level of detail.
 	 */
-	def largeMap(String id, int x, int y, int w, int h, int p) {
+	def largeMap(String id, int x, int y, int w, int h, int scale) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		println("largeMap: ${id} ${x},${y}+${w}+${h} ${p}")
+		println("largeMap: ${id} ${x},${y}+${w}+${h} ${scale}")
 		
-		if (p < 1) {
-			p = 1
+		if (scale < 1) {
+			scale = 1
 		}
 		
 		if (x < 0) {
@@ -267,23 +266,23 @@ class MapAPIController {
 		if (y < 0) {
 			y = 0;
 		}
-		x -= x % p;
-		y -= y % p;
+		x -= x % scale;
+		y -= y % scale;
 
-		if (x + w*p > info.width) {
+		if (x + w*scale > info.width) {
 			w = (info.width - x);
 		}
-		w -= w % p
-		if (y + h*p > info.height) {
+		w -= w % scale
+		if (y + h*scale > info.height) {
 			h = (info.height - y);
 		}
-		y -= y % p
+		y -= y % scale
 
-		int[][]		map = new int[h/p][w/p]
-		List list = mapService.getMapData(info, x, y, w, h, p)
+		int[][]		map = new int[h/scale][w/scale]
+		List list = mapService.getMapData(info, x, y, w, h, scale)
 		list.each { hex ->
-			int xx = (hex[0] - x) / p
-			int yy = (hex[1] - y) / p
+			int xx = (hex[0] - x) / scale
+			int yy = (hex[1] - y) / scale
 			map[yy][xx] = hex[2]
 		}
 		List bounds = null
@@ -293,11 +292,11 @@ class MapAPIController {
 			// no point doing this if there are no gaps. If it is a world map,
 			// then we always need to do this.
 			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
-			bounds = mapService.getBounds(info, x, w, p)
-			for (int xx=0; xx < w/p; xx++) {
+			bounds = mapService.getBounds(info, x, w, scale)
+			for (int xx=0; xx < w/scale; xx++) {
 				int xx10 = xx - xx%10;
-				for (int yy=0; yy < h/p; yy++) {
-					if (bounds.size() > 0 && (yy+y < bounds[xx].min / p || yy+y > bounds[xx].max / p)) {
+				for (int yy=0; yy < h/scale; yy++) {
+					if (bounds.size() > 0 && (yy+y < bounds[xx].min / scale || yy+y > bounds[xx].max / scale)) {
 						map[yy][xx] = info.oob
 					} else {
 						if (map[yy][xx] == 0) {

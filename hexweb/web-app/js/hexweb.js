@@ -42,12 +42,12 @@ VIEW.showGrid = false;
 VIEW.zoom = 0;
 VIEW.port= { width: 1600, height: 1200 };
 
-VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 10, precision: 1 },
-               { column: 24, row: 28, width: 33, height: 28, font: 9 , step: 10, precision: 1 },
-               { column: 12, row: 14, width: 17, height: 14, font: 6 , step: 20, precision: 1 }, 
-               { column: 6, row: 7, width: 9, height: 7, font: 4, step: 40, precision: 1  }, 
-               { column: 8, row: 8, width: 8, height: 8, font: 0, step: 100, precision: 10 },
-               { column: 2, row: 2, width: 2, height: 2, font: 0, step: 100, precision: 4 }
+VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 10, scale: 1 },
+               { column: 24, row: 28, width: 33, height: 28, font: 9 , step: 10, scale: 1 },
+               { column: 12, row: 14, width: 17, height: 14, font: 6 , step: 20, scale: 1 }, 
+               { column: 6, row: 7, width: 9, height: 7, font: 4, step: 40, scale: 1  }, 
+               { column: 8, row: 8, width: 8, height: 8, font: 0, step: 200, scale: 10 },
+               { column: 4, row: 4, width: 4, height: 4, font: 0, step: 400, scale: 20 }
              ];
 VIEW.currentScale = VIEW.scale[0];
 
@@ -89,8 +89,8 @@ function setViewPort(forceClear) {
 	var		tileHeight = VIEW.scale[VIEW.zoom].height;
 	VIEW.width = parseInt(VIEW.port.width / tileWidth) - 1;
 	VIEW.height = parseInt(VIEW.port.height / tileHeight) - 1;
-	VIEW.width *= VIEW.currentScale.precision;
-	VIEW.height *= VIEW.currentScale.precision;
+	VIEW.width *= VIEW.currentScale.scale;
+	VIEW.height *= VIEW.currentScale.scale;
 	if (VIEW.width % 2 == 1) {
 		VIEW.width = VIEW.width + 1;
 	}
@@ -139,7 +139,7 @@ function refreshMap() {
 		VIEW.y = 0;
 	}
 
-	if (VIEW.currentScale.precision == 1) {
+	if (VIEW.currentScale.scale == 1) {
 		drawSmallScale();
 	} else {
 		drawLargeScale();
@@ -174,14 +174,14 @@ function drawLargeScale() {
 	VIEW.tileWidth = tileWidth;
 	VIEW.tileHeight = tileHeight;
 	$.getJSON("/hexweb/api/map/"+MAP.info.id+"/largemap?x="+startX+"&y="+startY+"&w="+
-			  mapWidth+"&h="+mapHeight+"&p="+VIEW.currentScale.precision, function(data) {
+			  mapWidth+"&h="+mapHeight+"&scale="+VIEW.currentScale.scale, function(data) {
 		MAP.map = data.map;
 		MAP.bounds = data.bounds;
 
 		startX = data.info.x;
 		startY = data.info.Y;
-		mapWidth = data.info.width / VIEW.currentScale.precision;
-		mapHeight = data.info.height / VIEW.currentScale.precision;
+		mapWidth = data.info.width / VIEW.currentScale.scale;
+		mapHeight = data.info.height / VIEW.currentScale.scale;
 
 		for (var y=0; y < mapHeight; y++) {
 			for (var x=0; x < mapWidth; x++) {
