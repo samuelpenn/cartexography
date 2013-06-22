@@ -108,8 +108,15 @@ function paintTerrain(event, px, py) {
 		}
 	} else {
 		VIEW.context.fillStyle = MAP.images[VIEW.terrainBrush].colour;
-		VIEW.context.fillRect(x * VIEW.currentScale.column + 8, y * VIEW.currentScale.row + 8,
-				VIEW.currentScale.width, VIEW.currentScale.height);
+		var r = Math.floor(VIEW.brushSize / 2);
+		for (var px = ox-r; px <= ox + r; px++) {
+			for (var py = oy-r; py <= oy + r; py++) {
+				//if (isIn(px, py)) {
+					VIEW.context.fillRect(px * VIEW.currentScale.column + 8, py * VIEW.currentScale.row + 8,
+							VIEW.currentScale.width, VIEW.currentScale.height);
+				//}
+			}
+		}
 	}
 }
 

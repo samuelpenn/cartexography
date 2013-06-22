@@ -142,6 +142,47 @@ class MapService {
 			}
 		})
 	}
+
+	/**
+	 * Called when we're about to set a block parent in detail mode. Any tiles
+	 * which inherit from the parent need to be individually set to the parent's
+	 * old value.	
+	 * @param info
+	 * @param x		X coordinate of parent.
+	 * @param y		Y coordinate of parent.
+	 * @return
+	 */
+	def fillBlock(MapInfo info, int x, int y) {
+		// Get current value of parent.
+		Hex 		hex = getHex(info, x, y)
+		boolean[][] map = new boolean[10][10]
+
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("SELECT x, y FROM map WHERE mapinfo_id=%d AND "+
+										   "x BETWEEN %d AND %d AND y BETWEEN %d AND %d",
+										   info.id, x, x + 9, y, y+9)
+				Statement stmnt = connection.prepareStatement(sql)
+				ResultSet rs = stmnt.executeQuery(sql)
+				while (rs.next()) {
+					// Mark all those that are already set.
+					map[rs.getInt(2)-y][rs.getInt(1)-x] = true
+				}
+				rs.close()
+			}
+		})
+		
+		for (int px=0; px < 10; px++) {
+			for (int py=0; py < 10; py++) {
+				if (!map[py][px]) {
+					if (!isOut(info, x + px, y + py)) {
+						insertToMap(info, x + px, y + py, hex.areaId, hex.terrainId)
+					}
+				}
+			}
+		}
+
+	}
 	
 	/**
 	 * Get terrain data from the map for generating a thumbnail. Uses raw SQL

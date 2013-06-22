@@ -293,8 +293,9 @@ class MapAPIController {
 			// then we always need to do this.
 			Terrain		unknown = terrainService.getTerrainByNameOrId("unknown")
 			bounds = mapService.getBounds(info, x, w, scale)
+			int	s = scale / 10;
 			for (int xx=0; xx < w/scale; xx++) {
-				int xx10 = xx - xx%10;
+				int xx10 = xx - xx%s;
 				for (int yy=0; yy < h/scale; yy++) {
 					if (bounds.size() > 0 && (yy+y < bounds[xx].min / scale || yy+y > bounds[xx].max / scale)) {
 						map[yy][xx] = info.oob
@@ -302,7 +303,7 @@ class MapAPIController {
 						if (map[yy][xx] == 0) {
 							int b = map[yy - yy%10][xx10]
 							// If blank, fall back to '10th parent', else use background.
-							if (b != info.oob && b != 0) {
+							if (s > 1 && b != info.oob && b != 0) {
 								map[yy][xx] = b
 							} else {
 								map[yy][xx] = info.background
@@ -376,10 +377,16 @@ class MapAPIController {
 					
 					x = ox + px;
 					if (x >= 0 && x < info.width) {
+						if (x%10 == 0 && y%10 == 0) {
+							mapService.fillBlock(info, x, y);
+						}
 						setHex(info, x, y, terrain);
 					}
 					x = ox - px;
 					if (x >= 0 && x < info.width) {
+						if (x%10 == 0 && y%10 == 0) {
+							mapService.fillBlock(info, x, y);
+						}
 						setHex(info, x, y, terrain);
 					}
 				}
@@ -388,8 +395,13 @@ class MapAPIController {
 			// Larger scale
 			x -= x%10;
 			y -= y%10;
-			mapService.deleteRectangle(info, x, y, scale, scale)
-			setHex(info, x, y, terrain)
+			int r = Math.floor(radius / 2) * 10;
+			for (int px = x - r; px <= x + r; px+=10) {
+				for (int py = y - r; py <= y + r; py+=10) {
+					mapService.deleteRectangle(info, px, py, scale, scale)
+					setHex(info, px, py, terrain)
+				}
+			}
 		}
 		
 		render terrain
