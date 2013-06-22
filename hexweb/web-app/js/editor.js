@@ -56,7 +56,8 @@ function dblclickMap(event) {
  */
 function paintTerrain(event, px, py) {
 	var x = Math.floor(px / VIEW.currentScale.column);
-	if (x %2 == 1) {
+	var scale = VIEW.currentScale.scale;
+	if (x %2 == 1 && scale == 1) {
 		py -= VIEW.currentScale.row / 2;
 	} 
 	var y = Math.floor(py / VIEW.currentScale.row);
@@ -66,43 +67,49 @@ function paintTerrain(event, px, py) {
 	
 	$.ajax({
 		type: "PUT",
-		url: "/hexweb/api/map/"+MAP.info.id+"/update?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+
-			"&radius="+VIEW.brushSize+"&scale="+VIEW.currentScale.precision+"&terrain="+VIEW.terrainBrush,
+		url: "/hexweb/api/map/"+MAP.info.id+"/update?x="+(VIEW.x+x*scale)+"&y="+(VIEW.y+y*scale)+
+			"&radius="+VIEW.brushSize+"&scale="+scale+"&terrain="+VIEW.terrainBrush,
 		async: true
 	});
-	for (var px = 0; px < parseInt(VIEW.brushSize / 2 + 1); px++) {
-		var	 h = VIEW.brushSize - px;
-		
-		for (var py = 0; py < h; py ++) {
-			y = oy + py - parseInt(h/2);
-			if (px%2 == 1) {
-				y += ox%2;
-			}
-			if (y < 0) {
-				continue;
-			}
+	if (scale == 1) {
+		for (var px = 0; px < parseInt(VIEW.brushSize / 2 + 1); px++) {
+			var	 h = VIEW.brushSize - px;
 			
-			x = ox + px;
-			if (isIn(x, y)) {
-				VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
-						x * VIEW.currentScale.column + 8, 
-						y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
-						VIEW.currentScale.width, VIEW.currentScale.height);
-				if (VIEW.showGrid) {
-					drawHexGrid(x, y);
+			for (var py = 0; py < h; py ++) {
+				y = oy + py - parseInt(h/2);
+				if (px%2 == 1) {
+					y += ox%2;
 				}
-			}
-			x = ox - px;
-			if (isIn(x, y)) {
-				VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
-						x * VIEW.currentScale.column + 8, 
-						y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
-						VIEW.currentScale.width, VIEW.currentScale.height);
-				if (VIEW.showGrid) {
-					drawHexGrid(x, y);
+				if (y < 0) {
+					continue;
+				}
+				
+				x = ox + px;
+				if (isIn(x, y)) {
+					VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
+							x * VIEW.currentScale.column + 8, 
+							y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
+							VIEW.currentScale.width, VIEW.currentScale.height);
+					if (VIEW.showGrid) {
+						drawHexGrid(x, y);
+					}
+				}
+				x = ox - px;
+				if (isIn(x, y)) {
+					VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
+							x * VIEW.currentScale.column + 8, 
+							y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
+							VIEW.currentScale.width, VIEW.currentScale.height);
+					if (VIEW.showGrid) {
+						drawHexGrid(x, y);
+					}
 				}
 			}
 		}
+	} else {
+		VIEW.context.fillStyle = MAP.images[VIEW.terrainBrush].colour;
+		VIEW.context.fillRect(x * VIEW.currentScale.column + 8, y * VIEW.currentScale.row + 8,
+				VIEW.currentScale.width, VIEW.currentScale.height);
 	}
 }
 

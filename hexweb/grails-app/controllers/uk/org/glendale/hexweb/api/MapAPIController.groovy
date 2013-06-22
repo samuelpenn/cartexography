@@ -352,7 +352,7 @@ class MapAPIController {
 			render terrain
 			return
 		}		
-		println "Update: ${id}-${x},${y} radius ${radius}"
+		println "Update: ${id}-${x},${y} radius ${radius} scale ${scale}"
 		if (radius < 1) {
 			radius == 1
 		} else if (radius %2 == 0) {
@@ -361,6 +361,7 @@ class MapAPIController {
 		if (scale <= 1) {
 			int ox = x;
 			int oy = y;
+			// XXX: Why is radius being used as a diameter?
 			for (int px = 0; px < (int)Math.floor(radius / 2) + 1; px++) {
 				int	 h = radius - px;
 				
@@ -385,8 +386,10 @@ class MapAPIController {
 			}
 		} else {
 			// Larger scale
-			int ox = x;
-			int oy = y;
+			x -= x%10;
+			y -= y%10;
+			mapService.deleteRectangle(info, x, y, scale, scale)
+			setHex(info, x, y, terrain)
 		}
 		
 		render terrain

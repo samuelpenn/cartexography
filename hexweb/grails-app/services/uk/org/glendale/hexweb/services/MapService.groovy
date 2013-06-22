@@ -125,6 +125,25 @@ class MapService {
 	}
 	
 	/**
+	 * Delete all hex tiles within the given rectangle. This is used when
+	 * performing updates on large scale maps, where we want to clear an
+	 * area and revert to sparse data.
+	 */
+	def deleteRectangle(MapInfo info, int x, int y, int w, int h) {
+		def session = sessionFactory.getCurrentSession()
+		
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				Statement stmnt = connection.createStatement()
+				String    sql = "DELETE FROM map WHERE mapinfo_id=${info.id} AND " +
+								"x BETWEEN ${x} AND ${x + w - 1} AND " +
+								"y BETWEEN ${y} AND ${y + h - 1}"
+				stmnt.executeUpdate(sql)
+			}
+		})
+	}
+	
+	/**
 	 * Get terrain data from the map for generating a thumbnail. Uses raw SQL
 	 * in order to get the data as quickly as possible.
 	 * 
