@@ -18,6 +18,16 @@ environments {
             url = "jdbc:mysql://appleseed:3306/hexweb_test"
 			username = "hexweb"
 			password = "hexweb"
+            properties {
+               maxActive = -1
+               minEvictableIdleTimeMillis=1800000
+               timeBetweenEvictionRunsMillis=1800000
+               numTestsPerEvictionRun=3
+               testOnBorrow=true
+               testWhileIdle=true
+               testOnReturn=true
+               validationQuery="SELECT 1"
+            }
         }
     }
     test {

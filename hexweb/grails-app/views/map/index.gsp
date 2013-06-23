@@ -12,7 +12,9 @@
 						 name: "${mapInfo.name}",
 						 title: "${mapInfo.title}",
 						 width: ${mapInfo.width},
-						 height: ${mapInfo.height} }; 
+						 height: ${mapInfo.height},
+						 oob: ${mapInfo.oob },
+						 background: ${mapInfo.background } }; 
 			
 	
 			var		imagesToLoad = 0;

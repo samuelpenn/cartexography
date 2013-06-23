@@ -108,6 +108,10 @@ function drawHexGrid(x, y) {
 	var tileWidth = VIEW.tileWidth;
 	var tileHeight = VIEW.tileHeight;
 	var halfOffset = VIEW.halfOffset
+	
+	if (MAP.map[y][x] == MAP.info.oob) {
+		return;
+	}
 
 	var px = x * tileWidth + 8;
 	var py = y * tileHeight + (x%2 * halfOffset) + 8;

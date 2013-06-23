@@ -155,6 +155,11 @@ class MapService {
 	def fillBlock(MapInfo info, int x, int y) {
 		// Get current value of parent.
 		Hex 		hex = getHex(info, x, y)
+		if (hex == null) {
+			hex = new Hex()
+			hex.terrainId = info.background
+			hex.areaId = 0
+		}
 		boolean[][] map = new boolean[10][10]
 
 		sessionFactory.currentSession.doWork(new Work() {
