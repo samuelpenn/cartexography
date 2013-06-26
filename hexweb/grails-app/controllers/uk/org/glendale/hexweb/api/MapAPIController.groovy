@@ -28,6 +28,7 @@ class MapAPIController {
 	def terrainService
 	def thingService
 	def scaleService
+	def textureService
 	
 	/**
 	 * Returns information about this map. Includes the map metadata, list of
@@ -628,5 +629,13 @@ class MapAPIController {
 		out.write(data)
 		out.close()
 		return null
+	}
+	
+	def texture(String id) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		
+		textureService.getTexture(info, 2048)
+		
+		render "Done"
 	}
 }

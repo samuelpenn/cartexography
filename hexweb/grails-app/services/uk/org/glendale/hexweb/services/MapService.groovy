@@ -69,6 +69,60 @@ class MapService {
 		});
 	}
 	
+	/**
+	 * Gets a row of data from a map. The row may be missing data, and OOB tiles may
+	 * not be set correctly. Only gets terrain data.
+	 * 
+	 * @param info	Map to get data from.
+	 * @param y		Y coordinate of row of data.
+	 * @return		Array of terrain ids.
+	 */
+	private int[] getRawMapRow(MapInfo info, y) {
+		int[]	data = new int[info.width]
+		
+		List list = new ArrayList()
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("select x, terrain_id from map where mapinfo_id=%d and y = %d order by x",
+										   info.id, y)
+				Statement stmnt = connection.prepareStatement(sql)
+				ResultSet rs = stmnt.executeQuery(sql)
+				while (rs.next()) {
+					data[rs.getInt(1)] = rs.getInt(2)
+				}
+				rs.close()
+			}
+		})
+		return data
+	}
+	
+	/**
+	 * Get a row of data for a map. The row is complete, so any sparse data has been
+	 * filled in, and OOB tiles have been correctly set. Only terrain data is return.
+	 * 
+	 * Data is returned as an array of terrain ids.
+	 */
+	def getMapRow(MapInfo info, int y) {
+		int[]	parent = null
+		int[]	data = getRawMapRow(info, y)
+		if (y%10 == 0) {
+			parent = data
+		} else {
+			parent = getRawMapRow(info, y - y%10)
+		}
+		for (int x=0; x < info.width; x++) {
+			if (isOut(info, x, y)) {
+				data[x] = info.oob
+			} else if (data[x] == 0 && parent[x] != 0) {
+				data[x] = parent[x]
+			} else if (data[x] == 0) {
+				data[x] = info.background
+			}
+		}
+		
+		return data
+	}
+	
 	def getMapData(MapInfo info, int x, int y, int w, int h, int resolution) {
 		List list = null
 		if (resolution < 2) {

@@ -23,6 +23,8 @@ class TextureService {
 	static final int	ROW_HEIGHT = 12
 	static final int	ROW_OFFSET = 6
 	
+	def mapService
+	
 	/**
 	 * Return a stretched rectangular image of the given pixel width.
 	 * 
@@ -31,8 +33,20 @@ class TextureService {
 	 *   Need to fill in missing tiles, accounting for the OOB areas.
 	 */
 	def getTexture(MapInfo info, int width) {
-		SimpleImage image = new SimpleImage(width, width / 2, "#000000")
-		
+		int			height = width / 2
+		SimpleImage image = new SimpleImage(width, height, "#000000")
+		int			columns = width / COLUMN_WIDTH
+		int			rows = height / ROW_HEIGHT
+
+		for (int yy=0; yy < rows; yy++) {
+			int  y = Math.floor(yy * (info.height / rows))
+			println "${yy}: ${y}"
+			int[] data = mapService.getMapRow(info, y)
+			
+			for (int xx=0; xx < columns; xx++) {
+				
+			}
+		}
 		
 		
 		return image

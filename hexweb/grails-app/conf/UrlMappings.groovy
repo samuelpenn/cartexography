@@ -105,5 +105,10 @@ class UrlMappings {
 			controller = "mapAPI"
 			action = "thumb"
 		}
+
+		"/api/map/$id/texture" {
+			controller = "mapAPI"
+			action = "texture"
+		}
 	}
 }
