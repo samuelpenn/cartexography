@@ -113,8 +113,8 @@ class MapService {
 		for (int x=0; x < info.width; x++) {
 			if (isOut(info, x, y)) {
 				data[x] = info.oob
-			} else if (data[x] == 0 && parent[x] != 0) {
-				data[x] = parent[x]
+			} else if (data[x] == 0 && parent[x - x%10] != 0) {
+				data[x] = parent[x - x%10]
 			} else if (data[x] == 0) {
 				data[x] = info.background
 			}

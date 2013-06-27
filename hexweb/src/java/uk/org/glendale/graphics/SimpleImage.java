@@ -125,7 +125,7 @@ public class SimpleImage implements ImageObserver {
 		return image;
 	}
 
-	public Image createImage(int width, int height, URL url)
+	public static Image createImage(int width, int height, URL url)
 			throws MalformedURLException {
 		Image image = null;
 
