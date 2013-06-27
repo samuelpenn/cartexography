@@ -33,6 +33,10 @@ class TerrainService {
 		}
 		return Terrain.findByName(name)
 	}
+	
+	def getTerrainByNameOrId(MapInfo info, int id) {
+		return getTerrainByNameOrId(info, "${id}")
+	}
 
 	def getTerrainByNameOrId(MapInfo info, String name) {
 		if (name == null) {

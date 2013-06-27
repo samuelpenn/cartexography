@@ -24,6 +24,7 @@ class TextureService {
 	static final int	ROW_OFFSET = 6
 	
 	def mapService
+	def terrainService
 	
 	/**
 	 * Return a stretched rectangular image of the given pixel width.
@@ -37,6 +38,8 @@ class TextureService {
 		SimpleImage image = new SimpleImage(width, height, "#000000")
 		int			columns = width / COLUMN_WIDTH
 		int			rows = height / ROW_HEIGHT
+		
+		Map			terrain = [:]
 
 		for (int yy=0; yy < rows; yy++) {
 			int  y = Math.floor(yy * (info.height / rows))
@@ -44,7 +47,17 @@ class TextureService {
 			int[] data = mapService.getMapRow(info, y)
 			
 			for (int xx=0; xx < columns; xx++) {
-				
+				int x = Math.floor(xx * (info.width / columns))
+				int t = data[x]
+
+				String colour = terrain.get(t)
+				if (colour == null) {
+					colour = terrainService.getTerrainByNameOrId(info, t).colour
+					terrain.put(t,  colour)
+				}
+				int px = xx * COLUMN_WIDTH
+				int py = yy * ROW_HEIGHT
+				image.rectangleFill(px, py, COLUMN_WIDTH, ROW_HEIGHT, colour)
 			}
 		}
 		

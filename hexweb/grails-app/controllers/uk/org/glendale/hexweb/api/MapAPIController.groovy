@@ -634,8 +634,15 @@ class MapAPIController {
 	def texture(String id) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		textureService.getTexture(info, 2048)
+		SimpleImage image = textureService.getTexture(info, 1024)
 		
-		render "Done"
+		byte[] data = image.save().toByteArray()
+		
+		response.setContentType("image/jpeg")
+		response.setContentLength(data.length)
+		OutputStream	out = response.getOutputStream();
+		out.write(data)
+		out.close()
+		return null
 	}
 }
