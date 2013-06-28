@@ -645,4 +645,20 @@ class MapAPIController {
 		out.close()
 		return null
 	}
+	
+	def hex (int size) {
+		SimpleImage image = new SimpleImage(512, 512, "#000000")
+		
+		image.hex(10, 10, size, "#ffffff")
+		
+		byte[] data = image.save().toByteArray()
+		
+		response.setContentType("image/jpeg")
+		response.setContentLength(data.length)
+		OutputStream	out = response.getOutputStream();
+		out.write(data)
+		out.close()
+		return null
+
+	}
 }

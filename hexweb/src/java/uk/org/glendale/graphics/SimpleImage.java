@@ -274,6 +274,40 @@ public class SimpleImage implements ImageObserver {
 		// XXX: Bug! The radius is implemented as a diameter!
 		g.fillOval(x - radius / 2, y - radius / 2, radius, radius);
 	}
+	
+	public void hex(int x, int y, int r, String colour) {
+		Graphics2D g = (Graphics2D) image.getGraphics();
+		g.setColor(getColour(colour));
+		
+		double ROOT3 = Math.sqrt(3);
+		
+		int[]	xp = new int[6];
+		int[]	yp = new int[6];
+		
+		int h = (int)(r * ROOT3 / 2.0);
+		int	o = r / 2;
+		
+		xp[0] = x + o;		// Done
+		yp[0] = y;			// Done
+		
+		xp[1] = x + o + r;	// Done
+		yp[1] = y;			// Done
+		
+		xp[2] = x + r * 2; 	// Done
+		yp[2] = y + h;		// Done
+		
+		xp[3] = x + o + r;	// Done
+		yp[3] = y + h * 2;	// Done
+		
+		xp[4] = x + o;
+		yp[4] = y + h * 2;	// Done
+		
+		xp[5] = x;
+		yp[5] = y + h;
+		
+		g.fillPolygon(xp, yp, 6);
+
+	}
 
 	public void line(double x0, double y0, double x1, double y1) {
 		line((int) x0, (int) y0, (int) x1, (int) y1, "#000000", 0f);

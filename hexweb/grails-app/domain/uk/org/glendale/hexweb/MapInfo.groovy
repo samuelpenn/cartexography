@@ -20,6 +20,7 @@ package uk.org.glendale.hexweb
 class MapInfo {
 	String		name		// Unique name for this map. Expected to be [a-z][a-z0-9_]*
 	String		title   	// Descriptive name for this map.
+	String		style		// Style of the icons.
 	int			width   	// Width, in hexes.
 	int			height  	// Height, in hexes.
 	int			scale   	// Width of each hex, in metres.

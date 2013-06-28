@@ -131,7 +131,7 @@ function isIn(x, y) {
 	if (y < 0 || y >= VIEW.height) {
 		return false;
 	}
-	if (MAP.bounds != null) {
+	if (MAP.world && MAP.bounds != null) {
 		if (y + VIEW.y < MAP.bounds[x].min || y + VIEW.y > MAP.bounds[x].max) {
 			return false;
 		}

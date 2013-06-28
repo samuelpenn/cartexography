@@ -6,7 +6,6 @@
 		<g:javascript src="editor.js"/>
 		
 		<g:javascript>
-			var		BASE_PATH = "/hexweb/images/style/standard/";
 			
 			MAP.info = { id: ${mapInfo.id}, 
 						 name: "${mapInfo.name}",
@@ -14,10 +13,13 @@
 						 width: ${mapInfo.width},
 						 height: ${mapInfo.height},
 						 oob: ${mapInfo.oob },
-						 background: ${mapInfo.background } }; 
+						 background: ${mapInfo.background },
+						 style: "${mapInfo.style }",
+						 world: ${mapInfo.world } }; 
 			
 	
 			var		imagesToLoad = 0;
+			var		BASE_PATH = "/hexweb/images/style/"+MAP.info.style+"/";
 
 
 			window.onload = function() {
@@ -46,11 +48,13 @@
 							VIEW.terrainBrush = d.id;
 						}
 						
-						var h = "<li id='t"+d.id+"' onclick='selectTerrain("+d.id+")'>";
-						h += "<img src='"+BASE_PATH + "terrain/" + d.name +".png'/>";
-						h += d.title;
-						h +="</li>";
-						$("#terrainPalette").append(h);
+						if (d.id > 2) {
+							var h = "<li id='t"+d.id+"' onclick='selectTerrain("+d.id+")'>";
+							h += "<img src='"+BASE_PATH + "terrain/" + d.name +".png'/>";
+							h += d.title;
+							h +="</li>";
+							$("#terrainPalette").append(h);
+						}
 					}
 					selectTerrain(VIEW.terrainBrush);
 					
