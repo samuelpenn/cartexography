@@ -42,11 +42,13 @@ class TextureService {
 		int			rows = height / ROW_HEIGHT
 		
 		Map terrain = [:]
-		
+		File f = new File(".")
+
 		// Load all the images that we might need.
 		Terrain.findAll().each { t ->
 			try {
-				URL 	u = new URL("file:/home/sam/src/hexweb/hexweb/web-app/images/style/standard/terrain/"+t.name+".png")
+				//URL 	u = new URL("file:/home/sam/src/hexweb/hexweb/web-app/images/style/standard/terrain/"+t.name+".png")
+				URL 	u = new URL("file:web-app/images/style/standard/terrain/"+t.name+".png")
 				Image 	i = SimpleImage.createImage(TILE_WIDTH, TILE_HEIGHT, u)
 				if (i != null) {
 					int	id = t.id
