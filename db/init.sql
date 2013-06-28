@@ -1,29 +1,45 @@
 
 
-create table mapinfo (id int not null auto_increment, 
-        name varchar(16) not null, 
-        title varchar(256) not null, 
-        width int, 
-        height int, 
+create table mapinfo (id int not null auto_increment,
+        name varchar(16) not null,
+        title varchar(256) not null,
+        style varchar(16) not null,
+        width int,
+        height int,
         world smallint,
-	scale int,
-	template int,
+        scale int,
+        background int,
+        oob int,
+        template int,
         version int,
         primary key (id));
 
-insert into mapinfo values(0, 'test', 'Test Map', 320, 400, false, 5000, 0, 0);
+insert into mapinfo values(0, 'base', 'Base', 'simple', 32, 40, false, 1000, 3, 2, 0, 0);
+insert into mapinfo values(0, 'simple', 'Simple Style', 'simple', 320, 400, false, 5000, 3, 2, 1, 0);
+insert into mapinfo values(0, 'standard', 'Standard Style', 'standard', 320, 400, false, 5000, 3, 2, 1, 0);
 
-create table terrain(id int not null auto_increment, 
-	mapinfo_id int,
-        name varchar(32), 
-        title varchar(64), 
-        water smallint, 
-	colour varchar(8),
+create table terrain(id int not null auto_increment,
+        mapinfo_id int,
+        name varchar(32),
+        title varchar(64),
+        water smallint,
+        colour varchar(8),
         version int,
         primary key(id));
 
+-- Base tile types
 insert into terrain values(0, 1, 'unknown', 'Unknown', false, '#000000', 0);
 insert into terrain values(0, 1, 'oob', 'oob', false, '#000000', 0);
+insert into terrain values(0, 1, 'sea', 'Sea', true, '#a4f8ff', 0);
+
+-- Simple tiles
+insert into terrain values(0, 2, 'grass', 'Grassland', true, '#79ef22', 0);
+insert into terrain values(0, 2, 'shrubland', 'Shrubland', true, '#79ef22', 0);
+insert into terrain values(0, 2, 'broadleaf_woods', 'Woods', true, '#59cf02', 0);
+insert into terrain values(0, 2, 'broadleaf_forest', 'Forest', true, '#39af02', 0);
+insert into terrain values(0, 2, 'hills', 'Hills', true, '#39af02', 0);
+
+
 insert into terrain values(0, 1, 'ocean', 'Ocean', true, '#a7ccff', 0);
 insert into terrain values(0, 1, 'sea', 'Sea', true, '#d2e5ff', 0);
 insert into terrain values(0, 1, 'grass', 'Grassland', false, '#a1ea84', 0);
