@@ -5,7 +5,11 @@ then
 	echo "No such directory"
 	exit 2
 fi
-cd $1.xcf/terrain
+
+cd $1.xcf
+for d in *
+do
+cd $d
 
 gimp -n -i -b - <<EOF
 (let* ( (file's (cadr (file-glob "*.xcf" 1))) (filename "") (image 0) (layer 0) )
@@ -20,7 +24,7 @@ gimp -n -i -b - <<EOF
   (gimp-quit 0)
   )
 EOF
-
-cd ../..
-mkdir -p $1/terrain
-mv $1.xcf/terrain/*png $1/terrain
+mkdir -p ../../$1/$d
+mv *.png ../../$1/$d
+cd ..
+done
