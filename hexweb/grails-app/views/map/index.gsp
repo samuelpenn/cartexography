@@ -59,15 +59,10 @@
 						t.image.src = BASE_PATH + "things/" + t.name + ".png";
 						t.image.onload = function() {
 							imagesToLoad--;
-						}
-						
-						var h = "<li id='th"+t.id+"' onclick='selectThing("+t.id+")'>";
-						h += "<img src='"+BASE_PATH + "things/" + t.name +".png'/>";
-						h += t.title;
-						h +="</li>";
-						$("#thingPalette").append(h);
-						
+						}						
 					}
+					var url = VIEW.imageBase + "/things/" + MAP.things[1].name + ".png";
+					$("#thingMenu").attr("src", url);
 					
 				});
 
@@ -210,10 +205,8 @@
 				<br/>
 				<br/>
 				<img class="menu" id="terrainMenu" onclick="openTerrainMenu()"/>
-			</div>
-			<div id="thingPanel">
-				<ul id="thingPalette" class="palette">
-				</ul>
+				<br/>
+				<img class="menu" id="thingMenu" onclick="openThingMenu()"/>
 			</div>
 			<div id="debug" style="width: 200px"/>
 		</div>

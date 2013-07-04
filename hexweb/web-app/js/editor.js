@@ -23,10 +23,7 @@ function selectTerrain(id) {
 		id = 3;
 	}
 	$("#terrainPopout").remove();
-
-	$("#t"+VIEW.terrainBrush).removeClass("selected");
 	VIEW.terrainBrush = id;
-	$("#t"+VIEW.terrainBrush).addClass("selected");
 	
 	var url = VIEW.imageBase + "/terrain/" + MAP.images[VIEW.terrainBrush].name + ".png";
 	$("#terrainMenu").attr("src", url);
@@ -69,12 +66,45 @@ function selectThing(id) {
 	VIEW.brushMode = BRUSH_MODE.THING;
 	VIEW.editMode = EDIT_MODE.ADD;
 
-	$("#th"+VIEW.thingBrush).removeClass("selected");
+	$("#thingPopout").remove();
 	VIEW.thingBrush = id;
-	$("#th"+VIEW.thingBrush).addClass("selected");
 	
-	debug("Selected "+id);
+	var url = VIEW.imageBase + "/things/" + MAP.things[VIEW.thingBrush].name + ".png";
+	$("#thingMenu").attr("src", url);
 }
+
+function openThingMenu() {
+	var x = $("#thingMenu").position().left + 96;
+	var y = $("#thingMenu").position().top;
+	
+	if (document.getElementById("thingPopout") != null) {
+		// Toggle on/off.
+		$("#thingPopout").remove();
+		return;
+	}
+
+	$("body").append("<div id='thingPopout' class='floating'></div>");
+	$("#thingPopout").css("position", "absolute");
+	$("#thingPopout").css("left", x);
+	$("#thingPopout").css("top", y);
+	$("#thingPopout").css("width", "75%");
+	$("#thingPopout").css("height", "auto");
+	$("#thingPopout").css("border", "1px solid #999999");
+	
+	for (var id in MAP.things) {
+		var  t = MAP.things[id];
+		if (id < 3) {
+			continue;
+		}
+		var  path = VIEW.imageBase + "things/" + t.name + ".png";
+		
+		$("#thingPopout").append("<div class='tilebox' id='th_"+id+"' onclick='selectThing("+id+")'></div>");
+		
+		$("#th_"+id).append("<img src='"+path+"' height='64px'/>");
+		$("#th_"+id).append(t.title);
+	}
+}
+
 
 function unclickMap(event) {
 	VIEW.mouseDown = 0;
@@ -219,7 +249,6 @@ function findNearestPlace(x, y) {
 		if (d < minDistance) {
 			nearestPlace = p;
 			minDistance = d;
-			debug("Found " + p.id + " at " + minDistance);
 		}
 	}
 	return nearestPlace;
@@ -275,7 +304,6 @@ function drawMap(event) {
 			refreshMap();
 		} else if (place != null) {
 			// Simple click next to an existing place.
-			debug("Edit place " + place.id);
 			openEditPlaceDialog(place);
 		} else if (place == null && Math.abs(oldRecordX - VIEW.recordX) < 50 && Math.abs(oldRecordY - VIEW.recordY) < 50) {
 			// Paint a new object if the mouse hasn't moved that far.
@@ -305,7 +333,6 @@ function openEditPlaceDialog(place) {
 
 function deletePlace() {
 	var id = $("#placeId").val();
-	debug("Delete " + id);
 	$.ajax({
 		type: "DELETE",
 		url: "/hexweb/api/map/"+MAP.info.id+"/place/"+id
