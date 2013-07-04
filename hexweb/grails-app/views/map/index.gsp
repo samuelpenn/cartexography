@@ -20,6 +20,7 @@
 	
 			var		imagesToLoad = 0;
 			var		BASE_PATH = "/hexweb/images/style/"+MAP.info.style+"/";
+			VIEW.imageBase = BASE_PATH;
 
 
 			window.onload = function() {
@@ -46,15 +47,7 @@
 						}
 						if (d.name == "ocean") {
 							VIEW.terrainBrush = d.id;
-						}
-						
-						if (d.id > 2) {
-							var h = "<li id='t"+d.id+"' onclick='selectTerrain("+d.id+")'>";
-							h += "<img src='"+BASE_PATH + "terrain/" + d.name +".png'/>";
-							h += d.title;
-							h +="</li>";
-							$("#terrainPalette").append(h);
-						}
+						}						
 					}
 					selectTerrain(VIEW.terrainBrush);
 					
@@ -78,7 +71,7 @@
 					
 				});
 
-				VIEW.xMargins = 320;
+				VIEW.xMargins = 96;
 				VIEW.yMargins = 16;
 				document.getElementById("map").addEventListener("mousedown", clickMap, false);
 				document.getElementById("map").addEventListener("mouseup", unclickMap, false);
@@ -128,7 +121,7 @@
 			border-radius: 5px;
 			position: absolute;
 			top: 8px;
-			left: 320px;
+			left: 96px;
 			right: 8px;
 			bottom: 8px;
 		}
@@ -137,7 +130,7 @@
 			border: 1px solid #a0a0a0;
 			border-radius: 5px;
 			height: 1200px;
-			width: 300px;
+			width: 80px;
 			position: absolute;
 			left: 8px;
 			top: 8px;
@@ -176,6 +169,19 @@
 		.selectedButton {
 			border: 1px solid black;
 		}
+		.tilebox {
+			display: inline-block;
+			height: 72px;
+			width: 160px;
+			border-radius: 5px;
+			background-color: #eeeeee;
+			margin: 3px;
+		}
+		.menu {
+			background-image: url(${resource(dir: 'images/icons', file: 'popout.png')});
+			width: 58px;
+			padding-right: 6px;
+		}
 		
 	</style>
 	
@@ -185,30 +191,25 @@
 			<div style="padding: 3px">
 				<img src="${resource(dir: 'images/icons', file: 'up.png')}" alt="Up" onclick="moveMap(0, -1)"/>
 				<img src="${resource(dir: 'images/icons', file: 'down.png')}" alt="Down" onclick="moveMap(0, +1)"/>
-				<span style="width: 12px; display: inline-block"> </span>
-				<img id="zoomBtn0" src="${resource(dir: 'images/icons', file: 'zoom_0.png')}" alt="Large" onclick="setZoom(0)"/>
-				<img id="zoomBtn1" src="${resource(dir: 'images/icons', file: 'zoom_1.png')}" alt="Medium" onclick="setZoom(1)"/>
-				<img id="zoomBtn2" src="${resource(dir: 'images/icons', file: 'zoom_2.png')}" alt="Small" onclick="setZoom(2)"/>
-				<img id="zoomBtn3" src="${resource(dir: 'images/icons', file: 'zoom_3.png')}" alt="Tiny" onclick="setZoom(3)"/>
-				<span style="width: 12px; display: inline-block"> </span>
-				<img id="zoomBtn4" src="${resource(dir: 'images/icons', file: 'zoom_4.png')}" alt="Tiny+" onclick="setZoom(4)"/>
 				<br/>
 				<img src="${resource(dir: 'images/icons', file: 'left.png')}" alt="Left" onclick="moveMap(-1, 0)"/>
 				<img src="${resource(dir: 'images/icons', file: 'right.png')}" alt="Right" onclick="moveMap(+1, 0)"/>
-				<span style="width: 12px; display: inline-block"> </span>
+				<br />
+				<b>X: </b> <span id="x-orig-view">?</span><br/>
+				<b>Y: </b> <span id="y-orig-view">?</span><br/>
+				<img id="zoomBtn0" src="${resource(dir: 'images/icons', file: 'zoom_0.png')}" title="Large" alt="Large" onclick="setZoom(0)"/>
+				<img id="zoomBtn1" src="${resource(dir: 'images/icons', file: 'zoom_1.png')}" title="Medium" alt="Medium" onclick="setZoom(1)"/>
+				<img id="zoomBtn2" src="${resource(dir: 'images/icons', file: 'zoom_2.png')}" title="Small" alt="Small" onclick="setZoom(2)"/>
+				<img id="zoomBtn3" src="${resource(dir: 'images/icons', file: 'zoom_3.png')}" title="Tiny" alt="Tiny" onclick="setZoom(3)"/>
+				<img id="zoomBtn4" src="${resource(dir: 'images/icons', file: 'zoom_4.png')}" title="Tiny+" alt="Tiny+" onclick="setZoom(4)"/>
+				<img id="showGrid" src="${resource(dir: 'images/icons', file: 'grid.png')}" title="Grid toggle" alt="Grid toggle" onclick="toggleGrid()"/>
+				<br/>
 				<img id="brushBtn1" src="${resource(dir: 'images/icons', file: 'brush_1.png')}" title="Small Brush (1)" alt="Small (1)" onclick="setBrush(1)"/>
 				<img id="brushBtn3" src="${resource(dir: 'images/icons', file: 'brush_3.png')}" title="Medium Brush (3)" alt="Medium (3)" onclick="setBrush(3)"/>
 				<img id="brushBtn5" src="${resource(dir: 'images/icons', file: 'brush_5.png')}" title="Large Brush (5)" alt="Large (5)" onclick="setBrush(5)"/>
-				<span style="width: 12px; display: inline-block"> </span>
-				<img id="showGrid" src="${resource(dir: 'images/icons', file: 'grid.png')}" alt="Grid" onclick="toggleGrid()"/>
-			</div>
-			<div>
-				<p><b>X: </b> <span id="x-orig-view">?</span></p>
-				<p><b>Y: </b> <span id="y-orig-view">?</span></p>
-			</div>
-			<div id="terrainPanel">
-				<ul id="terrainPalette" class="palette">
-				</ul>
+				<br/>
+				<br/>
+				<img class="menu" id="terrainMenu" onclick="openTerrainMenu()"/>
 			</div>
 			<div id="thingPanel">
 				<ul id="thingPalette" class="palette">

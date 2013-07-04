@@ -18,10 +18,51 @@ function debug(msg) {
 function selectTerrain(id) {
 	VIEW.brushMode = BRUSH_MODE.TERRAIN;
 	VIEW.editMode = EDIT_MODE.PAINT;
+	
+	if (id == 0) {
+		id = 3;
+	}
+	$("#terrainPopout").remove();
 
 	$("#t"+VIEW.terrainBrush).removeClass("selected");
 	VIEW.terrainBrush = id;
 	$("#t"+VIEW.terrainBrush).addClass("selected");
+	
+	var url = VIEW.imageBase + "/terrain/" + MAP.images[VIEW.terrainBrush].name + ".png";
+	$("#terrainMenu").attr("src", url);
+}
+
+
+function openTerrainMenu() {
+	var x = $("#terrainMenu").position().left + 96;
+	var y = $("#terrainMenu").position().top;
+	
+	if (document.getElementById("terrainPopout") != null) {
+		// Toggle on/off.
+		$("#terrainPopout").remove();
+		return;
+	}
+
+	$("body").append("<div id='terrainPopout' class='floating'></div>");
+	$("#terrainPopout").css("position", "absolute");
+	$("#terrainPopout").css("left", x);
+	$("#terrainPopout").css("top", y);
+	$("#terrainPopout").css("width", "75%");
+	$("#terrainPopout").css("height", "auto");
+	$("#terrainPopout").css("border", "1px solid #999999");
+	
+	for (var id in MAP.images) {
+		var  t = MAP.images[id];
+		if (id < 3) {
+			continue;
+		}
+		var  path = VIEW.imageBase + "terrain/" + t.name + ".png";
+		
+		$("#terrainPopout").append("<div class='tilebox' id='t_"+id+"' onclick='selectTerrain("+id+")'></div>");
+		
+		$("#t_"+id).append("<img src='"+path+"' height='64px'/>");
+		$("#t_"+id).append(t.title);
+	}
 }
 
 function selectThing(id) {
