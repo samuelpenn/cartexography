@@ -8,12 +8,22 @@
  */
 package uk.org.glendale.hexweb
 
+/**
+ * Defines the type of a hex tile. Specifies the image that is used, the flat
+ * colour for large scale maps, the name and title. The order is used to sort
+ * terrain, so similar types of terrain appear together in the palates.
+ */
 class Terrain {
 	MapInfo		mapInfo
 	String		name
 	String		title
 	boolean		water
 	String		colour
+	/* Order used to group similar types. An order of zero means that
+	 * this terrain type is for display purposes only - it cannot be
+	 * drawn onto the map.
+	 */
+	int			ordering
 
     static constraints = {
     }
@@ -21,5 +31,6 @@ class Terrain {
 	static mapping = {
 		table "terrain"
 		mapInfo column: "mapinfo_id"
+		sort "ordering"
 	}
 }
