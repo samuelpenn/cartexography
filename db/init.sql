@@ -90,17 +90,17 @@ insert into terrain values(0, 1, 'jungle', 'Jungle', false, '#77FF77', 0);
 create table area (id int not null auto_increment,
         mapinfo_id int,
         name varchar(32),
-	title varchar(256),
+        title varchar(256),
         parent_id int,
         primary key(id));
 
 create table thing(id int not null auto_increment,
-	mapinfo_id int,
-	name varchar(32),
-	title varchar(64),
-	importance int,
-	version int,
-	primary key(id));
+        mapinfo_id int,
+        name varchar(32),
+        title varchar(64),
+        importance int,
+        version int,
+        primary key(id));
 
 insert into thing values(1, 1, 'village', 'Village', 1, 0);
 insert into thing values(2, 1, 'town', 'Town', 2, 0);
@@ -115,17 +115,17 @@ insert into thing values(10, 1, 'monument', 'Monument', 2, 0);
 insert into thing values(11, 1, 'label', 'Label', 3, 0);
 
 create table place(id int not null auto_increment,
-	mapinfo_id int,
-	thing_id int,
-	importance int,
-	tile_x int,
-	tile_y int,
-	sub_x int,
-	sub_y int,
-	name varchar(32),
-	title varchar(64),
-	version int,
-	primary key(id));
+        mapinfo_id int,
+        thing_id int,
+        importance int,
+        tile_x int,
+        tile_y int,
+        sub_x int,
+        sub_y int,
+        name varchar(32),
+        title varchar(64),
+        version int,
+        primary key(id));
 
 
 create table map (id bigint not null auto_increment,
@@ -134,5 +134,28 @@ create table map (id bigint not null auto_increment,
         y int,
         terrain_id int,
         primary key(id),
-	unique key (mapinfo_id, x, y));
+        unique key (mapinfo_id, x, y));
+
+
+create table path(
+        id bigint not null auto_increment,
+        mapinfo_id int,
+        name varchar(64),
+        style varchar(16),
+        thickness int,
+        version int,
+        primary key(id),
+        unique key (mapinfo_id, name));
+
+create table vertex(
+        id bigint not null auto_increment,
+        path_id bigint,
+        vertex int not null,
+        x int,
+        y int,
+        sub_x int,
+        sub_y int,
+        version int,
+        primary key (id),
+        unique key(path_id, vertex));
 
