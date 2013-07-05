@@ -14,9 +14,9 @@ create table mapinfo (id int not null auto_increment,
         version int,
         primary key (id));
 
-insert into mapinfo values(0, 'base', 'Base', 'simple', 32, 40, false, 1000, 3, 2, 0, 0);
-insert into mapinfo values(0, 'simple', 'Simple Style', 'simple', 320, 400, false, 5000, 3, 2, 1, 0);
-insert into mapinfo values(0, 'standard', 'Standard Style', 'standard', 320, 400, false, 5000, 3, 2, 1, 0);
+insert into mapinfo values(1, 'base', 'Base', 'simple', 32, 40, false, 1000, 3, 2, 0, 0);
+insert into mapinfo values(2, 'simple', 'Simple Style', 'simple', 320, 400, false, 5000, 3, 2, 1, 0);
+insert into mapinfo values(3, 'standard', 'Standard Style', 'standard', 320, 400, false, 5000, 3, 2, 1, 0);
 
 create table terrain(id int not null auto_increment,
         mapinfo_id int,
@@ -24,38 +24,50 @@ create table terrain(id int not null auto_increment,
         title varchar(64),
         water smallint,
         colour varchar(8),
+        ordering int,
         version int,
         primary key(id));
 
 -- Base tile types
-insert into terrain values(0, 1, 'unknown', 'Unknown', false, '#000000', 0);
-insert into terrain values(0, 1, 'oob', 'oob', false, '#000000', 0);
-insert into terrain values(0, 1, 'sea', 'Sea', true, '#a4f8ff', 0);
+insert into terrain values(0, 1, 'unknown', 'Unknown', false, '#000000', 0, 0);
+insert into terrain values(0, 1, 'oob', 'oob', false, '#000000', 0, 0);
+insert into terrain values(0, 1, 'sea', 'Sea', true, '#a4f8ff', 100, 0);
 
 -- Simple tiles
-insert into terrain values(0, 2, 'grass', 'Grassland', true, '#79ef22', 0);
-insert into terrain values(0, 2, 'shrubland', 'Shrubland', true, '#79ef22', 0);
-insert into terrain values(0, 2, 'broadleaf_woods', 'Woods', true, '#59cf02', 0);
-insert into terrain values(0, 2, 'broadleaf_forest', 'Forest', true, '#39af02', 0);
-insert into terrain values(0, 2, 'hills', 'Hills', true, '#39af02', 0);
+insert into terrain values(0, 2, 'grass', 'Grassland', true, '#79ef22', 200, 0);
+insert into terrain values(0, 2, 'hills', 'Hills', true, '#39af02', 210, 0);
+insert into terrain values(0, 2, 'mountains', 'Mountains', true, '#ae9334', 215, 0);
+insert into terrain values(0, 2, 'shrubland', 'Heath', true, '#79ef22', 300, 0);
+insert into terrain values(0, 2, 'broadleaf_woods', 'Woods', true, '#59cf02', 305, 0);
+insert into terrain values(0, 2, 'broadleaf_forest', 'Forest', true, '#39af02', 310, 0);
+insert into terrain values(0, 2, 'broadleaf_woods_hills', 'Wooded Hills', true, '#59cf02', 315, 0);
+insert into terrain values(0, 2, 'broadleaf_forest_hills', 'Forested Hills', true, '#39af02', 320, 0);
+insert into terrain values(0, 2, 'marsh', 'Marsh', true, '#39af02', 400, 0);
+insert into terrain values(0, 2, 'swamp', 'Swamp', true, '#39af02', 405, 0);
+
+-- Standard tiles
+insert into terrain values(0, 3, 'ocean', 'Ocean', true, '#a7ccff', 105, 0);
+
+insert into terrain values(0, 3, 'grass', 'Grassland', true, '#79ef22', 200, 0);
+insert into terrain values(0, 3, 'cropland', 'Cropland', false, '#88FF88', 205, 0);
+insert into terrain values(0, 3, 'hills', 'Hills', true, '#39af02', 210, 0);
+insert into terrain values(0, 3, 'mountains', 'Mountains', true, '#ae9334', 215, 0);
+
+insert into terrain values(0, 3, 'shrubland', 'Heath', true, '#79ef22', 300, 0);
+insert into terrain values(0, 3, 'shrubland_hills', 'Moors', true, '#79ef22', 301, 0);
+insert into terrain values(0, 3, 'broadleaf_woods', 'Broadleaf Woods', true, '#59cf02', 305, 0);
+insert into terrain values(0, 3, 'broadleaf_forest', 'Broadleaf Forest', true, '#39af02', 310, 0);
+insert into terrain values(0, 3, 'broadleaf_woods_hills', 'Broadleaf Wooded Hills', true, '#59cf02', 315, 0);
+insert into terrain values(0, 3, 'broadleaf_forest_hills', 'Broadleaf Forested Hills', true, '#39af02', 320, 0);
+
+insert into terrain values(0, 3, 'marsh', 'Marsh', true, '#39af02', 400, 0);
+insert into terrain values(0, 3, 'swamp', 'Swamp', true, '#39af02', 405, 0);
 
 
-insert into terrain values(0, 1, 'ocean', 'Ocean', true, '#a7ccff', 0);
-insert into terrain values(0, 1, 'sea', 'Sea', true, '#d2e5ff', 0);
-insert into terrain values(0, 1, 'grass', 'Grassland', false, '#a1ea84', 0);
-insert into terrain values(0, 1, 'hills', 'Hills', false, '#a1ea84', 0);
-insert into terrain values(0, 1, 'broadleaf_woods', 'Woodland', false, '#6bd633', 0);
-insert into terrain values(0, 1, 'broadleaf_forest', 'Broadleaf Forest', false, '#54b024', 0);
-insert into terrain values(0, 1, 'cropland', 'Cropland', false, '#88FF88', 0);
-insert into terrain values(0, 1, 'heath', 'Heath', false, '#a1ea84', 0);
-insert into terrain values(0, 1, 'moors', 'Moors', false, '#a1ea84', 0);
-insert into terrain values(0, 1, 'dense_forest', 'Dense Forest', false, '#227722', 0);
 insert into terrain values(0, 1, 'foothills', 'Foothills', false, '#a0a548', 0);
 insert into terrain values(0, 1, 'mountains', 'Mountains', false, '#a0a548', 0);
 insert into terrain values(0, 1, 'montane_forest', 'Montane Forest', false, '#a0a548', 0);
 insert into terrain values(0, 1, 'mountains_high', 'High Mountains', false, '#909538', 0);
-insert into terrain values(0, 1, 'marsh', 'Mashes', false, '#a1ea84', 0);
-insert into terrain values(0, 1, 'swamp', 'Swamp', false, '#a1ea84', 0);
 insert into terrain values(0, 1, 'tundra', 'Tundra', false, '#77FF77', 0);
 insert into terrain values(0, 1, 'snow', 'Snow', false, '#EEEEEE', 0);
 insert into terrain values(0, 1, 'ice', 'Ice', true, '#F0F0F0', 0);
