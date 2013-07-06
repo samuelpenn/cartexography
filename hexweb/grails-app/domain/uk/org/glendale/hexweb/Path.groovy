@@ -22,6 +22,6 @@ class Path {
 	
     static mapping = {
 		table "path"
-		mapInfo column: mapinfo_id
+		mapInfo column: "mapinfo_id"
     }
 }
