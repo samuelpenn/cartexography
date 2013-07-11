@@ -14,5 +14,5 @@ package uk.org.glendale.hexweb;
 public enum PathType {
 	ROAD,
 	RIVER,
-	COASTLINE
+	COAST
 }

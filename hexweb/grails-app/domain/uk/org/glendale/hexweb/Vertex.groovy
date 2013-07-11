@@ -8,6 +8,9 @@
  */
 package uk.org.glendale.hexweb
 
+/**
+ * A Vertex is a point on a path. It is positioned in 100ths of a hex tile.
+ */
 class Vertex {
 	int		vertex
 	int		x

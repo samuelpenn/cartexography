@@ -31,10 +31,12 @@
 					MAP.info = data.info;
 					MAP.images = {}; // Hex images
 					MAP.things = {}; // Thing data
+					MAP.paths = {}; // Path data
 					
 					document.title = MAP.info.title;
 					
 					imagesToLoad = 0;
+					// Build the terrain palette.
 					for (var i=0; i < data.terrain.length; i++) {
 						imagesToLoad++;
 						MAP.images[data.terrain[i].id] = data.terrain[i];
@@ -51,6 +53,7 @@
 					}
 					selectTerrain(VIEW.terrainBrush);
 					
+					// Build the thing palette.
 					for (var i=0; i < data.things.length; i++) {
 						imagesToLoad++;
 						var t = data.things[i];
@@ -172,6 +175,12 @@
 			background-color: #eeeeee;
 			margin: 3px;
 		}
+		.tilebox img {
+			float: left;
+		}
+		.tilebox .text {
+			float: right;
+		}
 		.menu {
 			background-image: url(${resource(dir: 'images/icons', file: 'popout.png')});
 			width: 58px;
@@ -207,6 +216,10 @@
 				<img class="menu" id="terrainMenu" onclick="openTerrainMenu()"/>
 				<br/>
 				<img class="menu" id="thingMenu" onclick="openThingMenu()"/>
+				<br/>
+				<img id="pathStyleROAD" src="${resource(dir: 'images/icons', file: 'path_road.png')}" onclick="setPathStyle(BRUSH_STYLE.ROAD)"/>
+				<img id="pathStyleRIVER" src="${resource(dir: 'images/icons', file: 'path_river.png')}" onclick="setPathStyle(BRUSH_STYLE.RIVER)"/>
+				<img id="pathStyleCOAST" src="${resource(dir: 'images/icons', file: 'path_coast.png')}" onclick="setPathStyle(BRUSH_STYLE.COAST)"/>
 			</div>
 			<div id="debug" style="width: 200px"/>
 		</div>

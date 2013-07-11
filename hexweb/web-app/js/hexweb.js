@@ -13,6 +13,12 @@
 var BRUSH_MODE = new Object();
 BRUSH_MODE.TERRAIN = "TERRAIN";
 BRUSH_MODE.THING = "THING";
+BRUSH_MODE.PATH = "PATH";
+
+var BRUSH_STYLE = new Object();
+BRUSH_STYLE.ROAD = "ROAD";
+BRUSH_STYLE.RIVER = "RIVER";
+BRUSH_STYLE.COAST = "COAST";
 
 var BRUSH_SIZE = new Object();
 BRUSH_SIZE.SMALL = 1;
@@ -21,7 +27,8 @@ BRUSH_SIZE.LARGE = 5;
 
 var EDIT_MODE = new Object();
 EDIT_MODE.PAINT = "PAINT";    // Set target
-EDIT_MODE.ADD = "ADD";        // Add new items
+EDIT_MODE.NEW = "NEW";        // Create new item
+EDIT_MODE.ADD = "ADD";        // Append to existing item
 EDIT_MODE.SELECT = "SELECT";  // Select existing items
 EDIT_MODE.EDIT = "EDIT";	  // Edit existing items
 EDIT_MODE.DELETE = "DELETE";  // Delete existing items
@@ -34,6 +41,7 @@ var VIEW = { width: 32, height: 20, x: 0, y: 0, context: null } 	// View port co
 VIEW.brushMode = BRUSH_MODE.TERRAIN;
 VIEW.brushSize = BRUSH_SIZE.SMALL;
 VIEW.editMode = EDIT_MODE.PAINT;
+VIEW.brushStyle = BRUSH_STYLE.RIVER;
 
 VIEW.terrainBrush = 0;
 VIEW.thingBrush = 0;

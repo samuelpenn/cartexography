@@ -22,6 +22,7 @@ function selectTerrain(id) {
 	if (id == 0) {
 		id = 3;
 	}
+	$("#pathStyle"+VIEW.brushStyle).removeClass("selectedButton");
 	$("#terrainPopout").remove();
 	VIEW.terrainBrush = id;
 	
@@ -34,6 +35,7 @@ function openTerrainMenu() {
 	var x = $("#terrainMenu").position().left + 96;
 	var y = $("#terrainMenu").position().top;
 	
+	$("#thingPopout").remove();
 	if (document.getElementById("terrainPopout") != null) {
 		// Toggle on/off.
 		$("#terrainPopout").remove();
@@ -66,6 +68,7 @@ function selectThing(id) {
 	VIEW.brushMode = BRUSH_MODE.THING;
 	VIEW.editMode = EDIT_MODE.ADD;
 
+	$("#pathStyle"+VIEW.brushStyle).removeClass("selectedButton");
 	$("#thingPopout").remove();
 	VIEW.thingBrush = id;
 	
@@ -77,6 +80,7 @@ function openThingMenu() {
 	var x = $("#thingMenu").position().left + 96;
 	var y = $("#thingMenu").position().top;
 	
+	$("#terrainPopout").remove();
 	if (document.getElementById("thingPopout") != null) {
 		// Toggle on/off.
 		$("#thingPopout").remove();
@@ -105,6 +109,17 @@ function openThingMenu() {
 	}
 }
 
+function setPathStyle(style) {
+	VIEW.brushMode = BRUSH_MODE.PATH
+	VIEW.editMode = EDIT_MODE.NEW;
+
+	$("#terrainPopout").remove();
+	$("#thingPopout").remove();
+	
+	$("#pathStyle"+VIEW.brushStyle).removeClass("selectedButton");
+	VIEW.brushStyle = style;
+	$("#pathStyle"+VIEW.brushStyle).addClass("selectedButton");
+}
 
 function unclickMap(event) {
 	VIEW.mouseDown = 0;
@@ -254,15 +269,76 @@ function findNearestPlace(x, y) {
 	return nearestPlace;
 }
 
+function paintPath(event, px, py) {
+	var x = Math.floor(px / VIEW.currentScale.column);
+	var sx = Math.floor(((px - x * VIEW.currentScale.column) * 100.0) / VIEW.currentScale.column);
+	if (x %2 == 1) {
+		py -= VIEW.currentScale.row / 2;
+	} 
+	var y = Math.floor(py / VIEW.currentScale.row);
+	var sy = Math.floor(((py - y * VIEW.currentScale.row) * 100.0) / VIEW.currentScale.row);
+
+	if (VIEW.editMode == EDIT_MODE.NEW) {
+		// Create a new path.
+		var path = new Object();
+		path.name = "untitled";
+		path.type = VIEW.brushStyle;
+		path.thickness = VIEW.brushSize;
+		path.vertex = new Array();
+		var v = new Object();
+		v.vertex = 0;
+		v.x = x;
+		v.y = y;
+		v.subX = sx;
+		v.subY = sy;
+		path.vertex.push(v);
+		// Finally, change to append mode.
+		VIEW.editMode = EDIT_MODE.ADD;
+		VIEW.currentPath = path;
+	} else if (VIEW.editMode == EDIT_MODE.ADD) {
+		var path = VIEW.currentPath;
+		var v = new Object();
+		v.vertex = path.vertex.length;
+		v.x = x;
+		v.y = y;
+		v.subX = sx;
+		v.subY = sy;
+		path.vertex.push(v);
+		drawPath(path);
+	}
+}
+
+function drawPath(path) {
+	VIEW.context.strokeStyle = "#000099";
+	VIEW.context.lineWidth = 1;
+	VIEW.context.beginPath();
+	var v = path.vertex[0];
+	VIEW.context.moveTo(v.x * 100, v.y * 100);
+	for (var i = 1; i < path.vertex.length; i++) {
+		var v = path.vertex[i];
+		VIEW.context.lineTo(v.x * 100, v.y * 100);
+	}
+	VIEW.context.stroke();
+	
+}
+
+/**
+ * Called when the user draws on the map.
+ */
 function drawMap(event) {
-	if (VIEW.mouseDown == 0 && VIEW.brushMode == BRUSH_MODE.TERRAIN) {
-		return;
+	if (VIEW.mouseDown == 0) {
+		if (VIEW.brushMode == BRUSH_MODE.TERRAIN || VIEW.brushMode == BRUSH_MODE.PATH) {
+			return;
+		}
 	}
 	var canoffset = $("#map").offset();
 	var px = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left) - 8;
 	var py = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1 - 8;
 	
-	if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
+	if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.mouseDown == 1) {
+		paintPath(event, px, py);
+		VIEW.mouseDown == 0;
+	} else if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
 		// Paint a terrain hex whilst the mouse is held down.
 		paintTerrain(event, px, py)
 	} else if (VIEW.brushMode == BRUSH_MODE.THING && VIEW.mouseDown == 1) {
