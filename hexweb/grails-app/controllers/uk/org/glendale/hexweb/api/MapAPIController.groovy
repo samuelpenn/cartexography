@@ -12,6 +12,7 @@ import grails.converters.JSON
 import uk.org.glendale.graphics.SimpleImage
 import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.MapInfo
+import uk.org.glendale.hexweb.Path
 import uk.org.glendale.hexweb.Place
 import uk.org.glendale.hexweb.Terrain
 import uk.org.glendale.hexweb.Thing
@@ -21,6 +22,7 @@ import uk.org.glendale.hexweb.Area
 import groovy.sql.Sql
 import java.awt.Image
 import javax.servlet.ServletOutputStream
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 class MapAPIController {
 	/** Common services for maps */
@@ -660,5 +662,19 @@ class MapAPIController {
 		out.close()
 		return null
 
+	}
+	
+	/**
+	 * Create a new path.
+	 */
+	def createPath(String id) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
+
+		def data = request.JSON
+		Path path = new Path(data)
+		println path.name + ":" + path.thickness + ":" + path.vertex.size()
+		println data["vertex"].length
+
+		render id
 	}
 }

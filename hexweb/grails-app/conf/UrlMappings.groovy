@@ -110,5 +110,12 @@ class UrlMappings {
 			controller = "mapAPI"
 			action = "texture"
 		}
+		
+		"/api/map/$id/path" {
+			controller = "mapAPI"
+			action = [ POST: "createPath", PUT: "updatePath" ]
+			parseRequest: true
+		}
+			
 	}
 }

@@ -308,6 +308,19 @@ function paintPath(event, px, py) {
 		path.vertex.push(v);
 		drawPath(path);
 	}
+	createPath(path);
+}
+
+function createPath(path) {
+	$.ajax({
+		contentType: 'application/json',
+		dataType: 'json',
+		type: "POST",
+		url: "/hexweb/api/map/"+MAP.info.id+"/path",
+		data: JSON.stringify(path),
+		processData: false
+	});
+
 }
 
 function getVertexX(vertex) {
@@ -322,6 +335,9 @@ function getVertexY(vertex) {
 	return y;
 }
 
+/**
+ * Display a given path on the map.
+ */
 function drawPath(path) {
 	VIEW.context.strokeStyle = "#a4f8ff";
 	VIEW.context.lineWidth = 5;
