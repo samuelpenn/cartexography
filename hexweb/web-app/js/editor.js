@@ -278,6 +278,8 @@ function paintPath(event, px, py) {
 	var y = Math.floor(py / VIEW.currentScale.row);
 	var sy = Math.floor(((py - y * VIEW.currentScale.row) * 100.0) / VIEW.currentScale.row);
 
+	console.log(""+x+","+y);
+	
 	if (VIEW.editMode == EDIT_MODE.NEW) {
 		// Create a new path.
 		var path = new Object();
@@ -308,25 +310,40 @@ function paintPath(event, px, py) {
 	}
 }
 
+function getVertexX(vertex) {
+	return vertex.x * VIEW.currentScale.column + (vertex.subX * VIEW.currentScale.column)/100 + 8;
+}
+
+function getVertexY(vertex) {
+	var y = vertex.y * VIEW.currentScale.row + (vertex.subY * VIEW.currentScale.row)/100 + 8;
+	if (vertex.x%2 == 1) {
+		y += VIEW.currentScale.row / 2;
+	}
+	return y;
+}
+
 function drawPath(path) {
-	VIEW.context.strokeStyle = "#000099";
-	VIEW.context.lineWidth = 1;
+	VIEW.context.strokeStyle = "#a4f8ff";
+	VIEW.context.lineWidth = 5;
 	VIEW.context.beginPath();
 	var v = path.vertex[0];
-	VIEW.context.moveTo(v.x * 100, v.y * 100);
+	VIEW.context.moveTo(getVertexX(v), getVertexY(v));
 	for (var i = 1; i < path.vertex.length; i++) {
 		var v = path.vertex[i];
-		VIEW.context.lineTo(v.x * 100, v.y * 100);
+		VIEW.context.lineTo(getVertexX(v), getVertexY(v));
 	}
 	VIEW.context.stroke();
 	
 }
+
+var mouseHasBeenUp = false;
 
 /**
  * Called when the user draws on the map.
  */
 function drawMap(event) {
 	if (VIEW.mouseDown == 0) {
+		mouseHasBeenUp = true;
 		if (VIEW.brushMode == BRUSH_MODE.TERRAIN || VIEW.brushMode == BRUSH_MODE.PATH) {
 			return;
 		}
@@ -335,9 +352,9 @@ function drawMap(event) {
 	var px = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left) - 8;
 	var py = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1 - 8;
 	
-	if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.mouseDown == 1) {
+	if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.mouseDown == 1 && mouseHasBeenUp) {
 		paintPath(event, px, py);
-		VIEW.mouseDown == 0;
+		mouseHasBeenUp = false;
 	} else if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
 		// Paint a terrain hex whilst the mouse is held down.
 		paintTerrain(event, px, py)
