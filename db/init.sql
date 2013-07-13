@@ -142,7 +142,8 @@ create table path(
         mapinfo_id int,
         name varchar(64),
         style varchar(16),
-        thickness int,
+        thickness1 int,
+        thickness2 int,
         version int,
         primary key(id),
         unique key (mapinfo_id, name));

@@ -19,6 +19,7 @@ class Vertex {
 	int		subY
 	
 	static belongsTo = [path: Path]
+
     static mapping = {
 		table "vertex"
 		subX column: "sub_x"

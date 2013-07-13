@@ -15,8 +15,9 @@ package uk.org.glendale.hexweb
 class Path {
 	MapInfo		mapInfo
 	String		name
-	PathType	type
-	int			thickness
+	PathStyle	style
+	int			thickness1
+	int			thickness2
 	
 	static hasMany = [vertex:Vertex]
 	

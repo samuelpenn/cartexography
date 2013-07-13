@@ -186,7 +186,26 @@
 			width: 58px;
 			padding-right: 6px;
 		}
-		
+		#pathDialog h4 {
+			margin: 0px;
+			padding-left: 5px;
+			padding-top: 5px;
+			color: #444444;
+		}
+		#pathLength {
+			float: right;
+			padding-right: 5px;
+		}
+		.button {
+			background-color: #eeeeee;
+			text: black;
+			border: 1px solid black;
+			border-radius: 3px;
+			padding-left: 5px;
+			padding-right: 5px;
+			padding-top: 2px;
+			padding-bottom: 2px;
+		}
 	</style>
 	
 	<body>

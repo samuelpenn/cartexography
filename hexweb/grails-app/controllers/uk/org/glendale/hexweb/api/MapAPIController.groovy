@@ -17,6 +17,7 @@ import uk.org.glendale.hexweb.Place
 import uk.org.glendale.hexweb.Terrain
 import uk.org.glendale.hexweb.Thing
 import uk.org.glendale.hexweb.Area
+import uk.org.glendale.hexweb.Vertex
 
 
 import groovy.sql.Sql
@@ -31,6 +32,7 @@ class MapAPIController {
 	def thingService
 	def scaleService
 	def textureService
+	def pathService
 	
 	/**
 	 * Returns information about this map. Includes the map metadata, list of
@@ -670,11 +672,16 @@ class MapAPIController {
 	def createPath(String id) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 
+		JSON.use('deep')
 		def data = request.JSON
-		Path path = new Path(data)
-		println path.name + ":" + path.thickness + ":" + path.vertex.size()
-		println data["vertex"].length
-
-		render id
+		println data
+		Path path = pathService.jsonToPath(info, data)
+		
+		if (path.id == 0 || path.id == null) {
+			path.id = null
+			path.mapInfo = info
+			pathService.createPath(path)
+		}
+		render path as JSON
 	}
 }

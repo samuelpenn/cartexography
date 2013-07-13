@@ -11,7 +11,7 @@ package uk.org.glendale.hexweb;
 /**
  * Type of vector path. Defines the colour and other graphical stylings.
  */
-public enum PathType {
+public enum PathStyle {
 	ROAD,
 	RIVER,
 	COAST

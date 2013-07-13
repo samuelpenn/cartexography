@@ -28,6 +28,8 @@ environments {
                testOnReturn=true
                validationQuery="SELECT 1"
             }
+			show_sql = true
+			logSql = true
         }
     }
     test {

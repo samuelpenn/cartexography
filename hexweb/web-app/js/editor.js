@@ -269,6 +269,35 @@ function findNearestPlace(x, y) {
 	return nearestPlace;
 }
 
+function showPathDialog() {
+	$("body").append("<div id='pathDialog' class='floating'></div>");
+	$("#pathDialog").css("position", "absolute");
+	$("#pathDialog").css("left", 128);
+	$("#pathDialog").css("top", 32);
+	$("#pathDialog").css("width", 250);
+	$("#pathDialog").css("height", 120);
+	$("#pathDialog").css("border", "1px solid #999999");
+	
+	var type = VIEW.currentPath.type;
+	switch (type) {
+	case BRUSH_STYLE.ROAD:
+		type = "Road";
+		break;
+	case BRUSH_STYLE.RIVER:
+		type = "River";
+		break;
+	case BRUSH_STYLE.COAST:
+		type = "Coastline";
+		break;
+	}
+	
+	$("#pathDialog").append("<h4>" + type + ": " + VIEW.currentPath.name + "</h4>");
+	
+	$("#pathDialog").append("<div id='pathLength'>1</div>");
+	$("#pathDialog").append("<span class='button' onclick='saveCurrentPath()'>Save</span>");
+
+}
+
 function paintPath(event, px, py) {
 	var x = Math.floor(px / VIEW.currentScale.column);
 	var sx = Math.floor(((px - x * VIEW.currentScale.column) * 100.0) / VIEW.currentScale.column);
@@ -283,9 +312,11 @@ function paintPath(event, px, py) {
 	if (VIEW.editMode == EDIT_MODE.NEW) {
 		// Create a new path.
 		var path = new Object();
+		path.id = 0;
 		path.name = "untitled";
-		path.type = VIEW.brushStyle;
-		path.thickness = VIEW.brushSize;
+		path.style = VIEW.brushStyle;
+		path.thickness1 = VIEW.brushSize;
+		path.thickness2 = VIEW.brushSize;
 		path.vertex = new Array();
 		var v = new Object();
 		v.vertex = 0;
@@ -297,6 +328,7 @@ function paintPath(event, px, py) {
 		// Finally, change to append mode.
 		VIEW.editMode = EDIT_MODE.ADD;
 		VIEW.currentPath = path;
+		showPathDialog()
 	} else if (VIEW.editMode == EDIT_MODE.ADD) {
 		var path = VIEW.currentPath;
 		var v = new Object();
@@ -307,11 +339,14 @@ function paintPath(event, px, py) {
 		v.subY = sy;
 		path.vertex.push(v);
 		drawPath(path);
+		$("#pathLength").html(path.vertex.length);
 	}
 	createPath(path);
 }
 
-function createPath(path) {
+function saveCurrentPath() {
+	var path = VIEW.currentPath;
+
 	$.ajax({
 		contentType: 'application/json',
 		dataType: 'json',
