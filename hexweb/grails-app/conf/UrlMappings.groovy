@@ -116,6 +116,11 @@ class UrlMappings {
 			action = [ POST: "createPath", PUT: "updatePath" ]
 			parseRequest: true
 		}
+		
+		"/api/map/test" {
+			controller = "mapAPI"
+			action = "test"
+		}
 			
 	}
 }

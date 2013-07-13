@@ -356,6 +356,7 @@ function saveCurrentPath() {
 		success: function (data) {
 			VIEW.currentPath = data;
 			refreshMap();
+			data.style = data.style.name
 			console.log(data.name + ": " + data.style);
 			drawPath(VIEW.currentPath);
 		}

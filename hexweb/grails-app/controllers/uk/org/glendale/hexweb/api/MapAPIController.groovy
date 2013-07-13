@@ -676,12 +676,20 @@ class MapAPIController {
 		def data = request.JSON
 		println data
 		Path path = pathService.jsonToPath(info, data)
+		path.mapInfo = info
 		
 		if (path.id == 0 || path.id == null) {
 			path.id = null
-			path.mapInfo = info
 			pathService.createPath(path)
+		} else {
+			pathService.updatePath(path)
 		}
+		println path.style
+		
 		render path as JSON
+	}
+	
+	def test() {
+		render Path.findById(19) as JSON
 	}
 }

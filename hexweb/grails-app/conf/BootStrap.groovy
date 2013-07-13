@@ -31,13 +31,14 @@ class BootStrap {
 			def map = [:]
 			map['id'] = it.id
 			map['name'] = it.name
-			map['style'] = "" + it.style
+			map['style'] = it.style
 			map['thickness1'] = it.thickness1
 			map['thickness2'] = it.thickness2
 			map['vertex'] = it.vertex
 			
 			return map
 		}
+		
 		JSON.registerObjectMarshaller(Vertex) {
 			def map = [:]
 			map['id'] = it.id

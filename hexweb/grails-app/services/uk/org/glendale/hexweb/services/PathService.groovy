@@ -70,4 +70,22 @@ class PathService {
 		
 		println "Saved as ${path.id}"
     }
+	
+	def updatePath(Path path) {
+		println "Save path ${path.name}"
+		
+		Path	p = Path.findById(path.id)
+		p.name = path.name
+		p.thickness1 = path.thickness1
+		p.thickness2 = path.thickness2
+		p.style = path.style
+		
+		p.vertex.each { v ->
+			v.delete()
+		}
+		
+		p.vertex = path.vertex
+		p.save()
+		
+	}
 }
