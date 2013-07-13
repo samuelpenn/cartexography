@@ -341,7 +341,6 @@ function paintPath(event, px, py) {
 		drawPath(path);
 		$("#pathLength").html(path.vertex.length);
 	}
-	createPath(path);
 }
 
 function saveCurrentPath() {
@@ -353,7 +352,13 @@ function saveCurrentPath() {
 		type: "POST",
 		url: "/hexweb/api/map/"+MAP.info.id+"/path",
 		data: JSON.stringify(path),
-		processData: false
+		processData: false,
+		success: function (data) {
+			VIEW.currentPath = data;
+			refreshMap();
+			console.log(data.name + ": " + data.style);
+			drawPath(VIEW.currentPath);
+		}
 	});
 
 }

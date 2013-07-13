@@ -27,6 +27,28 @@ class BootStrap {
 			
 			return map
 		}
+		JSON.registerObjectMarshaller(Path) {
+			def map = [:]
+			map['id'] = it.id
+			map['name'] = it.name
+			map['style'] = "" + it.style
+			map['thickness1'] = it.thickness1
+			map['thickness2'] = it.thickness2
+			map['vertex'] = it.vertex
+			
+			return map
+		}
+		JSON.registerObjectMarshaller(Vertex) {
+			def map = [:]
+			map['id'] = it.id
+			map['vertex'] = it.vertex
+			map['x'] = it.x
+			map['y'] = it.y
+			map['subX'] = it.subX
+			map['subY'] = it.subY
+			
+			return map
+		}
     }
     def destroy = {
     }
