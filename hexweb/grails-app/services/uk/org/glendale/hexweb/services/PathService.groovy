@@ -64,6 +64,12 @@ class PathService {
 		return path
 	}
 
+	/**
+	 * Store a new path in the database. The path and all its vertices
+	 * are stored.
+	 * 
+	 * @param path		Path to be saved.
+	 */
     def createPath(Path path) {
 		println "Save path ${path.name}"
 		path.save(failOnError: true)
@@ -71,6 +77,12 @@ class PathService {
 		println "Saved as ${path.id}"
     }
 	
+	/**
+	 * Store an existing path in the database. The path and all its
+	 * vertices are stored.
+	 * 
+	 * @param path		Path to be saved.
+	 */
 	def updatePath(Path path) {
 		println "Save path ${path.name}"
 		
@@ -80,11 +92,15 @@ class PathService {
 		p.thickness2 = path.thickness2
 		p.style = path.style
 		
-		p.vertex.each { v ->
-			v.delete()
+		p.vertex.clear()
+		/*
+		//p.vertex = path.vertex
+		path.vertex.each { v ->
+			v.path = p
+			v.id = 0
+			v.addToPath(p)
 		}
-		
-		p.vertex = path.vertex
+		*/
 		p.save()
 		
 	}

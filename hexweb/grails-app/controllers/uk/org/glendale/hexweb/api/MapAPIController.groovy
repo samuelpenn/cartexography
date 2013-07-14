@@ -690,6 +690,11 @@ class MapAPIController {
 	}
 	
 	def test() {
-		render Path.findById(19) as JSON
+		Path p = Path.findById(19)
+		p.name += "x"
+		
+		pathService.updatePath(p)
+		
+		render p as JSON
 	}
 }
