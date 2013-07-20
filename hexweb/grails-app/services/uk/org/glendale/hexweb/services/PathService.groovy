@@ -8,6 +8,13 @@
  */
 package uk.org.glendale.hexweb.services
 
+import java.sql.Connection;
+import java.sql.ResultSet
+import java.sql.Statement
+
+import org.hibernate.SessionFactory;
+import org.hibernate.jdbc.Work;
+
 import uk.org.glendale.hexweb.MapInfo
 import uk.org.glendale.hexweb.Path
 import uk.org.glendale.hexweb.Vertex
@@ -16,7 +23,8 @@ import uk.org.glendale.hexweb.Vertex
  * Service methods for handling vector paths.
  */
 class PathService {
-
+	def SessionFactory		sessionFactory
+	
 	/**
 	 * Choose a default unique name for this path. Currently just appends
 	 * a count to "untitled-".
@@ -78,6 +86,39 @@ class PathService {
     }
 	
 	/**
+	 * Needed because saving a path that is passed back from JSON doesn't seem to work.
+	 * Something about the GORM configuration is wrong. This is a hack to get things
+	 * working until the GORM configuration is fixed.
+	 * 
+	 * All existing vertices on the path are deleted from the database, then recreated
+	 * from the object.
+	 * 
+	 * @param path		Path to update the vertices for.
+	 */
+	private void saveVertices(Path path) {
+		Statement stmnt
+		
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("DELETE FROM vertex WHERE path_id=%d", path.id)
+				stmnt = connection.prepareStatement(sql)
+				stmnt.executeUpdate(sql)				
+			}
+		})
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				path.vertex.each { v ->
+					String sql = String.format("INSERT INTO vertex (path_id, vertex, x, y, sub_x, sub_y) VALUES (%d, %d, %d, %d, %d, %d)",
+						path.id, v.vertex, v.x, v.y, v.subX, v.subY)
+					stmnt = connection.prepareStatement(sql)
+					stmnt.executeUpdate()
+				}
+			}
+		})
+
+	}
+	
+	/**
 	 * Store an existing path in the database. The path and all its
 	 * vertices are stored.
 	 * 
@@ -91,17 +132,8 @@ class PathService {
 		p.thickness1 = path.thickness1
 		p.thickness2 = path.thickness2
 		p.style = path.style
-		
-		p.vertex.clear()
-		/*
-		//p.vertex = path.vertex
-		path.vertex.each { v ->
-			v.path = p
-			v.id = 0
-			v.addToPath(p)
-		}
-		*/
 		p.save()
 		
+		saveVertices(path)
 	}
 }
