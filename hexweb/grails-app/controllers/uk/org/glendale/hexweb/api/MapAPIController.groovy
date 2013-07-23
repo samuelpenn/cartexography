@@ -147,7 +147,7 @@ class MapAPIController {
 	 * array consisting only of the terrain id. Array is an array of rows, containing
 	 * columns.
 	 * 
-	 * Also returns any places that are located within the map area.
+	 * Also returns any places and paths that are located within the map area.
 	 * 
 	 * @param map	Map to get.
 	 * @param x		X coordinate of top left.
@@ -235,11 +235,13 @@ class MapAPIController {
 			between('tileX', x, x + w -1)
 			between('tileY', y, y + h - 1)			
 		})
+		List paths = pathService.getPathsInArea(info, x, y, w, h)
 		
 		Map data = new HashMap();
 		data.put("map", map)
 		data.put("area", area)
 		data.put("places", places)
+		data.put("paths", paths)
 		data.put("info", [ "x": x, "y": y, "width": w, "height": h ]);
 		if (bounds != null) {
 			data.put("bounds", bounds)

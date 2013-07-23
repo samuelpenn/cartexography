@@ -136,4 +136,42 @@ class PathService {
 		
 		saveVertices(path)
 	}
+	
+	/**
+	 * Get data on all the paths that pass through the given area. We only
+	 * count paths that have a vertex actually within the area.
+	 * 
+	 * @param info	Map that this applies to.
+	 * @param x		X coordinate of top left.
+	 * @param y		Y coordinate of top left.
+	 * @param w		Width of area.
+	 * @param h		Height of area.
+	 * @return
+	 */
+	def getPathsInArea(MapInfo info, int x, int y, int w, int h) {
+		ArrayList	ids = new ArrayList()
+		Statement	stmnt
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("SELECT DISTINCT(path_id) FROM path, vertex WHERE "+
+					"mapinfo_id = %d AND path.id = vertex.path_id AND "+
+					"x BETWEEN %d AND %d AND y BETWEEN %d AND %d",
+					info.id, x, x + w, y, y + h)
+				stmnt = connection.prepareStatement(sql)
+				ResultSet rs = stmnt.executeQuery()
+				while (rs.next()) {
+					println "Found matching path ${rs.getInt(1)}"
+					ids.add(rs.getInt(1))
+				}
+				rs.close()
+			}
+		})
+		ArrayList	list = new ArrayList()
+		ids.each { id ->
+			Path path = Path.findById(id)
+			list.add(path)
+		}
+		
+		return list
+	}
 }
