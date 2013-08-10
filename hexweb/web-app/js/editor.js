@@ -359,6 +359,8 @@ function selectPath(event, px, py) {
 	refreshMap();
 	if (pathId != 0) {
 		showPathDialog();
+	} else {
+		closeAllDialogs();
 	}
 }
 
