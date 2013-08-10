@@ -289,7 +289,7 @@ function showPathDialog() {
 	$("#pathDialog").css("height", 120);
 	$("#pathDialog").css("border", "1px solid #999999");
 	
-	var type = VIEW.currentPath.type;
+	var type = VIEW.currentPath.style;
 	switch (type) {
 	case BRUSH_STYLE.ROAD:
 		type = "Road";
@@ -300,12 +300,30 @@ function showPathDialog() {
 	case BRUSH_STYLE.COAST:
 		type = "Coastline";
 		break;
+	default:
+		type = "f"+VIEW.currentPath.type;
+		break;
 	}
 	
-	$("#pathDialog").append("<h4>" + type + ": " + VIEW.currentPath.name + "</h4>");
+	$("#pathDialog").append("<h4>" + type + ": <span id='pathNameLabel' onclick='changePathName()'>" + VIEW.currentPath.name + "</span></h4>");
 	
 	$("#pathDialog").append("<div id='pathLength'>1</div>");
 	$("#pathDialog").append("<span class='button' onclick='saveCurrentPath()'>Save</span>");
+}
+
+function changePathName() {
+	var path = VIEW.currentPath;
+	$("#pathNameLabel").removeAttr("onclick");
+	$("#pathNameLabel").html("<input id='pathNameField' onblur='updatePathName()' value='"+path.name+"'/>");
+}
+
+function updatePathName() {
+	var path = VIEW.currentPath;
+	var name = $("#pathNameField").val();
+	$("#pathNameLabel").html(name);
+	path.name = name;
+	saveCurrentPath();
+	closeAllDialogs();
 }
 
 /**
@@ -315,6 +333,7 @@ function selectPath(event, px, py) {
 	var		pathId = 0;
 	var		vertexId = 0;
 	var		closest = 50;
+	VIEW.currentPath = null;
 	
 	var		x = getMapX(px, py);
 	var		y = getMapY(px, py);
@@ -327,6 +346,7 @@ function selectPath(event, px, py) {
 			var d = Math.sqrt(dx * dx + dy * dy);
 			debug("p [" + p.id + "] [" + v.vertex + "] [" + d + "]");
 			if (d < closest) {
+				VIEW.currentPath = p;
 				pathId = p.id;
 				vertexId = v.vertex;
 				closest = d;
@@ -337,6 +357,9 @@ function selectPath(event, px, py) {
 	VIEW.selectedPathId = pathId;
 	VIEW.selectedVertexId = vertexId;
 	refreshMap();
+	if (pathId != 0) {
+		showPathDialog();
+	}
 }
 
 function getMapX(px, py) {
