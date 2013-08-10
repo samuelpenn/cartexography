@@ -214,6 +214,22 @@ function drawLargeScale() {
 }
 
 /**
+ * Paths are sometimes returned by JSON with their vertices
+ * @param paths
+ */
+function sortPaths(paths) {
+	if (paths != null) {
+		for (var i=0; i < paths.length; i++) {
+			var p = paths[i];
+			
+			p.vertex.sort(function(a,b) {
+				return a.vertex - b.vertex;
+			});
+		}
+	}
+}
+
+/**
  * Draw a map where every tile is displayed. Each tile is displayed
  * as a proper hex image.
  */
@@ -252,6 +268,10 @@ function drawSmallScale() {
 		MAP.area = data.area;
 		MAP.places = data.places;
 		MAP.bounds = data.bounds;
+		MAP.paths = data.paths;
+		sortPaths(MAP.paths);
+		
+		console.log("Paths: " + MAP.paths.length);
 
 		startX = data.info.x;
 		startY = data.info.Y;
@@ -319,6 +339,11 @@ function drawSmallScale() {
 		$("#x-orig-view").html(VIEW.x + " / " + MAP.info.width)
 		$("#y-orig-view").html(VIEW.y + " / " + MAP.info.height)
 		
+		// Draw all the paths visible on this map view.
+		for (var i=0; i < MAP.paths.length; i++) {
+			drawPath(MAP.paths[i]);
+		}
+		// Draw all the places visible on this map view.
 		for (var i=0; i < MAP.places.length; i++) {
 			drawPlace(MAP.places[i]);
 		}
@@ -346,4 +371,37 @@ function drawPlace(p) {
 	VIEW.context.font = VIEW.currentScale.font + "px Arial";
 	var w = VIEW.context.measureText(p.title).width;
 	VIEW.context.fillText(p.title, x + VIEW.imageWidth/2 - w / 2, y + VIEW.imageHeight);
+}
+
+/* ---- Path drawing functions ---- */
+
+function getVertexX(vertex) {
+	var x = (vertex.x - VIEW.x) * VIEW.currentScale.column + (vertex.subX * VIEW.currentScale.column)/100 + 8;
+	return x;
+}
+
+function getVertexY(vertex) {
+	var y = (vertex.y - VIEW.y) * VIEW.currentScale.row + (vertex.subY * VIEW.currentScale.row)/100 + 8;
+	if (vertex.x%2 == 1) {
+		y += VIEW.currentScale.row / 2;
+	}
+	return y;
+}
+
+/**
+ * Display a given path on the map.
+ */
+function drawPath(path) {
+	VIEW.context.strokeStyle = "#a4f8ff";
+	VIEW.context.lineWidth = 5;
+	VIEW.context.beginPath();
+	var v = path.vertex[0];
+	VIEW.context.moveTo(getVertexX(v), getVertexY(v));
+	for (var i = 1; i < path.vertex.length; i++) {
+		var v = path.vertex[i];
+		console.log("V[" + i + "]: " + v.vertex + "/" + v.id);
+		VIEW.context.lineTo(getVertexX(v), getVertexY(v));
+	}
+	VIEW.context.stroke();
+	
 }

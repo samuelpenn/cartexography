@@ -24,5 +24,6 @@ class Vertex {
 		table "vertex"
 		subX column: "sub_x"
 		subY column: "sub_y"
+		sort "id"
     }
 }

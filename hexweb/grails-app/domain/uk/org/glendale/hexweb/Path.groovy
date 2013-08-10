@@ -24,6 +24,7 @@ class Path {
     static mapping = {
 		table "path"
 		mapInfo column: "mapinfo_id"
+		vertex sort: "vertex"
 		//vertex cascade: "all,delete-orphan"
     }
 }

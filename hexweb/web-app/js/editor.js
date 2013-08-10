@@ -307,6 +307,9 @@ function paintPath(event, px, py) {
 	var y = Math.floor(py / VIEW.currentScale.row);
 	var sy = Math.floor(((py - y * VIEW.currentScale.row) * 100.0) / VIEW.currentScale.row);
 
+	x += VIEW.x;
+	y += VIEW.y;
+	
 	console.log(""+x+","+y);
 	
 	if (VIEW.editMode == EDIT_MODE.NEW) {
@@ -364,34 +367,6 @@ function saveCurrentPath() {
 
 }
 
-function getVertexX(vertex) {
-	return vertex.x * VIEW.currentScale.column + (vertex.subX * VIEW.currentScale.column)/100 + 8;
-}
-
-function getVertexY(vertex) {
-	var y = vertex.y * VIEW.currentScale.row + (vertex.subY * VIEW.currentScale.row)/100 + 8;
-	if (vertex.x%2 == 1) {
-		y += VIEW.currentScale.row / 2;
-	}
-	return y;
-}
-
-/**
- * Display a given path on the map.
- */
-function drawPath(path) {
-	VIEW.context.strokeStyle = "#a4f8ff";
-	VIEW.context.lineWidth = 5;
-	VIEW.context.beginPath();
-	var v = path.vertex[0];
-	VIEW.context.moveTo(getVertexX(v), getVertexY(v));
-	for (var i = 1; i < path.vertex.length; i++) {
-		var v = path.vertex[i];
-		VIEW.context.lineTo(getVertexX(v), getVertexY(v));
-	}
-	VIEW.context.stroke();
-	
-}
 
 var mouseHasBeenUp = false;
 

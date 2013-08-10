@@ -170,6 +170,11 @@ class PathService {
 		ids.each { id ->
 			Path path = Path.findById(id)
 			list.add(path)
+			println "Path ${path.id}:  "
+			path.vertex.each { v ->
+				print "${v.vertex}, "
+			}
+			println ""
 		}
 		
 		return list
