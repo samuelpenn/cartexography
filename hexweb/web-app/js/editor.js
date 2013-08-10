@@ -10,9 +10,11 @@
 VIEW.mouseDown = 0;
 VIEW.recordX = -1;
 VIEW.recordY = -1;
+VIEW.selectedPathId = 0;
+VIEW.selectedVertexId = 0;
 
 function debug(msg) {
-	$("#debug").append(msg + "<br/>");
+	console.log(msg);
 }
 
 function selectTerrain(id) {
@@ -23,7 +25,7 @@ function selectTerrain(id) {
 		id = 3;
 	}
 	$("#pathStyle"+VIEW.brushStyle).removeClass("selectedButton");
-	$("#terrainPopout").remove();
+	closeAllDialogs();
 	VIEW.terrainBrush = id;
 	
 	var url = VIEW.imageBase + "/terrain/" + MAP.images[VIEW.terrainBrush].name + ".png";
@@ -35,12 +37,12 @@ function openTerrainMenu() {
 	var x = $("#terrainMenu").position().left + 96;
 	var y = $("#terrainMenu").position().top;
 	
-	$("#thingPopout").remove();
 	if (document.getElementById("terrainPopout") != null) {
 		// Toggle on/off.
-		$("#terrainPopout").remove();
+		closeAllDialogs();
 		return;
 	}
+	closeAllDialogs();
 
 	$("body").append("<div id='terrainPopout' class='floating'></div>");
 	$("#terrainPopout").css("position", "absolute");
@@ -69,7 +71,7 @@ function selectThing(id) {
 	VIEW.editMode = EDIT_MODE.ADD;
 
 	$("#pathStyle"+VIEW.brushStyle).removeClass("selectedButton");
-	$("#thingPopout").remove();
+	closeAllDialogs();
 	VIEW.thingBrush = id;
 	
 	var url = VIEW.imageBase + "/things/" + MAP.things[VIEW.thingBrush].name + ".png";
@@ -80,12 +82,12 @@ function openThingMenu() {
 	var x = $("#thingMenu").position().left + 96;
 	var y = $("#thingMenu").position().top;
 	
-	$("#terrainPopout").remove();
 	if (document.getElementById("thingPopout") != null) {
 		// Toggle on/off.
-		$("#thingPopout").remove();
+		closeAllDialogs();
 		return;
 	}
+	closeAllDialogs();
 
 	$("body").append("<div id='thingPopout' class='floating'></div>");
 	$("#thingPopout").css("position", "absolute");
@@ -113,12 +115,20 @@ function setPathStyle(style) {
 	VIEW.brushMode = BRUSH_MODE.PATH
 	VIEW.editMode = EDIT_MODE.NEW;
 
-	$("#terrainPopout").remove();
-	$("#thingPopout").remove();
-	
+	closeAllDialogs();
+
 	$("#pathStyle"+VIEW.brushStyle).removeClass("selectedButton");
 	VIEW.brushStyle = style;
 	$("#pathStyle"+VIEW.brushStyle).addClass("selectedButton");
+	
+	$("#brushBtn1").removeClass("selectedButton");
+	$("#brushBtn3").removeClass("selectedButton");
+	$("#brushBtn5").removeClass("selectedButton");
+	
+	$("#pathBtnSel").addClass("selectedButton");
+	VIEW.editMode = EDIT_MODE.SELECT;
+	
+	refreshMap();
 }
 
 function unclickMap(event) {
@@ -270,6 +280,7 @@ function findNearestPlace(x, y) {
 }
 
 function showPathDialog() {
+	closeAllDialogs();
 	$("body").append("<div id='pathDialog' class='floating'></div>");
 	$("#pathDialog").css("position", "absolute");
 	$("#pathDialog").css("left", 128);
@@ -295,7 +306,60 @@ function showPathDialog() {
 	
 	$("#pathDialog").append("<div id='pathLength'>1</div>");
 	$("#pathDialog").append("<span class='button' onclick='saveCurrentPath()'>Save</span>");
+}
 
+/**
+ * Select the path closest to where the user clicked.
+ */
+function selectPath(event, px, py) {
+	var		pathId = 0;
+	var		vertexId = 0;
+	var		closest = 50;
+	
+	var		x = getMapX(px, py);
+	var		y = getMapY(px, py);
+	for (var i=0; i < MAP.paths.length; i++) {
+		var p = MAP.paths[i];
+		for (j=0; j < p.vertex.length; j++) {
+			var v = p.vertex[j];
+			var dx = (x - (v.x * 100 + v.subX));
+			var dy = (y - (v.y * 100 + v.subY));
+			var d = Math.sqrt(dx * dx + dy * dy);
+			debug("p [" + p.id + "] [" + v.vertex + "] [" + d + "]");
+			if (d < closest) {
+				pathId = p.id;
+				vertexId = v.vertex;
+				closest = d;
+			}
+		}
+	}
+	debug("Closest " + pathId);
+	VIEW.selectedPathId = pathId;
+	VIEW.selectedVertexId = vertexId;
+	refreshMap();
+}
+
+function getMapX(px, py) {
+	var x = Math.floor(px / VIEW.currentScale.column);
+	var sx = Math.floor(((px - x * VIEW.currentScale.column) * 100.0) / VIEW.currentScale.column);
+
+	x += VIEW.x;
+	
+	return x * 100 + sx;
+}
+
+function getMapY(px, py) {
+	var x = Math.floor(px / VIEW.currentScale.column);
+	var sx = Math.floor(((px - x * VIEW.currentScale.column) * 100.0) / VIEW.currentScale.column);
+	if (x %2 == 1) {
+		py -= VIEW.currentScale.row / 2;
+	} 
+	var y = Math.floor(py / VIEW.currentScale.row);
+	var sy = Math.floor(((py - y * VIEW.currentScale.row) * 100.0) / VIEW.currentScale.row);
+
+	y += VIEW.y;
+	
+	return y * 100 + sy;
 }
 
 function paintPath(event, px, py) {
@@ -371,10 +435,12 @@ function saveCurrentPath() {
 var mouseHasBeenUp = false;
 
 /**
- * Called when the user draws on the map.
+ * Called when the user draws or clicks on the map.
  */
 function drawMap(event) {
 	if (VIEW.mouseDown == 0) {
+		// Flag to prevent multiple events from a single click. Wait for the
+		// mouse to go 'up' after a click.
 		mouseHasBeenUp = true;
 		if (VIEW.brushMode == BRUSH_MODE.TERRAIN || VIEW.brushMode == BRUSH_MODE.PATH) {
 			return;
@@ -385,7 +451,11 @@ function drawMap(event) {
 	var py = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1 - 8;
 	
 	if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.mouseDown == 1 && mouseHasBeenUp) {
-		paintPath(event, px, py);
+		if (VIEW.editMode == EDIT_MODE.SELECT) {
+			selectPath(event, px, py);
+		} else if (VIEW.editMode == EDIT_MODE.NEW) {
+			paintPath(event, px, py);
+		}
 		mouseHasBeenUp = false;
 	} else if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
 		// Paint a terrain hex whilst the mouse is held down.

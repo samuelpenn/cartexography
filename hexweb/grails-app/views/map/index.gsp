@@ -226,10 +226,18 @@
 				<img id="zoomBtn3" src="${resource(dir: 'images/icons', file: 'zoom_3.png')}" title="Tiny" alt="Tiny" onclick="setZoom(3)"/>
 				<img id="zoomBtn4" src="${resource(dir: 'images/icons', file: 'zoom_4.png')}" title="Tiny+" alt="Tiny+" onclick="setZoom(4)"/>
 				<img id="showGrid" src="${resource(dir: 'images/icons', file: 'grid.png')}" title="Grid toggle" alt="Grid toggle" onclick="toggleGrid()"/>
-				<br/>
-				<img id="brushBtn1" src="${resource(dir: 'images/icons', file: 'brush_1.png')}" title="Small Brush (1)" alt="Small (1)" onclick="setBrush(1)"/>
-				<img id="brushBtn3" src="${resource(dir: 'images/icons', file: 'brush_3.png')}" title="Medium Brush (3)" alt="Medium (3)" onclick="setBrush(3)"/>
-				<img id="brushBtn5" src="${resource(dir: 'images/icons', file: 'brush_5.png')}" title="Large Brush (5)" alt="Large (5)" onclick="setBrush(5)"/>
+				<div id="brushIcons">
+					<br/>
+					<img id="brushBtn1" src="${resource(dir: 'images/icons', file: 'brush_1.png')}" title="Small Brush (1)" alt="Small (1)" onclick="setBrush(1)"/>
+					<img id="brushBtn3" src="${resource(dir: 'images/icons', file: 'brush_3.png')}" title="Medium Brush (3)" alt="Medium (3)" onclick="setBrush(3)"/>
+					<img id="brushBtn5" src="${resource(dir: 'images/icons', file: 'brush_5.png')}" title="Large Brush (5)" alt="Large (5)" onclick="setBrush(5)"/>
+				</div>
+				<div id="pathIcons">
+					<br/>
+					<img id="pathBtnSel" src="${resource(dir: 'images/icons', file: 'path_sel.png')}" title="Select Path" alt="Small (1)" onclick="setBrush(1)"/>
+					<img id="pathBtnAdd" src="${resource(dir: 'images/icons', file: 'path_add.png')}" title="Add Path" alt="Medium (3)" onclick="setBrush(3)"/>
+					<img id="pathBtnDel" src="${resource(dir: 'images/icons', file: 'path_del.png')}" title="Delete Path" alt="Large (5)" onclick="setBrush(5)"/>
+				</div>
 				<br/>
 				<br/>
 				<img class="menu" id="terrainMenu" onclick="openTerrainMenu()"/>

@@ -60,6 +60,7 @@ VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 10,
 VIEW.currentScale = VIEW.scale[0];
 
 function setZoom(zoom) {
+	closeAllDialogs();
 	$("#zoomBtn"+VIEW.zoom).removeClass("selectedButton");
 	VIEW.zoom = zoom;
 	$("#zoomBtn"+VIEW.zoom).addClass("selectedButton");
@@ -69,12 +70,14 @@ function setZoom(zoom) {
 }
 
 function setBrush(size) {
+	closeAllDialogs();
 	$("#brushBtn"+VIEW.brushSize).removeClass("selectedButton");
 	VIEW.brushSize = size;
 	$("#brushBtn"+VIEW.brushSize).addClass("selectedButton");
 }
 
 function toggleGrid() {
+	closeAllDialogs();
 	if (VIEW.showGrid) {
 		// Switch off
 		VIEW.showGrid = false;
@@ -221,7 +224,7 @@ function sortPaths(paths) {
 	if (paths != null) {
 		for (var i=0; i < paths.length; i++) {
 			var p = paths[i];
-			
+			p.style = p.style.name;
 			p.vertex.sort(function(a,b) {
 				return a.vertex - b.vertex;
 			});
@@ -392,16 +395,52 @@ function getVertexY(vertex) {
  * Display a given path on the map.
  */
 function drawPath(path) {
-	VIEW.context.strokeStyle = "#a4f8ff";
+	debug("Path " + path.style);
+	if (VIEW.selectedPathId == path.id) {
+		VIEW.context.strokeStyle = "#FF4444";
+	} else if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.brushStyle == path.style) {
+		VIEW.context.strokeStyle = "#880000";
+	} else {
+		VIEW.context.strokeStyle = "#a4f8ff";
+	}
 	VIEW.context.lineWidth = 5;
 	VIEW.context.beginPath();
 	var v = path.vertex[0];
 	VIEW.context.moveTo(getVertexX(v), getVertexY(v));
+	var	selectedV = -1;
+	if (v.vertex == VIEW.selectedVertexId) {
+		selectedV = 0;
+	}
 	for (var i = 1; i < path.vertex.length; i++) {
 		var v = path.vertex[i];
-		console.log("V[" + i + "]: " + v.vertex + "/" + v.id);
 		VIEW.context.lineTo(getVertexX(v), getVertexY(v));
+		if (v.vertex == VIEW.selectedVertexId) {
+			selectedV = i;
+		}
 	}
 	VIEW.context.stroke();
 	
+	if (VIEW.selectedPathId == path.id && selectedV >= 0) {
+		VIEW.context.strokeStyle = "#000000";
+		VIEW.context.beginPath();
+		if (selectedV > 0) {
+			var v = path.vertex[selectedV - 1];
+			VIEW.context.moveTo(getVertexX(v), getVertexY(v));
+			var v = path.vertex[selectedV];
+			VIEW.context.lineTo(getVertexX(v), getVertexY(v));
+		}
+		var v = path.vertex[selectedV];
+		VIEW.context.arc(getVertexX(v), getVertexY(v), 5, 0, 2 * Math.PI, false);
+		VIEW.context.fillStyle = "black";
+		VIEW.context.fill();
+		VIEW.context.stroke();
+		
+	}
+}
+
+function closeAllDialogs() {
+	$("#placeDialog").remove();
+	$("#pathDialog").remove();
+	$("#terrainPopout").remove();
+	$("#thingPopout").remove();	
 }
