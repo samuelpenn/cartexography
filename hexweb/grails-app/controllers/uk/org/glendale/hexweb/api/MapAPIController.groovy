@@ -691,6 +691,14 @@ class MapAPIController {
 		render path as JSON
 	}
 	
+	def deletePath(String id, int pathId) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		Path		path = Path.findById(pathId)
+		if (path != null) {
+			pathService.deletePath(path)
+		}
+	}
+	
 	def test() {
 		Path p = Path.findById(19)
 		p.name += "x"

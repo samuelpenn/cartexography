@@ -30,7 +30,11 @@ class PathService {
 	 * a count to "untitled-".
 	 */
 	private void setUniquePathName(Path path) {
-		int count = Path.count()
+		int count = Path.createCriteria().get {
+			projections {
+				max "id"
+			}
+		} as int
 		
 		path.name = "untitled-" + (count + 1)
 	}
@@ -71,6 +75,7 @@ class PathService {
 		}
 		return path
 	}
+	
 
 	/**
 	 * Store a new path in the database. The path and all its vertices
@@ -84,6 +89,28 @@ class PathService {
 		
 		println "Saved as ${path.id}"
     }
+	
+	def deletePath(Path path) {
+		Statement stmnt
+
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("DELETE FROM vertex WHERE path_id=%d", path.id)
+				stmnt = connection.prepareStatement(sql)
+				stmnt.executeUpdate(sql)
+				stmnt.close()
+			}
+		})
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("DELETE FROM path WHERE id=%d", path.id)
+				stmnt = connection.prepareStatement(sql)
+				stmnt.executeUpdate(sql)
+				stmnt.close()
+			}
+		})
+
+	}
 	
 	/**
 	 * Needed because saving a path that is passed back from JSON doesn't seem to work.

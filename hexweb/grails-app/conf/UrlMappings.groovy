@@ -116,7 +116,12 @@ class UrlMappings {
 			action = [ POST: "createPath", PUT: "updatePath" ]
 			parseRequest: true
 		}
-		
+
+		"/api/map/$id/path/$pathId" {
+			controller = "mapAPI"
+			action = [ DELETE: "deletePath" ]
+		}
+
 		"/api/map/test" {
 			controller = "mapAPI"
 			action = "test"

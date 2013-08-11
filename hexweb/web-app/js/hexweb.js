@@ -76,6 +76,23 @@ function setBrush(size) {
 	$("#brushBtn"+VIEW.brushSize).addClass("selectedButton");
 }
 
+function setPathEdit(mode) {
+	$("#pathBtnSel").removeClass("selectedButton");
+	$("#pathBtnAdd").removeClass("selectedButton");
+	$("#pathBtnDel").removeClass("selectedButton");
+	VIEW.editMode = mode;
+	switch (mode) {
+	case EDIT_MODE.SELECT:
+		VIEW.editMode = EDIT_MODE.SELECT;
+		$("#pathBtnSel").addClass("selectedButton");
+		break;
+	case EDIT_MODE.NEW:
+		VIEW.editMode = EDIT_MODE.NEW;
+		$("#pathBtnAdd").addClass("selectedButton");
+		break;
+	}
+}
+
 function toggleGrid() {
 	closeAllDialogs();
 	if (VIEW.showGrid) {

@@ -309,6 +309,7 @@ function showPathDialog() {
 	
 	$("#pathDialog").append("<div id='pathLength'>1</div>");
 	$("#pathDialog").append("<span class='button' onclick='saveCurrentPath()'>Save</span>");
+	$("#pathDialog").append("<span class='button' onclick='deleteCurrentPath()'>Delete</span>");
 }
 
 function changePathName() {
@@ -453,9 +454,20 @@ function saveCurrentPath() {
 			drawPath(VIEW.currentPath);
 		}
 	});
-
 }
 
+function deleteCurrentPath() {
+	var  path = VIEW.currentPath;
+	$.ajax({
+		type: "DELETE",
+		url: "/hexweb/api/map/"+MAP.info.id+"/path/"+path.id,
+		success: function (data) {
+			VIEW.currentPath = null;
+			refreshMap();
+			debug("Deleted path");
+		}
+	});
+}
 
 var mouseHasBeenUp = false;
 
@@ -478,7 +490,7 @@ function drawMap(event) {
 	if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.mouseDown == 1 && mouseHasBeenUp) {
 		if (VIEW.editMode == EDIT_MODE.SELECT) {
 			selectPath(event, px, py);
-		} else if (VIEW.editMode == EDIT_MODE.NEW) {
+		} else if (VIEW.editMode == EDIT_MODE.NEW || VIEW.editMode == EDIT_MODE.ADD) {
 			paintPath(event, px, py);
 		}
 		mouseHasBeenUp = false;
