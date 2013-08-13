@@ -235,8 +235,7 @@
 				<div id="pathIcons">
 					<br/>
 					<img id="pathBtnSel" src="${resource(dir: 'images/icons', file: 'path_sel.png')}" title="Select Path" alt="Small (1)" onclick="setPathEdit('SELECT')"/>
-					<img id="pathBtnAdd" src="${resource(dir: 'images/icons', file: 'path_add.png')}" title="Add Path" alt="Medium (3)" onclick="setPathEdit('NEW')"/>
-					<img id="pathBtnDel" src="${resource(dir: 'images/icons', file: 'path_del.png')}" title="Delete Path" alt="Large (5)" onclick="setPathEdit('DELETE')"/>
+					<img id="pathBtnNew" src="${resource(dir: 'images/icons', file: 'path_new.png')}" title="Add Path" alt="Medium (3)" onclick="setPathEdit('NEW')"/>
 				</div>
 				<br/>
 				<br/>

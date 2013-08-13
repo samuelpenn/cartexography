@@ -327,12 +327,9 @@ function updatePathName() {
 	closeAllDialogs();
 }
 
-/**
- * Select the path closest to where the user clicked.
- */
-function selectPath(event, px, py) {
+function findClosestPath(event, px, py) {
 	var		pathId = 0;
-	var		vertexId = 0;
+	var		vertexId = -1;
 	var		closest = 50;
 	VIEW.currentPath = null;
 	
@@ -345,7 +342,6 @@ function selectPath(event, px, py) {
 			var dx = (x - (v.x * 100 + v.subX));
 			var dy = (y - (v.y * 100 + v.subY));
 			var d = Math.sqrt(dx * dx + dy * dy);
-			debug("p [" + p.id + "] [" + v.vertex + "] [" + d + "]");
 			if (d < closest) {
 				VIEW.currentPath = p;
 				pathId = p.id;
@@ -354,14 +350,34 @@ function selectPath(event, px, py) {
 			}
 		}
 	}
-	debug("Closest " + pathId);
 	VIEW.selectedPathId = pathId;
-	VIEW.selectedVertexId = vertexId;
+	VIEW.selectedVertexId = vertexId;	
+}
+
+/**
+ * Select the path closest to where the user clicked.
+ */
+function selectPath(event, px, py) {
+	findClosestPath(event, px, py);
 	refreshMap();
-	if (pathId != 0) {
+	if (VIEW.selectedPathId != 0) {
 		showPathDialog();
 	} else {
 		closeAllDialogs();
+	}
+}
+
+function movePath(event, px, py) {
+	findClosestPath(event, px, py);
+	if (VIEW.currentPath != null && VIEW.selectedVertexId >= 0) {
+		var		x = getMapX(px, py);
+		var		y = getMapY(px, py);
+		VIEW.currentPath.vertex[VIEW.selectedVertexId].x = parseInt(x / 100);
+		VIEW.currentPath.vertex[VIEW.selectedVertexId].y = parseInt(y / 100);
+		VIEW.currentPath.vertex[VIEW.selectedVertexId].subX = x % 100;
+		VIEW.currentPath.vertex[VIEW.selectedVertexId].subY = y % 100;
+		debug("Moved path to "+x+","+y);
+		redrawMap();
 	}
 }
 
@@ -494,6 +510,10 @@ function drawMap(event) {
 			paintPath(event, px, py);
 		}
 		mouseHasBeenUp = false;
+	} else if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.mouseDown == 1) {
+		if (VIEW.editMode == EDIT_MODE.SELECT) {
+			movePath(event, px, py);
+		}
 	} else if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
 		// Paint a terrain hex whilst the mouse is held down.
 		paintTerrain(event, px, py)

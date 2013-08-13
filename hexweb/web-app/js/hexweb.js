@@ -78,8 +78,7 @@ function setBrush(size) {
 
 function setPathEdit(mode) {
 	$("#pathBtnSel").removeClass("selectedButton");
-	$("#pathBtnAdd").removeClass("selectedButton");
-	$("#pathBtnDel").removeClass("selectedButton");
+	$("#pathBtnNew").removeClass("selectedButton");
 	VIEW.editMode = mode;
 	switch (mode) {
 	case EDIT_MODE.SELECT:
@@ -88,7 +87,7 @@ function setPathEdit(mode) {
 		break;
 	case EDIT_MODE.NEW:
 		VIEW.editMode = EDIT_MODE.NEW;
-		$("#pathBtnAdd").addClass("selectedButton");
+		$("#pathBtnNew").addClass("selectedButton");
 		break;
 	}
 }
@@ -297,78 +296,100 @@ function drawSmallScale() {
 		startY = data.info.Y;
 		mapWidth = data.info.width;
 		mapHeight = data.info.height;
-
-		for (var y=0; y < mapHeight; y++) {
-			for (var x=0; x < mapWidth; x++) {
-				var t = MAP.map[y][x];
-				var px = x * tileWidth + 8;
-				var py = y * tileHeight + (x%2 * halfOffset) + 8;
-				
-				VIEW.context.drawImage(MAP.images[t].image, 
-						px, py, imageWidth, imageHeight);
-			}
-		}
-		if (VIEW.showGrid) {
-			for (var y=0; y < mapHeight; y++) {
-				for (var x=0; x < mapWidth; x++) {
-					drawHexGrid(x, y);
-				}
-			}
-		}
-		VIEW.context.strokeStyle = '#ff0000';
-		VIEW.context.lineWidth = 3;
-		for (var y=0; y < mapHeight; y++) {
-			for (var x=0; x < mapWidth; x++) {
-				var px = x * tileWidth + 8;
-				var py = y * tileHeight + (x%2 * halfOffset) + 8;
-				if (y > 0 && MAP.area[y][x] != MAP.area[y-1][x]) {
-					VIEW.context.beginPath();
-					VIEW.context.moveTo(px + tileWidth/3, py);
-					VIEW.context.lineTo(px + tileWidth, py);
-					VIEW.context.stroke();
-				}
-				if (x%2 == 1) {
-					if (x > 0 && MAP.area[y][x] != MAP.area[y][x-1]) {
-						VIEW.context.beginPath();
-						VIEW.context.moveTo(px, py + tileHeight/2);
-						VIEW.context.lineTo(px + tileWidth/3, py);
-						VIEW.context.stroke();					
-					}
-					if (x > 0 && y < mapHeight - 1 && MAP.area[y][x] != MAP.area[y+1][x-1]) {
-						VIEW.context.beginPath();
-						VIEW.context.moveTo(px, py + tileHeight/2);
-						VIEW.context.lineTo(px + tileWidth/3, py + tileHeight);
-						VIEW.context.stroke();					
-					}
-				} else {
-					if (x > 0 && y > 0 && MAP.area[y][x] != MAP.area[y-1][x-1]) {
-						VIEW.context.beginPath();
-						VIEW.context.moveTo(px, py + tileHeight/2);
-						VIEW.context.lineTo(px + tileWidth/3, py);
-						VIEW.context.stroke();					
-					}
-					if (x > 0 && MAP.area[y][x] != MAP.area[y][x-1]) {
-						VIEW.context.beginPath();
-						VIEW.context.moveTo(px, py + tileHeight/2);
-						VIEW.context.lineTo(px + tileWidth/3, py + tileHeight);
-						VIEW.context.stroke();					
-					}					
-				}
-			}
-		}
-		$("#x-orig-view").html(VIEW.x + " / " + MAP.info.width)
-		$("#y-orig-view").html(VIEW.y + " / " + MAP.info.height)
 		
-		// Draw all the paths visible on this map view.
-		for (var i=0; i < MAP.paths.length; i++) {
-			drawPath(MAP.paths[i]);
-		}
-		// Draw all the places visible on this map view.
-		for (var i=0; i < MAP.places.length; i++) {
-			drawPlace(MAP.places[i]);
-		}
+		redrawMap();
 	});
+	
+
 };
+
+function redrawMap() {
+	var		startX = VIEW.x;
+	var 	startY = VIEW.y;
+	var		mapWidth = VIEW.width;
+	var		mapHeight = VIEW.height;
+	var		tileWidth = VIEW.scale[VIEW.zoom].column;
+	var		tileHeight = VIEW.scale[VIEW.zoom].height;
+
+	mapWidth = parseInt(VIEW.port.width / tileWidth) - 1;
+	mapHeight = parseInt(VIEW.port.height / tileHeight) - 1;
+	mapWidth = VIEW.width;
+	mapHeight = VIEW.height;
+
+	var 	imageWidth = VIEW.scale[VIEW.zoom].width;
+	var 	imageHeight = VIEW.scale[VIEW.zoom].height;
+	var		halfOffset = parseInt(imageHeight / 2);
+
+	for (var y=0; y < mapHeight; y++) {
+		for (var x=0; x < mapWidth; x++) {
+			var t = MAP.map[y][x];
+			var px = x * tileWidth + 8;
+			var py = y * tileHeight + (x%2 * halfOffset) + 8;
+			
+			VIEW.context.drawImage(MAP.images[t].image, 
+					px, py, imageWidth, imageHeight);
+		}
+	}
+	if (VIEW.showGrid) {
+		for (var y=0; y < mapHeight; y++) {
+			for (var x=0; x < mapWidth; x++) {
+				drawHexGrid(x, y);
+			}
+		}
+	}
+	VIEW.context.strokeStyle = '#ff0000';
+	VIEW.context.lineWidth = 3;
+	for (var y=0; y < mapHeight; y++) {
+		for (var x=0; x < mapWidth; x++) {
+			var px = x * tileWidth + 8;
+			var py = y * tileHeight + (x%2 * halfOffset) + 8;
+			if (y > 0 && MAP.area[y][x] != MAP.area[y-1][x]) {
+				VIEW.context.beginPath();
+				VIEW.context.moveTo(px + tileWidth/3, py);
+				VIEW.context.lineTo(px + tileWidth, py);
+				VIEW.context.stroke();
+			}
+			if (x%2 == 1) {
+				if (x > 0 && MAP.area[y][x] != MAP.area[y][x-1]) {
+					VIEW.context.beginPath();
+					VIEW.context.moveTo(px, py + tileHeight/2);
+					VIEW.context.lineTo(px + tileWidth/3, py);
+					VIEW.context.stroke();					
+				}
+				if (x > 0 && y < mapHeight - 1 && MAP.area[y][x] != MAP.area[y+1][x-1]) {
+					VIEW.context.beginPath();
+					VIEW.context.moveTo(px, py + tileHeight/2);
+					VIEW.context.lineTo(px + tileWidth/3, py + tileHeight);
+					VIEW.context.stroke();					
+				}
+			} else {
+				if (x > 0 && y > 0 && MAP.area[y][x] != MAP.area[y-1][x-1]) {
+					VIEW.context.beginPath();
+					VIEW.context.moveTo(px, py + tileHeight/2);
+					VIEW.context.lineTo(px + tileWidth/3, py);
+					VIEW.context.stroke();					
+				}
+				if (x > 0 && MAP.area[y][x] != MAP.area[y][x-1]) {
+					VIEW.context.beginPath();
+					VIEW.context.moveTo(px, py + tileHeight/2);
+					VIEW.context.lineTo(px + tileWidth/3, py + tileHeight);
+					VIEW.context.stroke();					
+				}					
+			}
+		}
+	}
+	$("#x-orig-view").html(VIEW.x + " / " + MAP.info.width)
+	$("#y-orig-view").html(VIEW.y + " / " + MAP.info.height)
+	
+	// Draw all the paths visible on this map view.
+	for (var i=0; i < MAP.paths.length; i++) {
+		drawPath(MAP.paths[i]);
+	}
+	// Draw all the places visible on this map view.
+	for (var i=0; i < MAP.places.length; i++) {
+		drawPlace(MAP.places[i]);
+	}
+}
 
 /**
  * Draw the specified place on the map.
