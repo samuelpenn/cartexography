@@ -291,6 +291,12 @@ function drawSmallScale() {
 		sortPaths(MAP.paths);
 		
 		console.log("Paths: " + MAP.paths.length);
+		
+		for (var i=0; i < MAP.places.length; i++) {
+			var p = MAP.places[i];
+			debug("Place [" + p.name + "] " + p.tileX +"," + p.tileY);
+			debug("  " + MAP.places[i].thing_id);
+		}
 
 		startX = data.info.x;
 		startY = data.info.Y;

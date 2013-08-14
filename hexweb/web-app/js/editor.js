@@ -99,9 +99,6 @@ function openThingMenu() {
 	
 	for (var id in MAP.things) {
 		var  t = MAP.things[id];
-		if (id < 3) {
-			continue;
-		}
 		var  path = VIEW.imageBase + "things/" + t.name + ".png";
 		
 		$("#thingPopout").append("<div class='tilebox' id='th_"+id+"' onclick='selectThing("+id+")'></div>");
@@ -352,12 +349,13 @@ function findClosestPath(event, px, py) {
 				VIEW.currentPath = p;
 				pathId = p.id;
 				vertexId = v.vertex;
+				VIEW.selectedVertexIndex = j;
 				closest = d;
 			}
 		}
 	}
 	VIEW.selectedPathId = pathId;
-	VIEW.selectedVertexId = vertexId;	
+	VIEW.selectedVertexId = vertexId;
 }
 
 /**
@@ -378,13 +376,27 @@ function movePath(event, px, py) {
 	if (VIEW.currentPath != null && VIEW.selectedVertexId >= 0) {
 		var		x = getMapX(px, py);
 		var		y = getMapY(px, py);
-		VIEW.currentPath.vertex[VIEW.selectedVertexId].x = parseInt(x / 100);
-		VIEW.currentPath.vertex[VIEW.selectedVertexId].y = parseInt(y / 100);
-		VIEW.currentPath.vertex[VIEW.selectedVertexId].subX = x % 100;
-		VIEW.currentPath.vertex[VIEW.selectedVertexId].subY = y % 100;
+		VIEW.currentPath.vertex[VIEW.selectedVertexIndex].x = parseInt(x / 100);
+		VIEW.currentPath.vertex[VIEW.selectedVertexIndex].y = parseInt(y / 100);
+		VIEW.currentPath.vertex[VIEW.selectedVertexIndex].subX = x % 100;
+		VIEW.currentPath.vertex[VIEW.selectedVertexIndex].subY = y % 100;
 		debug("Moved path to "+x+","+y);
 		redrawMap();
 	}
+}
+
+function removeNodeFromPath() {
+	if (VIEW.currentPath == null || VIEW.selectedVertexId < 0) {
+		return;
+	}
+	var path = VIEW.currentPath;
+	debug("Removing path " + path.id);
+	for (var i = VIEW.selectedVertexId; i < path.vertex.length-1; i++) {
+		path.vertex[i] = path.vertex[i+1];
+	}
+	path.vertex.length --;
+	debug("Path length is now " + path.vertex.length);
+	redrawMap();
 }
 
 function getMapX(px, py) {
