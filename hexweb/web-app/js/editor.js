@@ -308,8 +308,14 @@ function showPathDialog() {
 	$("#pathDialog").append("<h4>" + type + ": <span id='pathNameLabel' onclick='changePathName()'>" + VIEW.currentPath.name + "</span></h4>");
 	
 	$("#pathDialog").append("<div id='pathLength'>1</div>");
-	$("#pathDialog").append("<span class='button' onclick='saveCurrentPath()'>Save</span>");
-	$("#pathDialog").append("<span class='button' onclick='deleteCurrentPath()'>Delete</span>");
+	
+	$("#pathDialog").append("<img src=\"/hexweb/images/icons/path_save.png\" onclick=\"saveCurrentPath()\"/>");
+	$("#pathDialog").append("&nbsp;");
+	$("#pathDialog").append("<img src=\"/hexweb/images/icons/path_del.png\" onclick=\"deleteCurrentPath()\"/>");
+	$("#pathDialog").append("&nbsp;");
+	$("#pathDialog").append("<img src=\"/hexweb/images/icons/node_add.png\" onclick=\"addNodeToPath()\"/>");
+	$("#pathDialog").append("&nbsp;");
+	$("#pathDialog").append("<img src=\"/hexweb/images/icons/node_del.png\" onclick=\"removeNodeFromPath()\"/>");
 }
 
 function changePathName() {

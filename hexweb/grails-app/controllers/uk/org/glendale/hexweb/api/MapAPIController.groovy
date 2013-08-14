@@ -697,6 +697,7 @@ class MapAPIController {
 		if (path != null) {
 			pathService.deletePath(path)
 		}
+		render pathId
 	}
 	
 	def test() {
