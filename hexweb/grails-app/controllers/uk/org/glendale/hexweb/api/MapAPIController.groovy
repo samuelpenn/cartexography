@@ -50,9 +50,10 @@ class MapAPIController {
 	
 	private List getTerrain(MapInfo info) {
 		List<Terrain>  list = Terrain.findAllByMapInfo(info)
-		if (info.template > 0) {
+		while (info.template > 0) {
 			MapInfo	template = mapService.getMapByNameOrId(info.template)
 			list.addAll(Terrain.findAllByMapInfo(template))
+			info = mapService.getMapByNameOrId(info.template)
 		}
 		return list
 	}

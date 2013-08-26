@@ -30,10 +30,9 @@ class AdminController {
 	 */
 	def create() {
 		List<MapInfo> list = MapInfo.findAll({
-			eq("template", 0)
+			eq("template", 1)
 		})
-			
-		
+
 		render(view: "create", model: [maps: list])
 	}
 	
@@ -47,6 +46,9 @@ class AdminController {
 		def scale = params.scale as int
 		def template = params.template as String
 		def world = params.world as boolean
+		
+		template = 3
+		println "Creating map ${template}"
 		
 		if (template == null) {
 			println "Template not set"

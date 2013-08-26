@@ -412,10 +412,15 @@ class MapService {
 			}
 			width += 2
 			height = 2 + ((width / 11) * 1.5 * 3) as int
+			println "World map of ${width} x ${height}"
 		}
 		
-		MapInfo info = new MapInfo(name: name, title: title, width: width, height: height, scale: scale, world: world, template: template.id)
-		info.save()
+		MapInfo info = new MapInfo(background: 1, oob: 2, style:"standard", name: name, title: title, width: width, height: height, scale: scale, world: world, template: template.id)
+		info.save(failOnError: true)
+		if (info.id == null) {
+			throw new IllegalStateException("Unable to save mapinfo")
+		}
+		println "Saved ${info.id}"
 
 		if (world) {
 			int span = (info.width / 11)
