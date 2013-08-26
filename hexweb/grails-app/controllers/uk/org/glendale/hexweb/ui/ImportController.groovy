@@ -53,7 +53,10 @@ class ImportController {
 			mapInfo.scale = scale
 			mapInfo.width = width
 			mapInfo.height = height
-			mapInfo.template = 1
+			mapInfo.template = 3
+			mapInfo.background = 3
+			mapInfo.oob = 2
+			mapInfo.style = "standard"
 			mapInfo.save()
 		}
 		
