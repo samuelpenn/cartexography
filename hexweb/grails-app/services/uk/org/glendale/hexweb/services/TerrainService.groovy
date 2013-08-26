@@ -48,10 +48,14 @@ class TerrainService {
 		} catch (NumberFormatException e) {
 			// Not an integer, so try by name.
 		}
-		return Terrain.find ({
+		Terrain t = Terrain.find ({
 			eq("mapInfo", info)
 			eq("name", name)
 		})
+		if (t == null && info.template != 0) {
+			t = getTerrainByNameOrId(MapInfo.findById(info.template), name)
+		}
+		return t
 	}
 
 	def terrainCache = [:]

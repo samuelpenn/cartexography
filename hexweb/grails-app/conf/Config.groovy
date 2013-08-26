@@ -153,16 +153,16 @@ mapcraft {
 		}
 		forest {
 			woodland {
-				clear = "woods"
-				lowhills = "broadleaf_hills"
-				highhills = "broadleaf_hills"
+				clear = "broadleaf_woods"
+				lowhills = "broadleaf_woods_hills"
+				highhills = "broadleaf_woods_hills"
 				lowmnts = "montane_forest"
 				highmnts = "montane_forest"
 			}
 			forest {
 				clear = "broadleaf_forest"
-				lowhills = "broadleaf_hills"
-				highhills = "broadleaf_hills"
+				lowhills = "broadleaf_forest_hills"
+				highhills = "broadleaf_forest_hills"
 				lowmnts = "montane_forest"
 				highmnts = "montane_forest"
 			}
