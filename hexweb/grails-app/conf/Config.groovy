@@ -116,6 +116,8 @@ mapcraft {
 			}
 			dry {
 				clear = "dry"
+				lowhills = "hills_dry"
+				highhills = "hills_dry"
 				lowmnts = "mountains"
 				highmnts = "mountains_high"
 			}
@@ -133,19 +135,33 @@ mapcraft {
 			}
 			tundra {
 				clear = "tundra"
+				lowhills = "tundra_hills"
+				highhills = "tundra_hills"
+				foothills = "tundra_foothills"
 				lowmnts = "mountains_ice"
 				highmnts = "mountains_ice"
 			}
 			snow {
 				clear = "snow"
+				lowhills = "snow_hills"
+				highhills = "snow_hills"
+				foothills = "snow_foothills"
 				lowmnts = "mountains_ice"
 				highmnts = "mountains_ice"
 			}
 			heath {
-				clear = "heath"
+				clear = "shrubland"
+				lowhills = "shrubland_hills"
+				highhills = "shrubland_hills"
+				foothills = "shrubland_foothills"
+				lowmnts = "mountains"
+				highmnts = "mountains_high"
 			}
 			moor {
-				clear = "moors"
+				clear = "shrubland"
+				lowhills = "shrubland_hills"
+				highhills = "shrubland_hills"
+				foothills = "shrubland_foothills"
 			}
 			wetland {
 				clear = "marsh"
@@ -156,15 +172,25 @@ mapcraft {
 				clear = "broadleaf_woods"
 				lowhills = "broadleaf_woods_hills"
 				highhills = "broadleaf_woods_hills"
-				lowmnts = "montane_forest"
-				highmnts = "montane_forest"
+				foothills = "broadlead_woods_foothills"
+				lowmnts = "montane_woods"
+				highmnts = "montane_woods"
 			}
 			forest {
 				clear = "broadleaf_forest"
 				lowhills = "broadleaf_forest_hills"
 				highhills = "broadleaf_forest_hills"
+				foothills = "broadleaf_forest_foothills"
 				lowmnts = "montane_forest"
 				highmnts = "montane_forest"
+			}
+			alpine {
+				clear = "needleleaf_forest"
+				lowhills = "needleleaf_forest_hills"
+				highhills = "needleleaf_forest_hills"
+				foothills = "needleleaf_forest_foothills"
+				lowmnts = "montane_forest"
+				highmnts = "montane_woods"
 			}
 			jungle {
 				clear = "rainforest_tropical"
