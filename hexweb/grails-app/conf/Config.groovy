@@ -172,7 +172,7 @@ mapcraft {
 				clear = "broadleaf_woods"
 				lowhills = "broadleaf_woods_hills"
 				highhills = "broadleaf_woods_hills"
-				foothills = "broadlead_woods_foothills"
+				foothills = "broadleaf_woods_foothills"
 				lowmnts = "montane_woods"
 				highmnts = "montane_woods"
 			}
