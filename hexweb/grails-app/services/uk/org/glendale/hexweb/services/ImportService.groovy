@@ -157,15 +157,19 @@ class ImportService {
 				
 				Terrain terrain = terrainService.getTerrainFromName(template, 
 										terrainMap.get(t), featureMap.get(f))
-				
-				if (a > 0 && areaMap.get(a) != null) {
-					a = areaMap.get(a)
+				if (terrain == null) {
+					println "NO TERRAIN MAP! t = ${t} f = ${f}"
 				} else {
-					a = 0
+					
+					if (a > 0 && areaMap.get(a) != null) {
+						a = areaMap.get(a)
+					} else {
+						a = 0
+					}
+					
+					Hex hex = new Hex(mapInfo: mapInfo, x: x, y: y, terrainId: terrain.id, areaId: a)
+					hex.save()
 				}
-				
-				Hex hex = new Hex(mapInfo: mapInfo, x: x, y: y, terrainId: terrain.id, areaId: a)
-				hex.save()
 				y++
 			}
 		}
