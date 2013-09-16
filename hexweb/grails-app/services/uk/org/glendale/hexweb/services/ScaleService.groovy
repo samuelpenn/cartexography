@@ -44,7 +44,9 @@ class ScaleService {
 			throw new IllegalArgumentException("Scales must be exactly divisibile")
 		} else if (srcScale == destScale) {
 			// Trivial case, they are the same.
-			return [ "x": x, "y": y ]
+			List l = new ArrayList()
+			l.add( [ "x": x, "y": y ] )
+			return l
 		} else if (srcScale == destScale * 2) {
 			return getScale2(x, y, src.width, src.height)
 		} else if (srcScale == destScale * 3) {

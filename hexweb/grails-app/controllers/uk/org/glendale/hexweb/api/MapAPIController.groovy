@@ -22,8 +22,12 @@ import uk.org.glendale.hexweb.Vertex
 
 import groovy.sql.Sql
 import java.awt.Image
+import java.sql.Connection
+import java.sql.ResultSet
+import java.sql.Statement
 import javax.servlet.ServletOutputStream
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.hibernate.jdbc.Work
 
 class MapAPIController {
 	/** Common services for maps */
@@ -502,7 +506,7 @@ class MapAPIController {
 	 * @param dest	Destination map to copy to.
 	 * @return
 	 */
-	def copy(String src, String dest) {
+	def copy(String src, String dest, int x, int y) {
 		MapInfo		srcInfo = mapService.getMapByNameOrId(src)
 		MapInfo		destInfo = mapService.getMapByNameOrId(dest)
 		
@@ -513,35 +517,59 @@ class MapAPIController {
 		int width = srcInfo.width
 		int height = srcInfo.height
 		
+		int scaleDiff = destInfo.scale / srcInfo.scale;
+		if (scaleDiff > 1) {
+			println scaleDiff
+		}
+		render "Clearing destination...<br/>"
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				String sql = String.format("DELETE FROM map WHERE mapinfo_id=%d AND "+
+					"x BETWEEN %d AND %d AND y BETWEEN %d AND %d", destInfo.id, 
+					x, x + srcInfo.width * scaleDiff,
+					y, y + srcInfo.height * scaleDiff)
+				connection.createStatement().executeUpdate(sql)
+			}
+		})
+		render "Destination cleared<br/>"
+		
 		for (int sx = 0; sx < width; sx++) {
+			render sx + "/" + srcInfo.width + "<br/>"
+			println sx
 			for (int sy = 0; sy < height; sy++) {
 				Hex hex = Hex.find ({
 					eq("mapInfo", srcInfo)
 					eq("x", sx)
 					eq("y", sy)			
 				});
+				if (hex == null || hex.terrainId == destInfo.background) {
+					continue
+				}
+				/*
+				if (hex == null) {
+					hex = new Hex()
+					hex.terrainId = srcInfo.background
+					hex.areaId = 0
+				}
+				*/
 
 				List list = scaleService.getScaledHexes(sx, sy, srcInfo, destInfo)
 				list.each {
-					int xx = it.x
-					int yy = it.y
+					int xx = it.x + x
+					int yy = it.y + y
 					if (xx < 0 || yy < 0 || xx >= destInfo.width || yy >= destInfo.height) {
 						// Skip.
 					} else {
 						println "${sx},${sy} -> ${xx},${yy}" 
-						Hex.findAll ({
-							eq("mapInfo", destInfo)
-							eq("x", xx)
-							eq("y", yy)
-						}).each {
-							it.delete()
-						}
-		
-						Hex n = new Hex(hex)
-						n.mapInfo = destInfo
-						n.x = xx
-						n.y = yy
-						n.save()
+						
+						sessionFactory.currentSession.doWork(new Work() {
+							public void execute(Connection connection) {
+								String sql = String.format("INSERT INTO map (mapinfo_id, x, y, terrain_id, area_id) VALUES (%d, %d, %d, %d, %d)",
+										destInfo.id, xx, yy, hex.terrainId, hex.areaId);
+								connection.createStatement().executeUpdate(sql)
+							}
+						})
+				
 					}
 					
 				}
