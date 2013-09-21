@@ -23,6 +23,7 @@ class BootStrap {
 			def map = [:]
 			map['id'] = it.id
 			map['name'] = it.name
+			map['title'] = it.title
 			map['parent'] = (it.parent != null)?it.parent.id:0
 			
 			return map

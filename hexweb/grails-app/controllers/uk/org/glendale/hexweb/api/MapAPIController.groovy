@@ -18,6 +18,7 @@ import uk.org.glendale.hexweb.Terrain
 import uk.org.glendale.hexweb.Thing
 import uk.org.glendale.hexweb.Area
 import uk.org.glendale.hexweb.Vertex
+import uk.org.glendale.hexweb.services.AreaService;
 
 
 import groovy.sql.Sql
@@ -38,6 +39,7 @@ class MapAPIController {
 	def scaleService
 	def textureService
 	def pathService
+	def areaService
 	
 	/**
 	 * Returns information about this map. Includes the map metadata, list of
@@ -65,9 +67,10 @@ class MapAPIController {
 	
 	private List getThings(MapInfo info) {
 		List<Thing>  list = Thing.findAllByMapInfo(info)
-		if (info.template > 0) {
+		while (info.template > 0) {
 			MapInfo	template = mapService.getMapByNameOrId(info.template)
 			list.addAll(Thing.findAllByMapInfo(template))
+			info = mapService.getMapByNameOrId(info.template)
 		}
 		return list
 	}
@@ -242,12 +245,16 @@ class MapAPIController {
 			between('tileY', y, y + h - 1)			
 		})
 		List paths = pathService.getPathsInArea(info, x, y, w, h)
+		List areas = Area.findAll({
+			eq("mapInfo", info)
+		});
 		
 		Map data = new HashMap();
 		data.put("map", map)
 		data.put("area", area)
 		data.put("places", places)
 		data.put("paths", paths)
+		data.put("areas", areas)
 		data.put("info", [ "x": x, "y": y, "width": w, "height": h ]);
 		if (bounds != null) {
 			data.put("bounds", bounds)

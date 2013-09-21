@@ -52,14 +52,21 @@
 						}						
 					}
 					selectTerrain(VIEW.terrainBrush);
-					
+
 					// Build the thing palette.
+					console.log("Number of things: " + data.things.length);
 					for (var i=0; i < data.things.length; i++) {
+						console.log(i);
 						imagesToLoad++;
 						var t = data.things[i];
+						if (t == null) {
+							continue;
+						}
+						console.log("things["+i+":"+t.id+"] ["+t.name+"]");
 						MAP.things[t.id] = t;
 						t.image = new Image();
 						t.image.src = BASE_PATH + "things/" + t.name + ".png";
+						console.log(t.image.src);
 						t.image.onload = function() {
 							imagesToLoad--;
 						}						
@@ -127,7 +134,7 @@
 			background-color: #f0f0f0;
 			border: 1px solid #a0a0a0;
 			border-radius: 5px;
-			height: 1200px;
+			height: 98%;
 			width: 80px;
 			position: absolute;
 			left: 8px;
@@ -206,6 +213,19 @@
 			padding-top: 2px;
 			padding-bottom: 2px;
 		}
+		#infobar {
+			position: absolute;
+			bottom: 0px;
+			left: 110%;
+			width: 300px;
+			opacity: 0.75;
+			background-color: white;
+			z-index: 1;
+			height: 32px;
+			border: 1px solid #777777;
+			border-radius: 3px;
+			padding: 3px;
+		}
 	</style>
 	
 	<body>
@@ -251,6 +271,8 @@
 		</div>
 		<canvas id="map" width="100%"></canvas>
 		<!--  <canvas id="map" width="1600px" height="1200px"></canvas> -->
+		
+		<div id="infobar">${mapInfo.title}</div>
 		
 	
 	</body>

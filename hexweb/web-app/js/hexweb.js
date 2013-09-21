@@ -288,16 +288,25 @@ function drawSmallScale() {
 		MAP.places = data.places;
 		MAP.bounds = data.bounds;
 		MAP.paths = data.paths;
+		MAP.areas = data.areas;
 		sortPaths(MAP.paths);
 		
 		if (MAP.paths != null) {
 			console.log("Paths: " + MAP.paths.length);
 		}
+		if (MAP.areas != null) {
+			var areas = new Array();
+			for (var i=0; i < MAP.areas.length; i++) {
+				var a = MAP.areas[i];
+				areas[a.id] = a;
+			}
+			MAP.areas = areas;
+		}
 		
 		if (MAP.places != null) {
 			for (var i=0; i < MAP.places.length; i++) {
 				var p = MAP.places[i];
-				debug("Place [" + p.name + "] " + p.tileX +"," + p.tileY);
+				debug("Place [" + p.name + "] " + p.x +"," + p.y);
 				debug("  " + MAP.places[i].thing_id);
 			}
 		}

@@ -505,10 +505,44 @@ function deleteCurrentPath() {
 
 var mouseHasBeenUp = false;
 
+function updateInfoBar(px, py) {
+	var x = Math.floor(px / VIEW.currentScale.column);
+	var scale = VIEW.currentScale.scale;
+	if (x %2 == 1 && scale == 1) {
+		py -= VIEW.currentScale.row / 2;
+	} 
+	var y = Math.floor(py / VIEW.currentScale.row);
+	
+	if (MAP.map[y] == null || MAP.map[y][x] == null) {
+		$("#infobar").html("");
+		return;
+	}
+	
+	var areaId = MAP.area[y][x];
+	x += VIEW.x;
+	y += VIEW.y;
+	
+	var title = ""
+	if (areaId > 0 && MAP.areas[areaId] != null) {
+		title = MAP.areas[areaId].title;
+	}
+	
+	
+	$("#infobar").html("<b>X:</b> " + x + ", <b>Y:</b> " + y + "  " + title);
+	
+}
+
 /**
  * Called when the user draws or clicks on the map.
  */
 function drawMap(event) {
+	// Update the info bar
+	var canoffset = $("#map").offset();
+	var px = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left) - 8;
+	var py = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1 - 8;
+
+	updateInfoBar(px, py);
+	
 	if (VIEW.mouseDown == 0) {
 		// Flag to prevent multiple events from a single click. Wait for the
 		// mouse to go 'up' after a click.
@@ -517,9 +551,6 @@ function drawMap(event) {
 			return;
 		}
 	}
-	var canoffset = $("#map").offset();
-	var px = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left) - 8;
-	var py = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1 - 8;
 	
 	if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.mouseDown == 1 && mouseHasBeenUp) {
 		if (VIEW.editMode == EDIT_MODE.SELECT) {
