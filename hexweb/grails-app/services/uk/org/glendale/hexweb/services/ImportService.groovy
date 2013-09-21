@@ -11,9 +11,12 @@ package uk.org.glendale.hexweb.services
 import uk.org.glendale.hexweb.Area
 import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.MapInfo
+import uk.org.glendale.hexweb.Path
+import uk.org.glendale.hexweb.PathStyle
 import uk.org.glendale.hexweb.Place
 import uk.org.glendale.hexweb.Terrain
 import uk.org.glendale.hexweb.Thing
+import uk.org.glendale.hexweb.Vertex
 
 /**
  * Provides services for the import and conversion of Mapcraft v1 maps.
@@ -200,5 +203,46 @@ class ImportService {
 			}
 		}
 		println "Done places"
+		
+		mapcraft.tileset.paths.path.each { p ->
+			String 	name = p.'@name'.text()
+			String  type = p.'@type'.text()
+			String  style = p.'@style'.text()
+			
+			println "Importing path [${name}]"
+			
+			Path	path = new Path(mapInfo: mapInfo, name: name)
+			if (type == "river") {
+				path.style = PathStyle.RIVER
+			} else if (type == "road") {
+				path.style = PathStyle.ROAD
+			}
+			path.thickness1 = p.start.'@width' as int
+			path.thickness2 = p.end.'@width' as int
+			Vertex vertex = new Vertex(vertex: 0, x: p.start.'@x' as int, y: p.start.'@y' as int)
+			vertex.subX = vertex.x % 100
+			vertex.subY = vertex.y % 100
+			vertex.x /= 100
+			vertex.y /= 100
+			
+			List vertices = new ArrayList()
+			vertices.add(vertex)
+			int i = 1
+			p.path.each { v ->
+				int x = v.'@x'
+				int y = v.'@y'
+				int sx = x % 100
+				int sy = y % 100
+				x /= 100
+				y /= 100
+				vertices.add(new Vertex(vertex: i++, x: x, y: y, subX: sx, subY: sy))
+			}
+			vertex = new Vertex(vertex: i, x: p.end.'@x' as int, y: p.end.'@y' as int)
+			vertex.subX = vertex.x % 100
+			vertex.subY = vertex.y % 100
+			vertex.x /= 100
+			vertex.y /= 100
+			vertices.add(vertex)
+		}
     }
 }
