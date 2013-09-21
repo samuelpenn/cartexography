@@ -54,8 +54,8 @@ VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 10,
                { column: 24, row: 28, width: 33, height: 28, font: 9 , step: 10, scale: 1 },
                { column: 12, row: 14, width: 17, height: 14, font: 6 , step: 20, scale: 1 }, 
                { column: 6, row: 7, width: 9, height: 7, font: 4, step: 40, scale: 1  }, 
-               { column: 8, row: 8, width: 8, height: 8, font: 0, step: 200, scale: 10 },
-               { column: 4, row: 4, width: 4, height: 4, font: 0, step: 400, scale: 20 }
+               { column: 8, row: 8, width: 8, height: 8, font: 0, step: 400, scale: 10 },
+               { column: 4, row: 4, width: 4, height: 4, font: 0, step: 1600, scale: 20 }
              ];
 VIEW.currentScale = VIEW.scale[0];
 

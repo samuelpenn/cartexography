@@ -23,6 +23,7 @@ import uk.org.glendale.hexweb.Vertex
 import groovy.sql.Sql
 import java.awt.Image
 import java.sql.Connection
+import java.sql.PreparedStatement;
 import java.sql.ResultSet
 import java.sql.Statement
 import javax.servlet.ServletOutputStream
@@ -522,6 +523,7 @@ class MapAPIController {
 			println scaleDiff
 		}
 		render "Clearing destination...<br/>"
+
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
 				String sql = String.format("DELETE FROM map WHERE mapinfo_id=%d AND "+
@@ -533,48 +535,8 @@ class MapAPIController {
 		})
 		render "Destination cleared<br/>"
 		
-		for (int sx = 0; sx < width; sx++) {
-			render sx + "/" + srcInfo.width + "<br/>"
-			println sx
-			for (int sy = 0; sy < height; sy++) {
-				Hex hex = Hex.find ({
-					eq("mapInfo", srcInfo)
-					eq("x", sx)
-					eq("y", sy)			
-				});
-				if (hex == null || hex.terrainId == destInfo.background) {
-					continue
-				}
-				/*
-				if (hex == null) {
-					hex = new Hex()
-					hex.terrainId = srcInfo.background
-					hex.areaId = 0
-				}
-				*/
-
-				List list = scaleService.getScaledHexes(sx, sy, srcInfo, destInfo)
-				list.each {
-					int xx = it.x + x
-					int yy = it.y + y
-					if (xx < 0 || yy < 0 || xx >= destInfo.width || yy >= destInfo.height) {
-						// Skip.
-					} else {
-						println "${sx},${sy} -> ${xx},${yy}" 
-						
-						sessionFactory.currentSession.doWork(new Work() {
-							public void execute(Connection connection) {
-								String sql = String.format("INSERT INTO map (mapinfo_id, x, y, terrain_id, area_id) VALUES (%d, %d, %d, %d, %d)",
-										destInfo.id, xx, yy, hex.terrainId, hex.areaId);
-								connection.createStatement().executeUpdate(sql)
-							}
-						})
-				
-					}
-					
-				}
-			}
-		}
+		mapService.copy(srcInfo, destInfo, x, y);
+	
 		render "Done"
 	}
 	

@@ -12,6 +12,7 @@ import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.MapInfo
 
 import java.sql.Connection
+import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Statement
 import org.hibernate.Session
@@ -23,6 +24,7 @@ import org.hibernate.jdbc.Work
  */
 class MapService {
 	def SessionFactory		sessionFactory
+	def ScaleService		scaleService
 	
 	/**
 	 * Gets the map details for the map specified by unique id.
@@ -322,6 +324,7 @@ class MapService {
 	def getBounds(MapInfo info, int x, int width, int resolution) {
 		List	list = new ArrayList()
 		println "getBounds: ${info.id} ${x} ${width}"
+
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
 				String sql = null;
@@ -442,4 +445,139 @@ class MapService {
 			}
 		}
 	}
+	
+	/**
+	 * Copy one map into another map, using the specified offsets.
+	 * This assumes that the two maps are the same scale, which allows some
+	 * degree of optimisation. If they are not the same scale, then
+	 * copyDifferentScale() will be called instead, so it is safe to always
+	 * call this method.
+	 */
+	def copy(MapInfo srcInfo, MapInfo destInfo, int x, int y) {
+		if (srcInfo.scale != destInfo.scale) {
+			// Call the right method.
+			return copyDifferentScale(srcInfo, destInfo, x, y)
+		}
+		List bounds = getBounds(destInfo, x, srcInfo.width, 1)
+		if (bounds.size() == 0) {
+			bounds = null
+		}
+		
+		for (int sx = 0; sx < srcInfo.width; sx++) {
+			println sx + "/" + srcInfo.width 
+
+			Object[] rows = new Object[srcInfo.height]
+
+			sessionFactory.currentSession.doWork(new Work() {
+				public void execute(Connection connection) {
+					String selectSql = "SELECT y, terrain_id, area_id FROM map WHERE mapinfo_id=? AND x=? ORDER BY y"
+					String insertSql = "INSERT INTO map (mapinfo_id, x, y, terrain_id, area_id) VALUES (?, ?, ?, ?, ?)"
+
+					PreparedStatement  select = connection.prepareStatement(selectSql)
+					PreparedStatement  insert = connection.prepareStatement(insertSql)
+
+					select.setInt(1, (int)srcInfo.id)
+					select.setInt(2, (int)sx)
+   				
+					ResultSet rs = select.executeQuery()
+					while (rs.next()) {
+						int sy = rs.getInt(1)
+						int terrainId = rs.getInt(2)
+						int areaId = rs.getInt(3)
+						rows[sy] = [ 't': terrainId, 'a': areaId ]
+					}
+					rs.close()
+
+					for (int sy=0; sy < srcInfo.height; sy++) {
+						int terrainId = srcInfo.background
+						int areaId = 0
+						if (rows[sy] != null) {
+							terrainId = rows[sy].t
+							areaId = rows[sy].a
+						}
+
+						int xx = sx + x
+						int yy = sy + y
+						if (bounds == null && (xx < 0 || yy < 0 || xx >= destInfo.width || yy >= destInfo.height)) {
+							// Skip.
+						} else if (bounds != null && (xx < 0 || yy < bounds.get(xx-x).min || xx >= destInfo.width || yy >= bounds.get(xx-x).max)) {
+							// Skip.
+						} else {
+							insert.setInt(1, (int)destInfo.id)
+							insert.setInt(2, xx)
+							insert.setInt(3, yy)
+							insert.setInt(4, terrainId)
+							insert.setInt(5, areaId)
+							insert.executeUpdate()				
+						}
+					}
+				}
+			})
+		}
+	}
+
+	/**
+	 * Copies one map into another map, accounting for any scale differences.
+	 * Otherwise this is identical to the copy() method.
+	 */
+	def copyDifferentScale(MapInfo srcInfo, MapInfo destInfo, int x, int y) {
+		List bounds = getBounds(destInfo, x, srcInfo.width, 1)
+		if (bounds.size() == 0) {
+			bounds = null;
+		}
+		for (int sx = 0; sx < srcInfo.width; sx++) {
+			println sx + "/" + srcInfo.width
+
+			Object[] rows = new Object[srcInfo.height]
+
+			sessionFactory.currentSession.doWork(new Work() {
+				public void execute(Connection connection) {
+					String selectSql = "SELECT y, terrain_id, area_id FROM map WHERE mapinfo_id=? AND x=? ORDER BY y"
+					String insertSql = "REPLACE INTO map (mapinfo_id, x, y, terrain_id, area_id) VALUES (?, ?, ?, ?, ?)"
+
+					PreparedStatement  select = connection.prepareStatement(selectSql)
+					PreparedStatement  insert = connection.prepareStatement(insertSql)
+
+					select.setInt(1, (int)srcInfo.id)
+					select.setInt(2, (int)sx)
+				   
+					ResultSet rs = select.executeQuery()
+					while (rs.next()) {
+						int sy = rs.getInt(1)
+						int terrainId = rs.getInt(2)
+						int areaId = rs.getInt(3)
+						rows[sy] = [ 't': terrainId, 'a': areaId ]
+					}
+					rs.close()
+
+					for (int sy=0; sy < srcInfo.height; sy++) {
+						int terrainId = srcInfo.background
+						int areaId = 0
+						if (rows[sy] != null) {
+							terrainId = rows[sy].t
+							areaId = rows[sy].a
+						}
+						List list = scaleService.getScaledHexes(sx, sy, srcInfo, destInfo)
+						list.each {
+							int xx = it.x + x
+							int yy = it.y + y
+							if (bounds == null && (xx < 0 || yy < 0 || xx >= destInfo.width || yy >= destInfo.height)) {
+								// Skip.
+							} else if (bounds != null && (xx < 0 || yy < bounds.get(xx-x).min || xx >= destInfo.width || yy >= bounds.get(xx-x).max)) {
+								// Skip.
+							} else {
+								insert.setInt(1, (int)destInfo.id)
+								insert.setInt(2, xx)
+								insert.setInt(3, yy)
+								insert.setInt(4, terrainId)
+								insert.setInt(5, areaId)
+								insert.executeUpdate()
+							}
+						}
+					}
+				}
+			})
+
+		}
+	}	
 }
