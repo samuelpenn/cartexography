@@ -186,17 +186,17 @@ class ImportService {
 			int type = thing.'@type' as int
 			int x = thing.'@x' as int
 			int y = thing.'@y' as int
-			String name = thing.name.text()
+			String title = thing.name.text()
 			String description = thing.description.text()
 			int importance = thing.importance.text() as int
 			
-			name = mapInfo.name + "-" + name.toLowerCase().replaceAll(" ", "-")
+			String name = mapInfo.name + "-" + title.toLowerCase().replaceAll(" ", "-")
 			
 			println "Importing [${name}] of type [${type}]"
 			
 			Thing	t = thingMap.get(type)
 			if (t != null) {
-				Place place = new Place(mapInfo: mapInfo, thing: t, name: name, title: name)
+				Place place = new Place(mapInfo: mapInfo, thing: t, name: name, title: title)
 				place.importance = importance
 				place.tileX = x / 100
 				place.tileY = y / 100
@@ -209,11 +209,12 @@ class ImportService {
 		}
 		println "Done places"
 		
+		// Import paths.
 		mapcraft.tileset.paths.path.each { p ->
 			String 	name = p.'@name'
 			String  type = p.'@type'
 			String  style = p.'@style'
-			
+
 			println "Importing path [${name}]"
 			
 			Path	path = new Path(mapInfo: mapInfo, name: name)

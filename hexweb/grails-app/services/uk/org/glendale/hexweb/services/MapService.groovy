@@ -8,6 +8,7 @@
  */
 package uk.org.glendale.hexweb.services
 
+import uk.org.glendale.hexweb.Area
 import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.MapInfo
 
@@ -25,6 +26,7 @@ import org.hibernate.jdbc.Work
 class MapService {
 	def SessionFactory		sessionFactory
 	def ScaleService		scaleService
+	def AreaService			areaService
 	
 	/**
 	 * Gets the map details for the map specified by unique id.
@@ -465,6 +467,19 @@ class MapService {
 		if (bounds.size() == 0) {
 			bounds = null
 		}
+		// Create area mappings.
+		def areaMapping = [:]
+		
+		areaService.getAreas(srcInfo).each() { a ->
+			Area area = areaService.getAreaByName(destInfo, a.name)
+			if (area == null) {
+				area = new Area(mapInfo: destInfo, name: a.name, title: a.title)
+				area.save()
+			}
+			areaMapping.put(a.id, area.id)
+		}
+		
+		
 		// Copy terrain data.
 		for (int sx = 0; sx < srcInfo.width; sx++) {
 			println sx + "/" + srcInfo.width 
@@ -519,7 +534,50 @@ class MapService {
 				}
 			})
 		}
+		copyPlaces(srcInfo, destInfo, x, y, 1)
+		copyPaths(srcInfo, destInfo, x, y, 1)
+	}
+	
+	private void copyPlaces(MapInfo srcInfo, MapInfo destInfo, int x, int y, int scale) {
 		// Copy places
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				Statement		stmnt = connection.createStatement()
+				
+				String selectSql = String.format("SELECT DISTINCT(name) FROM place "+
+					            "WHERE mapinfo_id=%d", srcInfo.id)
+				
+				ResultSet rs = stmnt.executeQuery(selectSql)
+				String 	  names = ""
+				while(rs.next()) {
+					String n = rs.getString(1)
+					if (names.length() > 0) {
+						names += ",'"+n.replaceAll("'", "''")+"'"
+					} else {
+						names += "'"+n.replaceAll("'", "''")+"'"
+					}
+				}
+				rs.close()
+				
+				if (names.length() > 0) {
+					String deleteSql = String.format("DELETE FROM place WHERE mapinfo_id=%d "+
+									"AND name IN (%s)", destInfo.id, names);
+					stmnt.executeUpdate(deleteSql)
+				}
+				
+				String insertSql = String.format("INSERT INTO place(mapinfo_id, thing_id, importance, "+
+					           "tile_x, tile_y, sub_x, sub_y, name, title) SELECT %d, thing_id, "+
+							   "importance, (%d * tile_x)+%d, (%d * tile_y)+%d, sub_x, sub_y, name, title "+
+							   "FROM place WHERE mapinfo_id=%d",
+							   destInfo.id, scale, x, scale, y, srcInfo.id)
+				println insertSql
+				stmnt.executeUpdate(insertSql)
+			}
+		})
+	}
+	
+	private void copyPaths(MapInfo srcInfo, MapInfo destInfo, int x, int y, int scale) {
+		// Copy paths
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
 				Statement		stmnt = connection.createStatement()
@@ -564,6 +622,19 @@ class MapService {
 		if (bounds.size() == 0) {
 			bounds = null;
 		}
+		// Create area mappings.
+		def areaMapping = [:]
+		
+		areaService.getAreas(srcInfo).each { a ->
+			Area area = areaService.getAreaByName(destInfo, a.name)
+			if (area == null) {
+				area = new Area(mapInfo: destInfo, name: a.name, title: a.title)
+				area.save()
+			}
+			println "Mapped ${a.id} to ${area.id}"
+			areaMapping.put(a.id, area.id)
+		}
+
 		for (int sx = 0; sx < srcInfo.width; sx++) {
 			println sx + "/" + srcInfo.width
 
@@ -595,6 +666,9 @@ class MapService {
 						if (rows[sy] != null) {
 							terrainId = rows[sy].t
 							areaId = rows[sy].a
+							if (areaMapping.get(areaId) != null) {
+								areaId = areaMapping.get(areaId)
+							}
 						}
 						List list = scaleService.getScaledHexes(sx, sy, srcInfo, destInfo)
 						list.each {
@@ -618,5 +692,8 @@ class MapService {
 			})
 
 		}
+		int scale = srcInfo.scale / destInfo.scale
+		copyPlaces(srcInfo, destInfo, x, y, scale)
+		copyPaths(srcInfo, destInfo, x, y, scale)
 	}	
 }

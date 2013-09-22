@@ -26,6 +26,12 @@ class AreaService {
 		});
     }
 	
+	def getAreas(MapInfo info) {
+		return Area.findAll ({
+			eq("mapInfo", info)
+		});
+	}
+	
 	/**
 	 * Remove all named areas from the map. This does not unassign
 	 * any tile data, so after calling this, tiles may point to areas
