@@ -465,7 +465,7 @@ class MapService {
 		if (bounds.size() == 0) {
 			bounds = null
 		}
-		
+		// Copy terrain data.
 		for (int sx = 0; sx < srcInfo.width; sx++) {
 			println sx + "/" + srcInfo.width 
 
@@ -487,7 +487,9 @@ class MapService {
 						int sy = rs.getInt(1)
 						int terrainId = rs.getInt(2)
 						int areaId = rs.getInt(3)
-						rows[sy] = [ 't': terrainId, 'a': areaId ]
+						if (sy < srcInfo.height) {
+							rows[sy] = [ 't': terrainId, 'a': areaId ]
+						}
 					}
 					rs.close()
 
@@ -517,6 +519,40 @@ class MapService {
 				}
 			})
 		}
+		// Copy places
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				Statement		stmnt = connection.createStatement()
+				
+				String selectSql = String.format("SELECT DISTINCT(name) FROM place "+
+					            "WHERE mapinfo_id=%d", srcInfo.id)
+				
+				ResultSet rs = stmnt.executeQuery(selectSql)
+				String 	  names = ""
+				while(rs.next()) {
+					String n = rs.getString(1)
+					if (names.length() > 0) {
+						names += ",'"+n.replaceAll("'", "''")+"'"
+					} else {
+						names += "'"+n.replaceAll("'", "''")+"'"
+					}
+				}
+				rs.close()
+				
+				if (names.length() > 0) {
+					String deleteSql = String.format("DELETE FROM place WHERE mapinfo_id=%d "+
+									"AND name IN (%s)", destInfo.id, names);
+					stmnt.executeUpdate(deleteSql)
+				}
+				
+				String insertSql = String.format("INSERT INTO place(mapinfo_id, thing_id, importance, "+
+					           "tile_x, tile_y, sub_x, sub_y, name, title) SELECT %d, thing_id, "+
+							   "importance, tile_x+%d, tile_y+%d, sub_x, sub_y, name, title "+
+							   "FROM place WHERE mapinfo_id=%d",
+							   destInfo.id, x, y, srcInfo.id)
+				stmnt.executeUpdate(insertSql)
+			}
+		})
 	}
 
 	/**

@@ -190,6 +190,8 @@ class ImportService {
 			String description = thing.description.text()
 			int importance = thing.importance.text() as int
 			
+			name = mapInfo.name + "-" + name.toLowerCase().replaceAll(" ", "-")
+			
 			println "Importing [${name}] of type [${type}]"
 			
 			Thing	t = thingMap.get(type)
