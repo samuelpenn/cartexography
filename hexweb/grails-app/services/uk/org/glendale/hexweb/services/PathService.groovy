@@ -142,7 +142,19 @@ class PathService {
 				}
 			}
 		})
-
+	}
+	
+	def addVertices(Path path, List vertices) {
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				vertices.each { v ->
+					String sql = String.format("INSERT INTO vertex (path_id, vertex, x, y, sub_x, sub_y) VALUES (%d, %d, %d, %d, %d, %d)",
+						path.id, v.vertex, v.x, v.y, v.subX, v.subY)
+					Statement stmnt = connection.prepareStatement(sql)
+					stmnt.executeUpdate()
+				}
+			}
+		})
 	}
 	
 	/**

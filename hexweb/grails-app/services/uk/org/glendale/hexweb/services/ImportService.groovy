@@ -35,6 +35,7 @@ class ImportService {
 	def terrainService
 	def mapService
 	def thingService
+	def pathService
 	
 	private static String BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 	private int fromBase64(String code) {
@@ -101,8 +102,10 @@ class ImportService {
 		def  featureMap = [:]
 		def	 thingMap = [:]
 		
+		// Make sure that the map is empty before we import.
+		mapService.clearMap(mapInfo)
+
 		// Read areas.
-		areaService.clearAreas(mapInfo)
 		mapcraft.areas.area.each { a ->
 			int areaId = a.'@id' as int
 			String areaName = a.'@name' as String
@@ -110,12 +113,11 @@ class ImportService {
 			if (areaUri == null) {
 				areaUri = areaName.toLowerCase()
 			}
-			println areaName
 			
 			Area area = areaService.getAreaByName(mapInfo, areaUri)
 			if (area == null) {
 				area = new Area(mapInfo: mapInfo, name: areaUri, title: areaName)
-				area.save()
+				area.save(flush:true, failOnError: true)
 			}
 			println "Mapping [${areaName}] to [${area.id}]"
 			areaMap.put(areaId, area.id)
@@ -144,15 +146,15 @@ class ImportService {
 				}	
 			}
 		}
-		// Make sure that the map is empty before we import.
-		mapService.clearMap(mapInfo)
 		terrainService.terrainCache = [:]
 		
 		// Read blob data.
 		mapcraft.tileset.tiles.column.each { column ->
 			int x = column.'@x' as int
 			int y = 0
-			println "Column ${x}"
+			if (x % 10 == 0) {
+				println "Column ${x}"
+			}
 			column.text().split().each { blob ->
 				int t = getTerrainCode(blob)
 				int f = getFeatureCode(blob)
@@ -176,6 +178,7 @@ class ImportService {
 				y++
 			}
 		}
+
 		println "Done tiles"
 		
 		// Import places
@@ -205,9 +208,9 @@ class ImportService {
 		println "Done places"
 		
 		mapcraft.tileset.paths.path.each { p ->
-			String 	name = p.'@name'.text()
-			String  type = p.'@type'.text()
-			String  style = p.'@style'.text()
+			String 	name = p.'@name'
+			String  type = p.'@type'
+			String  style = p.'@style'
 			
 			println "Importing path [${name}]"
 			
@@ -217,32 +220,49 @@ class ImportService {
 			} else if (type == "road") {
 				path.style = PathStyle.ROAD
 			}
-			path.thickness1 = p.start.'@width' as int
-			path.thickness2 = p.end.'@width' as int
-			Vertex vertex = new Vertex(vertex: 0, x: p.start.'@x' as int, y: p.start.'@y' as int)
-			vertex.subX = vertex.x % 100
-			vertex.subY = vertex.y % 100
-			vertex.x /= 100
-			vertex.y /= 100
 			
-			List vertices = new ArrayList()
-			vertices.add(vertex)
-			int i = 1
-			p.path.each { v ->
-				int x = v.'@x'
-				int y = v.'@y'
-				int sx = x % 100
-				int sy = y % 100
-				x /= 100
-				y /= 100
-				vertices.add(new Vertex(vertex: i++, x: x, y: y, subX: sx, subY: sy))
+			Node	startNode = p.start[0]
+			Node	endNode	= p.end[0]
+			
+			if (startNode == null || endNode == null) {
+				println "Path has no start or end nodes"
+			} else {
+				path.thickness1 = startNode.'@width' as int
+				path.thickness2 = endNode.'@width' as int
+				
+				path.save(failOnError: true, flush:true)
+				println "Saved path as ${path.id}"
+				
+				Vertex vertex = new Vertex(vertex: 0, x: startNode.'@x' as int, y: startNode.'@y' as int)
+				vertex.id = 0
+				vertex.path = path
+				vertex.subX = vertex.x % 100
+				vertex.subY = vertex.y % 100
+				vertex.x /= 100
+				vertex.y /= 100
+				
+				List vertices = new ArrayList()
+				vertices.add(vertex)
+				println "Added first vertex"
+				int i = 1
+				p.path.each { v ->
+					int x = v.'@x' as int
+					int y = v.'@y' as int
+					int sx = x % 100
+					int sy = y % 100
+					x /= 100
+					y /= 100
+					vertices.add(new Vertex(id: 0, path: path, vertex: i++, x: x, y: y, subX: sx, subY: sy))
+				}
+				vertex = new Vertex(vertex: i, x: endNode.'@x' as int, y: endNode.'@y' as int)
+				vertex.subX = vertex.x % 100
+				vertex.subY = vertex.y % 100
+				vertex.x /= 100
+				vertex.y /= 100
+				vertices.add(vertex)
+				
+				pathService.addVertices(path, vertices)
 			}
-			vertex = new Vertex(vertex: i, x: p.end.'@x' as int, y: p.end.'@y' as int)
-			vertex.subX = vertex.x % 100
-			vertex.subY = vertex.y % 100
-			vertex.x /= 100
-			vertex.y /= 100
-			vertices.add(vertex)
 		}
     }
 }

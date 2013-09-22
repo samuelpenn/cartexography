@@ -176,6 +176,9 @@ class MapService {
 			public void execute(Connection connection) {
 				Statement stmnt = connection.createStatement()
 				stmnt.executeUpdate("DELETE FROM map WHERE mapinfo_id=${info.id}")
+				stmnt.executeUpdate("DELETE FROM area WHERE mapinfo_id=${info.id}")
+				stmnt.executeUpdate("DELETE FROM place WHERE mapinfo_id=${info.id}")
+				stmnt.executeUpdate("DELETE FROM path WHERE mapinfo_id=${info.id}")
 			}
 		})
 	}
