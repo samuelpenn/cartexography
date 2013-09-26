@@ -114,6 +114,30 @@
 				
 				refreshMap();
 			};			
+
+			function moveMapTo(x, y) {
+				VIEW.x = x;
+				VIEW.y = y;
+				
+				if (VIEW.x %2 == 1) {
+					VIEW.x --;
+				}
+
+				if (VIEW.x < 0) VIEW.x = 0;
+				if (VIEW.y < 0) VIEW.y = 0;
+				
+				if (VIEW.x > MAP.info.width - VIEW.width) {
+					VIEW.x = MAP.info.width - VIEW.width;
+					if (VIEW.x %2 == 1) {
+						VIEW.x --;						
+					}
+				}
+				if (VIEW.y > MAP.info.height - VIEW.height) {
+					VIEW.y = MAP.info.height - VIEW.height;
+				}
+				
+				refreshMap();
+			};			
 		</g:javascript>
 		
 		<r:layoutResources/>
@@ -246,6 +270,7 @@
 				<img id="zoomBtn3" src="${resource(dir: 'images/icons', file: 'zoom_3.png')}" title="Tiny" alt="Tiny" onclick="setZoom(3)"/>
 				<img id="zoomBtn4" src="${resource(dir: 'images/icons', file: 'zoom_4.png')}" title="Tiny+" alt="Tiny+" onclick="setZoom(4)"/>
 				<img id="showGrid" src="${resource(dir: 'images/icons', file: 'grid.png')}" title="Grid toggle" alt="Grid toggle" onclick="toggleGrid()"/>
+				<img class="menu" id="mapMenu" src="${resource(dir: 'images/icons', file: 'map.png')}" title="Map thumbnail" alt="Map thumbnail" onclick="openMap()"/>
 				<div id="brushIcons">
 					<br/>
 					<img id="brushBtn1" src="${resource(dir: 'images/icons', file: 'brush_1.png')}" title="Small Brush (1)" alt="Small (1)" onclick="setBrush(1)"/>

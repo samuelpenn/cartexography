@@ -499,5 +499,6 @@ function closeAllDialogs() {
 	$("#placeDialog").remove();
 	$("#pathDialog").remove();
 	$("#terrainPopout").remove();
-	$("#thingPopout").remove();	
+	$("#thingPopout").remove();
+	$("#mapPopout").remove();
 }
