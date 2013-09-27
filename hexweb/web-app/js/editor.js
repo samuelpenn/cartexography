@@ -21,7 +21,7 @@ function openMap() {
 	var x = $("#mapMenu").position().left + 96;
 	var y = $("#mapMenu").position().top;
 	var	width = 640;
-	var height = parseInt(MAP.info.height / (MAP.info.width / 640.0))
+	var height = parseInt(MAP.info.height / (MAP.info.width * 1.0 / 640.0))
 	debug(width + "x" + height);
 	if (document.getElementById("mapPopout") != null) {
 		// Toggle on/off.
@@ -34,12 +34,15 @@ function openMap() {
 	$("#mapPopout").css("position", "absolute");
 	$("#mapPopout").css("left", x);
 	$("#mapPopout").css("top", y);
-	$("#mapPopout").css("width", width+"px");
-	$("#mapPopout").css("height", height+"px");
+	$("#mapPopout").css("width", (width)+"px");
+	$("#mapPopout").css("height", (height)+"px");
 	$("#mapPopout").css("border", "1px solid #999999");
+	$("#mapPopout").css("opacity", "1");
 	
-	$("#mapPopout").append("<img id='mapThumb' src='/hexweb/api/map/eorthe/thumb?w=320' width='100%' height='100%'/>");
-	$("#mapThumb").css("opacity", "0.85");
+	$("#mapPopout").html("<img id='mapThumb' src='/hexweb/api/map/"+MAP.info.name+
+			               "/thumb?w=320&forceWidth=true' width='"+width+
+			               "' height='"+height+"'/>");
+	$("#mapThumb").css("opacity", "1");
 	document.getElementById("mapThumb").addEventListener("mousedown", clickThumb, false);
 	debug($("#mapPopout").width() + "x" + $("#mapPopout").height());
 	debug($("#mapThumb").width() + "x" + $("#mapThumb").height());

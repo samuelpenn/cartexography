@@ -554,19 +554,21 @@ class MapAPIController {
 	 * @param w
 	 * @return
 	 */
-	def thumb(String id, int w) {
+	def thumb(String id, int w, boolean forceWidth) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
 		int			min = Math.min(info.width, info.height)
 		int			max = Math.max(info.width, info.height)
 		
 		int			step = max / w
+		if (forceWidth) {
+			step = info.width / w
+		}
 		if (step < 1) {
 			step = 1;
 		}
-		
 		int			width = info.width / step
-		int			height = info.height / step
+		int			height = info.height / step	
 		
 		List        terrain = mapService.getThumbData(info,  step)
 		
@@ -619,7 +621,7 @@ class MapAPIController {
 		height = height * scale
 		
 		SimpleImage scaled = img.getScaled(width, height)
-		if (height < w) {
+		if (height < w && !forceWidth) {
 			SimpleImage tmp = new SimpleImage(width, w, "#ffffff")
 			tmp.paint(scaled.getImage(), 0, 0, width, height)
 			scaled = tmp
