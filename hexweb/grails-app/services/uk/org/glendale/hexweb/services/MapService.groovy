@@ -543,10 +543,10 @@ class MapService {
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
 				Statement		stmnt = connection.createStatement()
-				
+
 				String selectSql = String.format("SELECT DISTINCT(name) FROM place "+
 					            "WHERE mapinfo_id=%d", srcInfo.id)
-				
+
 				ResultSet rs = stmnt.executeQuery(selectSql)
 				String 	  names = ""
 				while(rs.next()) {
@@ -558,13 +558,13 @@ class MapService {
 					}
 				}
 				rs.close()
-				
+
 				if (names.length() > 0) {
 					String deleteSql = String.format("DELETE FROM place WHERE mapinfo_id=%d "+
 									"AND name IN (%s)", destInfo.id, names);
 					stmnt.executeUpdate(deleteSql)
 				}
-				
+
 				String insertSql = String.format("INSERT INTO place(mapinfo_id, thing_id, importance, "+
 					           "tile_x, tile_y, sub_x, sub_y, name, title) SELECT %d, thing_id, "+
 							   "importance, (%d * tile_x)+%d, (%d * tile_y)+%d, sub_x, sub_y, name, title "+
@@ -576,39 +576,51 @@ class MapService {
 		})
 	}
 	
+	/**
+	 * Copy all the paths from the source map to the destination map.
+	 * Position and scale of paths may need to be altered during the copy.
+	 */
 	private void copyPaths(MapInfo srcInfo, MapInfo destInfo, int x, int y, int scale) {
 		// Copy paths
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
 				Statement		stmnt = connection.createStatement()
-				
-				String selectSql = String.format("SELECT DISTINCT(name) FROM place "+
-					            "WHERE mapinfo_id=%d", srcInfo.id)
-				
+
+				String selectSql = String.format("SELECT id FROM path WHERE mapinfo_id=%d", srcInfo.id)
 				ResultSet rs = stmnt.executeQuery(selectSql)
-				String 	  names = ""
+				def		pathIds = []
 				while(rs.next()) {
-					String n = rs.getString(1)
-					if (names.length() > 0) {
-						names += ",'"+n.replaceAll("'", "''")+"'"
-					} else {
-						names += "'"+n.replaceAll("'", "''")+"'"
-					}
+					pathIds.add(rs.getInt(1))
 				}
 				rs.close()
 				
-				if (names.length() > 0) {
-					String deleteSql = String.format("DELETE FROM place WHERE mapinfo_id=%d "+
-									"AND name IN (%s)", destInfo.id, names);
-					stmnt.executeUpdate(deleteSql)
+				String prefix = destInfo.name.replaceAll("[^a-zA-Z0-9]*", "") + "_"
+				//stmnt.executeUpdate("DELETE FROM path WHERE name LIKE '"+prefix+"%'")
+
+				pathIds.each { pId ->
+					String name = prefix + pId
+					String insertSql = String.format("INSERT INTO path(mapinfo_id, name, style, " +
+						"thickness1, thickness2) SELECT %d, '%s', style, thickness1, thickness2 " +
+						"FROM path WHERE id=%d", destInfo.id, name, pId);
+					println(insertSql)
+					stmnt.executeUpdate(insertSql)
+					
+					int	pathId = 0
+					selectSql = String.format("SELECT id FROM path WHERE name='%s'", name)
+					rs = stmnt.executeQuery(selectSql)
+					if (rs.next()) {
+						pathId = rs.getInt(1)
+					}
+					rs.close()
+					if (pathId != 0) {
+						println "Copying path ${pId} -> ${pathId}"
+						insertSql = String.format("INSERT INTO vertex(path_id, vertex, x, y, sub_x, sub_y) " +
+							"SELECT %d, vertex, (%d * x) + %d, (%d * y) + %d, sub_x, sub_y FROM vertex WHERE path_id = %d",
+							 pathId, scale, x, scale, y, pId)
+						println(insertSql)
+						stmnt.executeUpdate(insertSql)
+					}
 				}
-				
-				String insertSql = String.format("INSERT INTO place(mapinfo_id, thing_id, importance, "+
-					           "tile_x, tile_y, sub_x, sub_y, name, title) SELECT %d, thing_id, "+
-							   "importance, tile_x+%d, tile_y+%d, sub_x, sub_y, name, title "+
-							   "FROM place WHERE mapinfo_id=%d",
-							   destInfo.id, x, y, srcInfo.id)
-				stmnt.executeUpdate(insertSql)
 			}
 		})
 	}
