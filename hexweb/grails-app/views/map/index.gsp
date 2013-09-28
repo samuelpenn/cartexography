@@ -206,6 +206,10 @@
 			background-color: #eeeeee;
 			margin: 3px;
 		}
+		#areaPopout .tileBox {
+			width: 90px;
+			height: 32px;
+		}
 		.tilebox img {
 			float: left;
 		}
@@ -287,6 +291,8 @@
 				<img class="menu" id="terrainMenu" onclick="openTerrainMenu()"/>
 				<br/>
 				<img class="menu" id="thingMenu" onclick="openThingMenu()"/>
+				<br/>
+				<img class="menu" id="areaMenu" onclick="openAreaMenu()" src="${resource(dir: 'images/icons', file: 'areas.png')}"/>
 				<br/>
 				<img id="pathStyleROAD" src="${resource(dir: 'images/icons', file: 'path_road.png')}" onclick="setPathStyle(BRUSH_STYLE.ROAD)"/>
 				<img id="pathStyleRIVER" src="${resource(dir: 'images/icons', file: 'path_river.png')}" onclick="setPathStyle(BRUSH_STYLE.RIVER)"/>

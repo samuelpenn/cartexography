@@ -14,6 +14,7 @@ var BRUSH_MODE = new Object();
 BRUSH_MODE.TERRAIN = "TERRAIN";
 BRUSH_MODE.THING = "THING";
 BRUSH_MODE.PATH = "PATH";
+BRUSH_MODE.AREA = "AREA";
 
 var BRUSH_STYLE = new Object();
 BRUSH_STYLE.ROAD = "ROAD";
@@ -45,6 +46,7 @@ VIEW.brushStyle = BRUSH_STYLE.RIVER;
 
 VIEW.terrainBrush = 0;
 VIEW.thingBrush = 0;
+VIEW.areaBrush = 0;
 VIEW.showGrid = false;
 
 VIEW.zoom = 0;
@@ -322,6 +324,72 @@ function drawSmallScale() {
 
 };
 
+function redrawHex(x, y) {
+	var		startX = VIEW.x;
+	var 	startY = VIEW.y;
+	var		mapWidth = VIEW.width;
+	var		mapHeight = VIEW.height;
+	var		tileWidth = VIEW.scale[VIEW.zoom].column;
+	var		tileHeight = VIEW.scale[VIEW.zoom].height;
+
+	mapWidth = parseInt(VIEW.port.width / tileWidth) - 1;
+	mapHeight = parseInt(VIEW.port.height / tileHeight) - 1;
+	mapWidth = VIEW.width;
+	mapHeight = VIEW.height;
+
+	var 	imageWidth = VIEW.scale[VIEW.zoom].width;
+	var 	imageHeight = VIEW.scale[VIEW.zoom].height;
+	var		halfOffset = parseInt(imageHeight / 2);
+
+	var t = MAP.map[y][x];
+	var px = x * tileWidth + 8;
+	var py = y * tileHeight + (x%2 * halfOffset) + 8;
+	
+	VIEW.context.drawImage(MAP.images[t].image, 
+			px, py, imageWidth, imageHeight);
+
+	if (VIEW.showGrid) {
+		drawHexGrid(x, y);
+	}
+	VIEW.context.strokeStyle = '#ff0000';
+	VIEW.context.lineWidth = 3;
+	var px = x * tileWidth + 8;
+	var py = y * tileHeight + (x%2 * halfOffset) + 8;
+	if (y > 0 && MAP.area[y][x] != MAP.area[y-1][x]) {
+		VIEW.context.beginPath();
+		VIEW.context.moveTo(px + tileWidth/3, py);
+		VIEW.context.lineTo(px + tileWidth, py);
+		VIEW.context.stroke();
+	}
+	if (x%2 == 1) {
+		if (x > 0 && MAP.area[y][x] != MAP.area[y][x-1]) {
+			VIEW.context.beginPath();
+			VIEW.context.moveTo(px, py + tileHeight/2);
+			VIEW.context.lineTo(px + tileWidth/3, py);
+			VIEW.context.stroke();					
+		}
+		if (x > 0 && y < mapHeight - 1 && MAP.area[y][x] != MAP.area[y+1][x-1]) {
+			VIEW.context.beginPath();
+			VIEW.context.moveTo(px, py + tileHeight/2);
+			VIEW.context.lineTo(px + tileWidth/3, py + tileHeight);
+			VIEW.context.stroke();					
+		}
+	} else {
+		if (x > 0 && y > 0 && MAP.area[y][x] != MAP.area[y-1][x-1]) {
+			VIEW.context.beginPath();
+			VIEW.context.moveTo(px, py + tileHeight/2);
+			VIEW.context.lineTo(px + tileWidth/3, py);
+			VIEW.context.stroke();					
+		}
+		if (x > 0 && MAP.area[y][x] != MAP.area[y][x-1]) {
+			VIEW.context.beginPath();
+			VIEW.context.moveTo(px, py + tileHeight/2);
+			VIEW.context.lineTo(px + tileWidth/3, py + tileHeight);
+			VIEW.context.stroke();					
+		}					
+	}
+}
+
 function redrawMap() {
 	var		startX = VIEW.x;
 	var 	startY = VIEW.y;
@@ -345,8 +413,13 @@ function redrawMap() {
 			var px = x * tileWidth + 8;
 			var py = y * tileHeight + (x%2 * halfOffset) + 8;
 			
-			VIEW.context.drawImage(MAP.images[t].image, 
-					px, py, imageWidth, imageHeight);
+			if (MAP.images[t] == null) {
+				debug("Cannot get terrain ["+t+"] for "+(VIEW.x + x)+","+(VIEW.y + y));
+				continue;
+			} else {
+				VIEW.context.drawImage(MAP.images[t].image, 
+						px, py, imageWidth, imageHeight);
+			}
 		}
 	}
 	if (VIEW.showGrid) {
@@ -501,4 +574,5 @@ function closeAllDialogs() {
 	$("#terrainPopout").remove();
 	$("#thingPopout").remove();
 	$("#mapPopout").remove();
+	$("#areaPopout").remove();
 }

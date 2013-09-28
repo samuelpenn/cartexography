@@ -152,6 +152,44 @@ function openThingMenu() {
 	}
 }
 
+function selectArea(id) {
+	VIEW.brushMode = BRUSH_MODE.AREA;
+	VIEW.editMode = EDIT_MODE.PAINT;
+
+	$("#pathStyle"+VIEW.brushStyle).removeClass("selectedButton");
+	closeAllDialogs();
+	VIEW.areaBrush = id;
+}
+
+function openAreaMenu() {
+	var x = $("#areaMenu").position().left + 96;
+	var y = $("#areaMenu").position().top;
+	
+	if (document.getElementById("areaPopout") != null) {
+		// Toggle on/off.
+		closeAllDialogs();
+		return;
+	}
+	closeAllDialogs();
+
+	$("body").append("<div id='areaPopout' class='floating'></div>");
+	$("#areaPopout").css("position", "absolute");
+	$("#areaPopout").css("left", x);
+	$("#areaPopout").css("top", y);
+	$("#areaPopout").css("width", "75%");
+	$("#areaPopout").css("height", "auto");
+	$("#areaPopout").css("border", "1px solid #999999");
+	
+	$("#areaPopout").append("<div class='tilebox' id='ar_0' onclick='selectArea(0)'>Clear</div>");
+	for (var id in MAP.areas) {
+		var  a = MAP.areas[id];
+		var  id = a.id
+		
+		$("#areaPopout").append("<div class='tilebox' id='ar_"+id+"' onclick='selectArea("+id+")'></div>");		
+		$("#ar_"+id).append(a.title);
+	}
+}
+
 function setPathStyle(style) {
 	VIEW.brushMode = BRUSH_MODE.PATH
 	VIEW.editMode = EDIT_MODE.NEW;
@@ -208,6 +246,30 @@ function paintTerrain(event, px, py) {
 			"&radius="+VIEW.brushSize+"&scale="+scale+"&terrain="+VIEW.terrainBrush,
 		async: true
 	});
+	paintUpdate(event, x, y, ox, oy, scale);
+}
+
+function paintArea(event, px, py) {
+	var x = Math.floor(px / VIEW.currentScale.column);
+	var scale = VIEW.currentScale.scale;
+	if (x %2 == 1 && scale == 1) {
+		py -= VIEW.currentScale.row / 2;
+	} 
+	var y = Math.floor(py / VIEW.currentScale.row);
+	
+	var ox = x;
+	var oy = y;
+	
+	$.ajax({
+		type: "PUT",
+		url: "/hexweb/api/map/"+MAP.info.id+"/update?x="+(VIEW.x+x*scale)+"&y="+(VIEW.y+y*scale)+
+			"&radius="+VIEW.brushSize+"&scale="+scale+"&area="+VIEW.areaBrush,
+		async: true
+	});
+	paintUpdate(event, x, y, ox, oy, scale);	
+}
+
+function paintUpdate(event, x, y, ox, oy, scale) {
 	if (scale == 1) {
 		for (var px = 0; px < parseInt(VIEW.brushSize / 2 + 1); px++) {
 			var	 h = VIEW.brushSize - px;
@@ -220,26 +282,48 @@ function paintTerrain(event, px, py) {
 				if (y < 0) {
 					continue;
 				}
-				
-				x = ox + px;
-				if (isIn(x, y)) {
-					VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
-							x * VIEW.currentScale.column + 8, 
-							y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
-							VIEW.currentScale.width, VIEW.currentScale.height);
-					if (VIEW.showGrid) {
-						drawHexGrid(x, y);
+				if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
+					x = ox + px;
+					if (isIn(x, y)) {
+						VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
+								x * VIEW.currentScale.column + 8, 
+								y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
+								VIEW.currentScale.width, VIEW.currentScale.height);
+						if (VIEW.showGrid) {
+							drawHexGrid(x, y);
+						}
 					}
-				}
-				x = ox - px;
-				if (isIn(x, y)) {
-					VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
-							x * VIEW.currentScale.column + 8, 
-							y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
-							VIEW.currentScale.width, VIEW.currentScale.height);
-					if (VIEW.showGrid) {
-						drawHexGrid(x, y);
+					x = ox - px;
+					if (isIn(x, y)) {
+						VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
+								x * VIEW.currentScale.column + 8, 
+								y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
+								VIEW.currentScale.width, VIEW.currentScale.height);
+						if (VIEW.showGrid) {
+							drawHexGrid(x, y);
+						}
 					}
+				} else if (VIEW.brushMode == BRUSH_MODE.AREA) {
+					x = ox + px;
+					if (isIn(x, y)) {
+						MAP.area[y][x] = VIEW.areaBrush;
+						redrawHex(x, y);
+						if (VIEW.showGrid) {
+							drawHexGrid(x, y);
+						}
+					}
+					x = ox - px;
+					if (isIn(x, y)) {
+						MAP.area[y][x] = VIEW.areaBrush;
+						for (var xx=-1; xx < 2; xx++) {
+							for (var yy=-1; yy < 2; yy++) {
+								redrawHex(x+xx, y+yy);								
+								if (VIEW.showGrid) {
+									drawHexGrid(x, y);
+								}
+							}
+						}
+					}					
 				}
 			}
 		}
@@ -569,6 +653,8 @@ function updateInfoBar(px, py) {
 	var title = ""
 	if (areaId > 0 && MAP.areas[areaId] != null) {
 		title = MAP.areas[areaId].title;
+	} else if (areaId > 0) {
+		title = "(" + areaId + ")";
 	}
 	
 	
@@ -591,7 +677,7 @@ function drawMap(event) {
 		// Flag to prevent multiple events from a single click. Wait for the
 		// mouse to go 'up' after a click.
 		mouseHasBeenUp = true;
-		if (VIEW.brushMode == BRUSH_MODE.TERRAIN || VIEW.brushMode == BRUSH_MODE.PATH) {
+		if (VIEW.brushMode == BRUSH_MODE.TERRAIN || VIEW.brushMode == BRUSH_MODE.PATH || VIEW.brushMode == BRUSH_MODE.AREA) {
 			return;
 		}
 	}
@@ -609,7 +695,9 @@ function drawMap(event) {
 		}
 	} else if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
 		// Paint a terrain hex whilst the mouse is held down.
-		paintTerrain(event, px, py)
+		paintTerrain(event, px, py);
+	} else if (VIEW.brushMode == BRUSH_MODE.AREA) {
+		paintArea(event, px, py);
 	} else if (VIEW.brushMode == BRUSH_MODE.THING && VIEW.mouseDown == 1) {
 		// This is a click. We don't draw on a click, but record the position.
 		if (VIEW.recordX == -1 && VIEW.recordY == -1) {

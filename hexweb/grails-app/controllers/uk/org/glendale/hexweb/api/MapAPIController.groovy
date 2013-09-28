@@ -349,9 +349,10 @@ class MapAPIController {
 	static int lastY = -1
 	static int lastRadius = -1
 	static int lastTerrain = -1
+	static int lastArea = -1
 	
-	private synchronized boolean isdup(id, x, y, radius, terrain) {
-		if (x == lastX && y == lastY && radius == lastRadius && terrain == lastTerrain && id == lastId) {
+	private synchronized boolean isdup(id, x, y, radius, terrain, area) {
+		if (x == lastX && y == lastY && radius == lastRadius && terrain == lastTerrain && id == lastId && area == lastArea) {
 			return true
 		}
 		lastX = x
@@ -359,6 +360,7 @@ class MapAPIController {
 		lastTerrain = terrain
 		lastRadius = radius
 		lastId = id
+		lastArea = area
 
 		return false
 	}
@@ -366,14 +368,14 @@ class MapAPIController {
 	/**
 	 * Updates a hex with a new terrain.
 	 */
-	def update(String id, int x, int y, int radius, int terrain, int scale) {
+	def update(String id, int x, int y, int radius, int terrain, int area, int scale) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		if (isdup(info.id, x, y, radius, terrain)) {
+		if (isdup(info.id, x, y, radius, terrain, area)) {
 			render terrain
 			return
 		}		
-		println "Update: ${id}-${x},${y} radius ${radius} scale ${scale}"
+		println "Update: ${id}-${x},${y} radius ${radius} scale ${scale} area ${area}"
 		if (radius < 1) {
 			radius == 1
 		} else if (radius %2 == 0) {
@@ -400,14 +402,14 @@ class MapAPIController {
 						if (x%10 == 0 && y%10 == 0) {
 							mapService.fillBlock(info, x, y);
 						}
-						setHex(info, x, y, terrain);
+						setHex(info, x, y, terrain, area);
 					}
 					x = ox - px;
 					if (x >= 0 && x < info.width) {
 						if (x%10 == 0 && y%10 == 0) {
 							mapService.fillBlock(info, x, y);
 						}
-						setHex(info, x, y, terrain);
+						setHex(info, x, y, terrain, area);
 					}
 				}
 			}
@@ -419,7 +421,7 @@ class MapAPIController {
 			for (int px = x - r; px <= x + r; px+=10) {
 				for (int py = y - r; py <= y + r; py+=10) {
 					mapService.deleteRectangle(info, px, py, scale, scale)
-					setHex(info, px, py, terrain)
+					setHex(info, px, py, terrain, area)
 				}
 			}
 		}
@@ -431,7 +433,7 @@ class MapAPIController {
 	 * Set a specific hex to be of the specified terrain type.
 	 * TODO: Can we make this more efficient?
 	 */
-	private void setHex(MapInfo info, int x, int y, int terrain) {
+	private void setHex(MapInfo info, int x, int y, int terrain, int area) {
 		if (!mapService.isOut(info, x, y)) {
 			Hex hex = Hex.find ({
 				eq("mapInfo", info)
@@ -441,7 +443,11 @@ class MapAPIController {
 			if (hex == null) {
 				hex = new Hex(x: x, y: y, mapInfo: info)
 			}
-			hex.terrainId = terrain
+			if (terrain > 0) {
+				hex.terrainId = terrain
+			} else {
+				hex.areaId = area
+			}
 			hex.save();
 		}
 	}
