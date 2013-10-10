@@ -52,10 +52,10 @@ VIEW.showGrid = false;
 VIEW.zoom = 0;
 VIEW.port= { width: 1600, height: 1200 };
 
-VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 12, step: 10, scale: 1 },
-               { column: 24, row: 28, width: 33, height: 28, font: 9 , step: 10, scale: 1 },
-               { column: 12, row: 14, width: 17, height: 14, font: 6 , step: 20, scale: 1 }, 
-               { column: 6, row: 7, width: 9, height: 7, font: 4, step: 40, scale: 1  }, 
+VIEW.scale = [ { column: 48, row: 56, width: 65, height: 56, font: 14, step: 10, scale: 1 },
+               { column: 24, row: 28, width: 33, height: 28, font: 12, step: 10, scale: 1 },
+               { column: 12, row: 14, width: 17, height: 14, font: 9,  step: 20, scale: 1 }, 
+               { column: 6, row: 7, width: 9, height: 7, font: 6, step: 40, scale: 1  }, 
                { column: 8, row: 8, width: 8, height: 8, font: 0, step: 400, scale: 10 },
                { column: 4, row: 4, width: 4, height: 4, font: 0, step: 1600, scale: 20 }
              ];
@@ -499,11 +499,15 @@ function drawPlace(p) {
 	var x = (p.x - VIEW.x) * tileWidth - tileWidth/2 + (p.sx * VIEW.imageWidth)/100 + 8;
 	var y = (p.y - VIEW.y) * tileHeight + (p.x %2 * VIEW.halfOffset) - tileHeight/2 + (p.sy * VIEW.imageHeight)/100 + 8;
 
-	VIEW.context.drawImage(MAP.things[p.thing_id].image, x, y, 
-			VIEW.imageWidth, VIEW.imageHeight);
-	VIEW.context.font = VIEW.currentScale.font + "px Arial";
-	var w = VIEW.context.measureText(p.title).width;
-	VIEW.context.fillText(p.title, x + VIEW.imageWidth/2 - w / 2, y + VIEW.imageHeight);
+	if (MAP.things[p.thing_id] == null) {
+		debug("Unable to find thing "+p.thing_id + " for place " + p.title);
+	} else {
+		VIEW.context.drawImage(MAP.things[p.thing_id].image, x, y, 
+				VIEW.imageWidth, VIEW.imageHeight);
+		VIEW.context.font = VIEW.currentScale.font + "px Arial";
+		var w = VIEW.context.measureText(p.title).width;
+		VIEW.context.fillText(p.title, x + VIEW.imageWidth/2 - w / 2, y + VIEW.imageHeight);
+	}
 }
 
 /* ---- Path drawing functions ---- */

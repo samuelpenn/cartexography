@@ -595,14 +595,17 @@ class MapAPIController {
 				int py = y / step
 				if (info.world && (y < bounds[px].min || y > bounds[px].max)) {
 					String colour = colours.get(info.oob)
-					img.rectangleFill(px, py, 1, 1, colour)
+					if (colour == null) {
+						println "Cannot get terrain for ${px}, ${py}"	
+					} else {
+						img.rectangleFill(px, py, 1, 1, colour)
+					}
 				} else {
 					String colour = colours.get(info.background)
 					img.rectangleFill(px, py, 1, 1, colour)
 				}
 			}
 		}
-		
 		terrain.each { hex ->
 			int tid = hex.t
 			int x = hex.x
@@ -611,8 +614,13 @@ class MapAPIController {
 			String colour = colours.get(tid)
 			if (colour == null) {
 				Terrain t = Terrain.findById(tid)
-				colours.put(tid, t.colour)
-				colour = t.colour
+				if (t != null) {
+					colours.put(tid, t.colour)
+					colour = t.colour
+				} else {
+					println "Cannot find terrain ${tid} at ${x},${y}"
+					colour = "#ffffff"
+				}
 			}
 			int px = x / step
 			int py = y / step
@@ -682,7 +690,6 @@ class MapAPIController {
 
 		JSON.use('deep')
 		def data = request.JSON
-		println data
 		Path path = pathService.jsonToPath(info, data)
 		path.mapInfo = info
 		
@@ -692,7 +699,6 @@ class MapAPIController {
 		} else {
 			pathService.updatePath(path)
 		}
-		println path.style
 		
 		render path as JSON
 	}

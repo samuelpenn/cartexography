@@ -199,7 +199,7 @@ class PathService {
 				stmnt = connection.prepareStatement(sql)
 				ResultSet rs = stmnt.executeQuery()
 				while (rs.next()) {
-					println "Found matching path ${rs.getInt(1)}"
+					//println "Found matching path ${rs.getInt(1)}"
 					ids.add(rs.getInt(1))
 				}
 				rs.close()
@@ -209,11 +209,11 @@ class PathService {
 		ids.each { id ->
 			Path path = Path.findById(id)
 			list.add(path)
-			println "Path ${path.id}:  "
+			//println "Path ${path.id}:  "
 			path.vertex.each { v ->
-				print "${v.vertex}, "
+				//print "${v.vertex}, "
 			}
-			println ""
+			//println ""
 		}
 		
 		return list

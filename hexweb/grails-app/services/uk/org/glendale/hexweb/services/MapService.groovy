@@ -476,7 +476,12 @@ class MapService {
 				area = new Area(mapInfo: destInfo, name: a.name, title: a.title)
 				area.save()
 			}
-			areaMapping.put(a.id, area.id)
+			println "Mapping area ${a.id} -> ${area.id}"
+			areaMapping.put((int)a.id, (int)area.id)
+			if (areaMapping.get((int)a.id) == null) {
+				println "Area mapping not saved!"
+				return
+			}
 		}
 		
 		
@@ -502,6 +507,13 @@ class MapService {
 						int sy = rs.getInt(1)
 						int terrainId = rs.getInt(2)
 						int areaId = rs.getInt(3)
+						if (areaId > 0) {
+							if (areaMapping.get(areaId) != null) {
+								areaId = areaMapping.get(areaId)
+							} else {
+								println "Unable to find mapping for area ${areaId}"
+							}
+						}
 						if (sy < srcInfo.height) {
 							rows[sy] = [ 't': terrainId, 'a': areaId ]
 						}
