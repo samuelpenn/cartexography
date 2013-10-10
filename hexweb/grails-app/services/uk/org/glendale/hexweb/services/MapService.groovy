@@ -288,7 +288,8 @@ class MapService {
 	def insertToMap(MapInfo info, int x, int y, int areaId, int terrainId) {
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
-				String sql = String.format("insert into map (mapinfo_id, x, y, area_id, terrain_id) values(%d, %d, %d, %d, %d)",
+				String sql = String.format("insert into map (mapinfo_id, x, y, area_id, terrain_id) "+
+					                       "values(%d, %d, %d, %d, %d)",
 										   info.id, x, y, areaId, terrainId)
 				Statement stmnt = connection.prepareStatement(sql)
 				stmnt.executeUpdate(sql)

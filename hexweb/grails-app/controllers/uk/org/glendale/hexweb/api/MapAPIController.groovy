@@ -317,7 +317,7 @@ class MapAPIController {
 			for (int xx=0; xx < w/scale; xx++) {
 				int xx10 = xx - xx%s;
 				for (int yy=0; yy < h/scale; yy++) {
-					if (bounds.size() > 0 && (yy+y < bounds[xx].min / scale || yy+y > bounds[xx].max / scale)) {
+					if (bounds.size() > 0 && (yy*scale + y < bounds[xx].min || yy*scale + y > bounds[xx].max)) {
 						map[yy][xx] = info.oob
 					} else {
 						if (map[yy][xx] == 0) {
@@ -448,6 +448,7 @@ class MapAPIController {
 			} else {
 				hex.areaId = area
 			}
+			//mapService.insertToMap(info, x, y, area, terrain)
 			hex.save();
 		}
 	}
@@ -569,6 +570,11 @@ class MapAPIController {
 		int			step = max / w
 		if (forceWidth) {
 			step = info.width / w
+		}
+		if (step != 1 && step%10 < 5) {
+			step -= step%10;
+		} else if (step != 1 && step%10 >= 5) {
+			step += (10 - step%10)
 		}
 		if (step < 1) {
 			step = 1;
