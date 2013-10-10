@@ -31,10 +31,10 @@ create table terrain(id int not null auto_increment,
 -- Base tile types
 insert into terrain values(0, 1, 'unknown', 'Unknown', false, '#000000', 0, 0);
 insert into terrain values(0, 1, 'oob', 'oob', false, '#000000', 0, 0);
-insert into terrain values(0, 1, 'sea', 'Sea', true, '#a4f8ff', 100, 0);
+insert into terrain values(0, 1, 'sea', 'Sea', true, '#b7f9ff', 100, 0);
 
 -- Simple tiles
-insert into terrain values(0, 2, 'grass', 'Grassland', false, '#79ef22', 200, 0);
+insert into terrain values(0, 2, 'grass', 'Grassland', false, '#aeea82', 200, 0);
 insert into terrain values(0, 2, 'hills', 'Hills', false, '#39af02', 210, 0);
 insert into terrain values(0, 2, 'mountains', 'Mountains', false, '#ae9334', 215, 0);
 insert into terrain values(0, 2, 'shrubland', 'Heath', false, '#79ef22', 300, 0);
@@ -51,9 +51,10 @@ insert into terrain values(0, 2, 'grass_dry', 'Dry Grassland', false, '#f7fe8e',
 insert into terrain values(0, 2, 'desert_sand', 'Sandy Desert', false, '#f7fe8e', 620, 0);
 
 -- Standard tiles
-insert into terrain values(0, 3, 'ocean', 'Ocean', true, '#a7ccff', 105, 0);
+insert into terrain values(0, 3, 'ocean', 'Ocean', true, '#8eebf3', 105, 0);
+insert into terrain values(0, 3, 'ice', 'Ice', false, '#f0f0f0', 110, 0);
 
-insert into terrain values(0, 3, 'grass', 'Grassland', false, '#79ef22', 200, 0);
+insert into terrain values(0, 3, 'grass', 'Grassland', false, '#aeea82', 200, 0);
 insert into terrain values(0, 3, 'cropland', 'Cropland', false, '#88FF88', 205, 0);
 insert into terrain values(0, 3, 'hills', 'Hills', false, '#39af02', 210, 0);
 insert into terrain values(0, 3, 'broken', 'Broken', false, '#39af02', 212, 0);
@@ -66,6 +67,7 @@ insert into terrain values(0, 3, 'montane_forest', 'Montane Forest', false, '#ae
 insert into terrain values(0, 3, 'shrubland', 'Heath', false, '#79ef22', 300, 0);
 insert into terrain values(0, 3, 'shrubland_hills', 'Moors', false, '#79ef22', 301, 0);
 insert into terrain values(0, 3, 'shrubland_broken', 'Broken Shrub', false, '#79ef22', 302, 0);
+insert into terrain values(0, 3, 'shrubland_foothills', 'Shrub Foothills', false, '#79ef22', 303, 0);
 insert into terrain values(0, 3, 'broadleaf_woods', 'Broadleaf Woods', false, '#59cf02', 305, 0);
 insert into terrain values(0, 3, 'broadleaf_forest', 'Broadleaf Forest', false, '#39af02', 310, 0);
 insert into terrain values(0, 3, 'broadleaf_woods_hills', 'Broadleaf Wooded Hills', false, '#59cf02', 315, 0);
@@ -83,9 +85,9 @@ insert into terrain values(0, 3, 'needleleaf_forest_foothills', 'Needleleaf Fore
 insert into terrain values(0, 3, 'marsh', 'Marsh', true, '#39af02', 400, 0);
 insert into terrain values(0, 3, 'swamp', 'Swamp', true, '#39af02', 405, 0);
 
-insert into terrain values(0, 3, 'tundra', 'Tundra', false, '#ae9334', 500, 0);
-insert into terrain values(0, 3, 'tundra_hills', 'Tundra Hills', false, '#ae9334', 505, 0);
-insert into terrain values(0, 3, 'tundra_foothills', 'Tundra Foothills', false, '#ae9334', 507, 0);
+insert into terrain values(0, 3, 'tundra', 'Tundra', false, '#d2e6aa', 500, 0);
+insert into terrain values(0, 3, 'tundra_hills', 'Tundra Hills', false, '#c1d59b', 505, 0);
+insert into terrain values(0, 3, 'tundra_foothills', 'Tundra Foothills', false, '#c1d59b', 507, 0);
 insert into terrain values(0, 3, 'boreal_woods', 'Boreal Woods', false, '#59cf02', 510, 0);
 insert into terrain values(0, 3, 'boreal_forest', 'Boreal Forest', false, '#39af02', 515, 0);
 insert into terrain values(0, 3, 'boreal_woods_hills', 'Boreal Wooded Hills', false, '#59cf02', 520, 0);
@@ -96,10 +98,10 @@ insert into terrain values(0, 3, 'snow_hills', 'Snow Hills', false, '#e0e0e0', 5
 insert into terrain values(0, 3, 'snow_foothills', 'Snow foothills', false, '#e0e0e0', 557, 0);
 insert into terrain values(0, 3, 'mountains_ice', 'Ice Mountains', false, '#e0a0a0', 560, 0);
 
-insert into terrain values(0, 3, 'grass_dry', 'Dry Grassland', false, '#f7fe8e', 600, 0);
-insert into terrain values(0, 3, 'hills_dry', 'Dry Hills', false, '#f7fe8e', 605, 0);
-insert into terrain values(0, 3, 'desert_sand', 'Sandy Desert', false, '#f7fe8e', 620, 0);
-insert into terrain values(0, 3, 'desert_rock', 'Rocky Desert', false, '#f7fe8e', 625, 0);
+insert into terrain values(0, 3, 'grass_dry', 'Dry Grassland', false, '#dcff9e', 600, 0);
+insert into terrain values(0, 3, 'hills_dry', 'Dry Hills', false, '#ccec94', 605, 0);
+insert into terrain values(0, 3, 'desert_sand', 'Sandy Desert', false, '#f9ff9e', 620, 0);
+insert into terrain values(0, 3, 'desert_rock', 'Rocky Desert', false, '#f9ff9e', 625, 0);
 
 
 insert into terrain values(0, 1, 'foothills', 'Foothills', false, '#a0a548', 0);
