@@ -225,6 +225,7 @@ class MapAPIController {
 					} else {
 						if (map[yy][xx] == 0) {
 							int b = map[yy - yy%10][xx10]
+							println "${xx},${yy} is zero, b is ${b} from ${xx10},${yy - yy%10}"
 							if (b != info.oob && b != 0) {
 								map[yy][xx] = b
 							} else {
@@ -305,6 +306,7 @@ class MapAPIController {
 			int yy = (hex[1] - y) / scale
 			map[yy][xx] = hex[2]
 		}
+		println "Data returned: ${list.size()}"
 		List bounds = null
 		if (info.world || list.size() != w * h) {
 			println "Filtering large map ${list.size()} of ${w * h}"

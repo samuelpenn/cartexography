@@ -171,6 +171,8 @@ function refreshMap() {
 	if (VIEW.y < 0) {
 		VIEW.y = 0;
 	}
+	VIEW.x -= VIEW.x%10;
+	VIEW.y -= VIEW.y%10;
 
 	if (VIEW.currentScale.scale == 1) {
 		drawSmallScale();
