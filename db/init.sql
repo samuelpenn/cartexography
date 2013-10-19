@@ -52,7 +52,7 @@ insert into terrain values(0, 2, 'desert_sand', 'Sandy Desert', false, '#f7fe8e'
 
 -- Standard tiles
 insert into terrain values(0, 3, 'ocean', 'Ocean', true, '#8eebf3', 105, 0);
-insert into terrain values(0, 3, 'ice', 'Ice', false, '#f0f0f0', 110, 0);
+insert into terrain values(0, 3, 'ice', 'Sea Ice', false, '#f0f0f0', 110, 0);
 
 insert into terrain values(0, 3, 'grass', 'Grassland', false, '#aeea82', 200, 0);
 insert into terrain values(0, 3, 'cropland', 'Cropland', false, '#88FF88', 205, 0);
@@ -93,10 +93,11 @@ insert into terrain values(0, 3, 'boreal_forest', 'Boreal Forest', false, '#39af
 insert into terrain values(0, 3, 'boreal_woods_hills', 'Boreal Wooded Hills', false, '#59cf02', 520, 0);
 insert into terrain values(0, 3, 'boreal_forest_hills', 'Boreal Forested Hills', false, '#39af02', 530, 0);
 
-insert into terrain values(0, 3, 'snow', 'Snow', false, '#f0f0f0', 550, 0);
-insert into terrain values(0, 3, 'snow_hills', 'Snow Hills', false, '#e0e0e0', 555, 0);
-insert into terrain values(0, 3, 'snow_foothills', 'Snow foothills', false, '#e0e0e0', 557, 0);
-insert into terrain values(0, 3, 'mountains_ice', 'Ice Mountains', false, '#e0a0a0', 560, 0);
+insert into terrain values(0, 3, 'snow', 'Snow', false, '#e0e0e0', 550, 0);
+insert into terrain values(0, 3, 'snow_hills', 'Snow Hills', false, '#d0d0d0', 555, 0);
+insert into terrain values(0, 3, 'snow_foothills', 'Snow foothills', false, '#c0c0c0', 557, 0);
+insert into terrain values(0, 3, 'mountains_ice', 'Ice Mountains', false, '#a0a0a0', 560, 0);
+insert into terrain values(0, 3, 'glacier', 'Glacier', false, '#f0f0f0', 570, 0);
 
 insert into terrain values(0, 3, 'grass_dry', 'Dry Grassland', false, '#dcff9e', 600, 0);
 insert into terrain values(0, 3, 'hills_dry', 'Dry Hills', false, '#ccec94', 605, 0);
