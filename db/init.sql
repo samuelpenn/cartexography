@@ -82,6 +82,13 @@ insert into terrain values(0, 3, 'needleleaf_forest_hills', 'Needleleaf Forested
 insert into terrain values(0, 3, 'needleleaf_woods_foothills', 'Needleleaf Wooded Foothills', false, '#59cf02', 345, 0);
 insert into terrain values(0, 3, 'needleleaf_forest_foothills', 'Needleleaf Forested Foothills', false, '#39af02', 350, 0);
 
+insert into terrain values(0, 3, 'tropical_woods', 'Tropical Woods', false, '#59cf02', 360, 0);
+insert into terrain values(0, 3, 'tropical_forest', 'Tropical Forest', false, '#39af02', 365, 0);
+insert into terrain values(0, 3, 'tropical_woods_hills', 'Tropical Wooded Hills', false, '#59cf02', 370, 0);
+insert into terrain values(0, 3, 'tropical_forest_hills', 'Tropical Forested Hills', false, '#39af02', 375, 0);
+insert into terrain values(0, 3, 'tropical_woods_foothills', 'Tropical Wooded Foothills', false, '#59cf02', 380, 0);
+insert into terrain values(0, 3, 'tropical_forest_foothills', 'Tropical Forested Foothills', false, '#39af02', 385, 0);
+
 insert into terrain values(0, 3, 'marsh', 'Marsh', true, '#39af02', 400, 0);
 insert into terrain values(0, 3, 'swamp', 'Swamp', true, '#39af02', 405, 0);
 
