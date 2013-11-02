@@ -128,7 +128,6 @@ public class SimpleImage implements ImageObserver {
 	public static Image createImage(int width, int height, URL url)
 			throws MalformedURLException {
 		Image image = null;
-
 		image = Toolkit.getDefaultToolkit().getImage(url);
 
 		MediaTracker tracker = new MediaTracker(new Container());
@@ -136,16 +135,15 @@ public class SimpleImage implements ImageObserver {
 		try {
 			tracker.waitForID(0);
 		} catch (InterruptedException e) {
-
+			e.printStackTrace();
 		}
 		image = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 		tracker.addImage(image, 1);
 		try {
 			tracker.waitForID(1);
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
-
 		return image;
 	}
 

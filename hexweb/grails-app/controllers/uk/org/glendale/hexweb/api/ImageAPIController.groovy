@@ -8,6 +8,7 @@
  */
 package uk.org.glendale.hexweb.api
 
+import java.awt.Image
 import uk.org.glendale.graphics.SimpleImage
 import uk.org.glendale.hexweb.MapInfo
 import uk.org.glendale.hexweb.Terrain
@@ -18,9 +19,28 @@ import uk.org.glendale.hexweb.Hex
  */
 class ImageAPIController {
 	def mapService
+	def grailsApplication
+	
+	private Image getImage(Terrain terrain, String path, int width, int height) {
+		URL		url = new URL("file://" + path + "/terrain/${terrain.name}.png")
+		
+		println "Adding image for " + url.toString()
+		
+		Image image = SimpleImage.createImage(width, height, url)
+		if (image == null) {
+			println "Null image created"
+		}
+		
+		return image
+	}
 
     def imageByCoord(String id, int x, int y, int w, int h, int s) { 
 		MapInfo		info = mapService.getMapByNameOrId(id)
+		
+		String BASE_PATH = grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+info.style).file.absolutePath
+		println "Path: [" + BASE_PATH + "]"
+		File i = new File(BASE_PATH)
+		println i.absolutePath
 		
 		if (x < 0) {
 			x = 0;
@@ -61,36 +81,50 @@ class ImageAPIController {
 			order("x")
 		})
 
-		Map colours = [:]
+		Map terrain = [:]
+		Map	images = [:]
+		
+		int		tileWidth = s
+		int		tileHeight = s * 0.86
 		
 		Terrain background = Terrain.findById(info.background)
-		colours.put(info.background, background.colour)
+		terrain.put(info.background, background)
 		Terrain oob = Terrain.findById(info.oob)
-		colours.put(info.oob, oob.colour)
+		terrain.put(info.oob, oob)
+		
+		images.put(info.background, getImage(background, BASE_PATH, tileWidth, tileHeight))
+		images.put(info.oob, getImage(oob, BASE_PATH, tileWidth, tileHeight))
 
 		list.each { hex ->
+			//println "${hex[0]},${hex[1]}"
 			map[hex[1] - y][hex[0] - x] = hex[2]
 			area[hex[1] - y][hex[0] - x] = hex[3]
-		}
-		
-		for (int px = 0; px < w; px ++) {
-			for (int py = 0; py < h; py ++) {
-				int	tid = map[py][px]
-				String colour = colours.get(tid)
-				if (colour == null) {
-					Terrain t = Terrain.findById(tid)
-					if (t != null) {
-						colours.put(tid, t.colour)
-						colour = t.colour
-					} else {
-						println "Cannot find terrain ${tid} at ${x},${y}"
-						colour = colours.get(info.background)
-					}
-				}
-				image.rectangleFill(px * s, py * s, s, s, colour)
+			if (images.get(hex[2]) == null) {
+				Terrain 	t = Terrain.findById(hex[2])
+				Image 		img = SimpleImage.createImage(tileWidth, tileHeight, new URL("file://" + BASE_PATH + "/terrain/${t.name}.png"))
+				images.put(hex[2], img)
 			}
 		}
-
+		for (int px = 0; px < w; px ++) {
+			for (int py = 0; py < h; py ++) {
+				int		tid = map[py][px]
+				if (tid == 0) {
+					tid = background.id
+				}
+				Image img = images[tid]
+				if (img != null) {
+					int		xx = px * tileWidth * 0.74
+					int		yy = py * tileHeight
+					if (px %2 == 1) {
+						yy += tileHeight / 2
+					}
+					image.paint(img, xx, yy, tileWidth, tileHeight)
+				} else {
+					println "No image for ${px}, ${py}"
+				}
+				//image.rectangleFill(px * s, py * s, s, s, colour)
+			}
+		}
 		
 		byte[] data = image.save().toByteArray()
 		

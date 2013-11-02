@@ -646,7 +646,10 @@ function updateInfoBar(px, py) {
 		return;
 	}
 	
-	var areaId = MAP.area[y][x];
+	var areaId = 0;
+	if (scale == 1) {
+		areaId = MAP.area[y][x];
+	}
 	x += VIEW.x;
 	y += VIEW.y;
 	
