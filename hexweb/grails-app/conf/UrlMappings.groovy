@@ -126,6 +126,11 @@ class UrlMappings {
 			controller = "mapAPI"
 			action = "test"
 		}
-			
+		
+		"/image/$id" {
+			controller = "imageAPI"
+			action = "imageByCoord"
+		}
+
 	}
 }
