@@ -34,6 +34,17 @@ class ImageAPIController {
 		return image
 	}
 
+	/**
+	 * Get an image of the map according to the given set of coordinates.
+	 * 
+	 * @param id		Map to get image of.
+	 * @param x			Origin x coordinate (top left).
+	 * @param y			Origin y coordinate (top left).
+	 * @param w			Width in tiles.
+	 * @param h			Height in tiles.
+	 * @param s			Size (width) of each tile.
+	 * @return
+	 */
     def imageByCoord(String id, int x, int y, int w, int h, int s) { 
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
@@ -58,6 +69,19 @@ class ImageAPIController {
 			h = info.height - y;
 		}
 		
+		SimpleImage image = getMapImage(info, x, y, w, h, s)
+		
+		byte[] data = image.save().toByteArray()
+		
+		response.setContentType("image/jpeg")
+		response.setContentLength(data.length)
+		OutputStream	out = response.getOutputStream();
+		out.write(data)
+		out.close()
+		return null
+    }
+	
+	private SimpleImage getMapImage(MapInfo info, int x, int y, int w, int h, int s) {
 		int			height = h * s + s / 2
 		int			width = w * s
 		
@@ -101,10 +125,11 @@ class ImageAPIController {
 			area[hex[1] - y][hex[0] - x] = hex[3]
 			if (images.get(hex[2]) == null) {
 				Terrain 	t = Terrain.findById(hex[2])
-				Image 		img = SimpleImage.createImage(tileWidth, tileHeight, new URL("file://" + BASE_PATH + "/terrain/${t.name}.png"))
-				images.put(hex[2], img)
+				images.put(hex[2], getImage(t, BASE_PATH, tileWidth, tileHeight))
 			}
 		}
+		
+		// Draw terrain layer.
 		for (int px = 0; px < w; px ++) {
 			for (int py = 0; py < h; py ++) {
 				int		tid = map[py][px]
@@ -113,7 +138,7 @@ class ImageAPIController {
 				}
 				Image img = images[tid]
 				if (img != null) {
-					int		xx = px * tileWidth * 0.74
+					int		xx = px * tileWidth * 0.73
 					int		yy = py * tileHeight
 					if (px %2 == 1) {
 						yy += tileHeight / 2
@@ -122,18 +147,8 @@ class ImageAPIController {
 				} else {
 					println "No image for ${px}, ${py}"
 				}
-				//image.rectangleFill(px * s, py * s, s, s, colour)
 			}
 		}
-		
-		byte[] data = image.save().toByteArray()
-		
-		response.setContentType("image/jpeg")
-		response.setContentLength(data.length)
-		OutputStream	out = response.getOutputStream();
-		out.write(data)
-		out.close()
-		return null
-
+		return image
 	}
 }
