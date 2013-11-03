@@ -168,8 +168,9 @@ class ImageAPIController {
 				x1 += vertices[i + 1].subX / 100.0
 				y1 += vertices[i + 1].subY / 100.0
 				
+				float thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / vertices.length
 				image.line(x0 * columnWidth, y0 * tileHeight, x1 * columnWidth, y1 * tileHeight, 
-					       "#a4f8ff", path.thickness1)
+					       "#a4f8ff", thickness)
 			}
 		}
 		
