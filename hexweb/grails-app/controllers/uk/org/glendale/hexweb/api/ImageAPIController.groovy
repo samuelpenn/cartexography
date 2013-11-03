@@ -13,6 +13,8 @@ import uk.org.glendale.graphics.SimpleImage
 import uk.org.glendale.hexweb.MapInfo
 import uk.org.glendale.hexweb.Terrain
 import uk.org.glendale.hexweb.Hex
+import uk.org.glendale.hexweb.Path
+import uk.org.glendale.hexweb.Vertex
 
 /**
  * Controller which produces images.
@@ -20,6 +22,7 @@ import uk.org.glendale.hexweb.Hex
 class ImageAPIController {
 	def mapService
 	def grailsApplication
+	def pathService
 	
 	private Image getImage(Terrain terrain, String path, int width, int height) {
 		URL		url = new URL("file://" + path + "/terrain/${terrain.name}.png")
@@ -47,11 +50,6 @@ class ImageAPIController {
 	 */
     def imageByCoord(String id, int x, int y, int w, int h, int s) { 
 		MapInfo		info = mapService.getMapByNameOrId(id)
-		
-		String BASE_PATH = grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+info.style).file.absolutePath
-		println "Path: [" + BASE_PATH + "]"
-		File i = new File(BASE_PATH)
-		println i.absolutePath
 		
 		if (x < 0) {
 			x = 0;
@@ -86,7 +84,9 @@ class ImageAPIController {
 		int			width = w * s
 		
 		SimpleImage image = new SimpleImage(width, height, "#ffffff")
-		
+
+		String BASE_PATH = grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+info.style).file.absolutePath
+				
 		int[][]		map = new int[h][w]
 		int[][]		area = new int[h][w]
 		
@@ -149,6 +149,15 @@ class ImageAPIController {
 				}
 			}
 		}
+		
+		// Draw rivers
+		List paths = pathService.getPathsInArea(info, x, y, w, h)
+		paths.each { path ->
+			Vertex[] vertices = path.vertex.toArray()
+			println path.name + " " +  vertices.length
+		}
+		
+		
 		return image
 	}
 }
