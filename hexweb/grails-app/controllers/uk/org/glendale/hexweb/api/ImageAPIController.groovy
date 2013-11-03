@@ -110,6 +110,7 @@ class ImageAPIController {
 		
 		int		tileWidth = s
 		int		tileHeight = s * 0.86
+		int		columnWidth = s * 0.73
 		
 		Terrain background = Terrain.findById(info.background)
 		terrain.put(info.background, background)
@@ -138,7 +139,7 @@ class ImageAPIController {
 				}
 				Image img = images[tid]
 				if (img != null) {
-					int		xx = px * tileWidth * 0.73
+					int		xx = px * columnWidth
 					int		yy = py * tileHeight
 					if (px %2 == 1) {
 						yy += tileHeight / 2
@@ -155,6 +156,21 @@ class ImageAPIController {
 		paths.each { path ->
 			Vertex[] vertices = path.vertex.toArray()
 			println path.name + " " +  vertices.length
+			
+			for (int i=0; i < vertices.length - 1; i++) {
+				double		x0 = vertices[i].x - x
+				double		y0 = vertices[i].y - y
+				double		x1 = vertices[i+1].x - x
+				double		y1 = vertices[i+1].y - y
+				
+				x0 += vertices[i].subX / 100.0
+				y0 += vertices[i].subY / 100.0
+				x1 += vertices[i + 1].subX / 100.0
+				y1 += vertices[i + 1].subY / 100.0
+				
+				image.line(x0 * columnWidth, y0 * tileHeight, x1 * columnWidth, y1 * tileHeight, 
+					       "#a4f8ff", path.thickness1)
+			}
 		}
 		
 		
