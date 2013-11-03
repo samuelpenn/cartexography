@@ -14,7 +14,9 @@ import uk.org.glendale.hexweb.MapInfo
 import uk.org.glendale.hexweb.Terrain
 import uk.org.glendale.hexweb.Hex
 import uk.org.glendale.hexweb.Path
+import uk.org.glendale.hexweb.Thing
 import uk.org.glendale.hexweb.Vertex
+import uk.org.glendale.hexweb.Place
 
 /**
  * Controller which produces images.
@@ -23,9 +25,23 @@ class ImageAPIController {
 	def mapService
 	def grailsApplication
 	def pathService
+	def thingService
 	
 	private Image getImage(Terrain terrain, String path, int width, int height) {
 		URL		url = new URL("file://" + path + "/terrain/${terrain.name}.png")
+		
+		println "Adding image for " + url.toString()
+		
+		Image image = SimpleImage.createImage(width, height, url)
+		if (image == null) {
+			println "Null image created"
+		}
+		
+		return image
+	}
+
+	private Image getImage(Thing thing, String path, int width, int height) {
+		URL		url = new URL("file://" + path + "/things/${thing.name}.png")
 		
 		println "Adding image for " + url.toString()
 		
@@ -151,6 +167,53 @@ class ImageAPIController {
 			}
 		}
 		
+		String hexColour = "#44444444"
+		float hexThickness = 1
+		
+		// Draw a hex grid
+		for (int px = 0; px < w; px ++) {
+			for (int py = 0; py < h; py ++) {
+				double xx = px * columnWidth;
+				double yy = py * tileHeight + (px%2 * tileHeight/2);
+				
+				image.line(xx + columnWidth / 3, yy, xx + columnWidth, yy, hexColour, hexThickness)
+				image.line(xx + columnWidth, yy, xx + columnWidth + columnWidth / 3, yy + tileHeight / 2, hexColour, hexThickness)
+				image.line(xx + columnWidth + columnWidth / 3, yy + tileHeight / 2, xx + columnWidth, yy + tileHeight, hexColour, hexThickness)
+				image.line(xx + columnWidth, yy + tileHeight, xx + columnWidth/3, yy + tileHeight, hexColour, hexThickness)
+				image.line(xx + columnWidth/3, yy + tileHeight, xx, yy + tileHeight/2, hexColour, hexThickness)
+				image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy, hexColour, hexThickness)		
+			}	
+		}
+
+		// Now do the area borders
+		String borderColour = "#ff0000"
+		float borderThickness = 2
+		for (int px = 0; px < w; px ++) {
+			for (int py = 0; py < h; py ++) {
+				double xx = px * columnWidth;
+				double yy = py * tileHeight + (px%2 * tileHeight/2);
+				
+				if (py > 0 && area[py][px] != area[py-1][px]) {
+					image.line(xx + columnWidth / 3, yy, xx + columnWidth, yy, borderColour, borderThickness)
+				}
+				if (px%2 == 1) {
+					if (px > 0 && area[py][px] != area[py][px-1]) {
+						image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy, borderColour, borderThickness);
+					}
+					if (px > 0 && py < h - 1 && area[py][px] != area[py+1][px-1]) {
+						image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy + tileHeight, borderColour, borderThickness);
+					}
+				} else {
+					if (px > 0 && py > 0 && area[py][px] != area[py-1][px-1]) {
+						image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy, borderColour, borderThickness)
+					}
+					if (px > 0 && area[py][px] != area[py][px-1]) {
+						image.line(xx, yy + tileHeight / 2, xx + columnWidth / 3, yy + tileHeight, borderColour, borderThickness)
+					}					
+				}
+			}
+		}
+
 		// Draw rivers
 		List paths = pathService.getPathsInArea(info, x, y, w, h)
 		paths.each { path ->
@@ -174,6 +237,36 @@ class ImageAPIController {
 			}
 		}
 		
+		// Draw places
+		List places = Place.findAll ({
+			eq('mapInfo', info)
+			between('tileX', x, x + w -1)
+			between('tileY', y, y + h - 1)
+		})
+		Map	things = [:]
+		places.each { place ->
+			println place.title
+			if (things.get(place.thingId) == null) {
+				Thing thing = Thing.findById(place.thingId)
+				things.put(thing.id, getImage(thing, BASE_PATH, tileWidth, tileHeight))
+			}
+			Image	img = things.get(place.thingId)
+			if (img != null) {
+				int		xx = (place.tileX - x) * columnWidth
+				int		yy = (place.tileY - y) * tileHeight
+				if ((place.tileX - x) %2 == 1) {
+					yy += tileHeight / 2
+				}
+				xx += (place.subX * tileWidth) / 100
+				yy += (place.subY * tileHeight) / 100
+				image.paint(img, xx, yy, tileWidth, tileHeight)
+				int	fontSize = s / 5 + place.importance * 2
+				int fontWidth = image.getTextWidth(place.title, 0, fontSize)
+				xx += tileWidth / 2 - fontWidth / 2
+				yy += tileHeight
+				image.text(xx, yy, place.title, 0,  fontSize, "#000000")
+			}
+		}
 		
 		return image
 	}
