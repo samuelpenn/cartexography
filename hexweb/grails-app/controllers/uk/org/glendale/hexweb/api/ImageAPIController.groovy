@@ -96,8 +96,8 @@ class ImageAPIController {
     }
 	
 	private SimpleImage getMapImage(MapInfo info, int x, int y, int w, int h, int s) {
-		int			height = h * s + s / 2
-		int			width = w * s
+		int			height = (h * s + s / 2) * 0.86
+		int			width = (w * s) * 0.73 + s * 0.25 
 		
 		SimpleImage image = new SimpleImage(width, height, "#ffffff")
 
@@ -232,8 +232,9 @@ class ImageAPIController {
 				y1 += vertices[i + 1].subY / 100.0
 				
 				float thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / vertices.length
+				thickness *= (s / 20)
 				image.line(x0 * columnWidth, y0 * tileHeight, x1 * columnWidth, y1 * tileHeight, 
-					       "#a4f8ff", (float)(thickness * 2))
+					       "#a4f8ff", thickness)
 			}
 		}
 		
