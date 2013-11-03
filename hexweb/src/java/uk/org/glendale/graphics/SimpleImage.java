@@ -471,10 +471,7 @@ public class SimpleImage implements ImageObserver {
 	public void save(File path) throws IOException {
 		BufferedImage bimage = getBufferedImage();
 
-		// while (!ready) { }
 		OutputStream out = new BufferedOutputStream(new FileOutputStream(path));
-		//JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-		//encoder.encode(bimage);
 		ImageIO.write(bimage, "jpg", out);
 	}
 
@@ -482,9 +479,16 @@ public class SimpleImage implements ImageObserver {
 		BufferedImage				bimage = getBufferedImage();
 		ByteArrayOutputStream		out = new ByteArrayOutputStream();
 
-		//JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-		//encoder.encode(bimage);
 		ImageIO.write(bimage, "jpg", out);
+
+		return out;
+	}
+
+	public ByteArrayOutputStream toPng() throws IOException {
+		BufferedImage				bimage = getBufferedImage();
+		ByteArrayOutputStream		out = new ByteArrayOutputStream();
+
+		ImageIO.write(bimage, "png", out);
 
 		return out;
 	}

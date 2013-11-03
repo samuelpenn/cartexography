@@ -85,9 +85,9 @@ class ImageAPIController {
 		
 		SimpleImage image = getMapImage(info, x, y, w, h, s)
 		
-		byte[] data = image.save().toByteArray()
+		byte[] data = image.toPng().toByteArray()
 		
-		response.setContentType("image/jpeg")
+		response.setContentType("image/png")
 		response.setContentLength(data.length)
 		OutputStream	out = response.getOutputStream();
 		out.write(data)
@@ -168,7 +168,7 @@ class ImageAPIController {
 		}
 		
 		String hexColour = "#44444444"
-		float hexThickness = 1
+		float hexThickness = 3
 		
 		// Draw a hex grid
 		for (int px = 0; px < w; px ++) {
@@ -187,7 +187,7 @@ class ImageAPIController {
 
 		// Now do the area borders
 		String borderColour = "#ff0000"
-		float borderThickness = 2
+		float borderThickness = 5
 		for (int px = 0; px < w; px ++) {
 			for (int py = 0; py < h; py ++) {
 				double xx = px * columnWidth;
@@ -233,7 +233,7 @@ class ImageAPIController {
 				
 				float thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / vertices.length
 				image.line(x0 * columnWidth, y0 * tileHeight, x1 * columnWidth, y1 * tileHeight, 
-					       "#a4f8ff", thickness)
+					       "#a4f8ff", (float)(thickness * 2))
 			}
 		}
 		
