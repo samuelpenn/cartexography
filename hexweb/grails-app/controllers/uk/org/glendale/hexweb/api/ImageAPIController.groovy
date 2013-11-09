@@ -30,8 +30,6 @@ class ImageAPIController {
 	private Image getImage(Terrain terrain, String path, int width, int height) {
 		URL		url = new URL("file://" + path + "/terrain/${terrain.name}.png")
 		
-		println "Adding image for " + url.toString()
-		
 		Image image = SimpleImage.createImage(width, height, url)
 		if (image == null) {
 			println "Null image created"
@@ -42,8 +40,6 @@ class ImageAPIController {
 
 	private Image getImage(Thing thing, String path, int width, int height) {
 		URL		url = new URL("file://" + path + "/things/${thing.name}.png")
-		
-		println "Adding image for " + url.toString()
 		
 		Image image = SimpleImage.createImage(width, height, url)
 		if (image == null) {
@@ -99,6 +95,7 @@ class ImageAPIController {
 		int			height = (h * s + s / 2) * 0.86
 		int			width = (w * s) * 0.73 + s * 0.25 
 		
+		
 		SimpleImage image = new SimpleImage(width, height, "#ffffff")
 
 		String BASE_PATH = grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+info.style).file.absolutePath
@@ -142,7 +139,9 @@ class ImageAPIController {
 			area[hex[1] - y][hex[0] - x] = hex[3]
 			if (images.get(hex[2]) == null) {
 				Terrain 	t = Terrain.findById(hex[2])
-				images.put(hex[2], getImage(t, BASE_PATH, tileWidth, tileHeight))
+				if (t != null) {
+					images.put(hex[2], getImage((Terrain)t, BASE_PATH, tileWidth, tileHeight))
+				}
 			}
 		}
 		
@@ -167,53 +166,54 @@ class ImageAPIController {
 			}
 		}
 		
-		String hexColour = "#44444444"
-		float hexThickness = 3
-		
-		// Draw a hex grid
-		for (int px = 0; px < w; px ++) {
-			for (int py = 0; py < h; py ++) {
-				double xx = px * columnWidth;
-				double yy = py * tileHeight + (px%2 * tileHeight/2);
-				
-				image.line(xx + columnWidth / 3, yy, xx + columnWidth, yy, hexColour, hexThickness)
-				image.line(xx + columnWidth, yy, xx + columnWidth + columnWidth / 3, yy + tileHeight / 2, hexColour, hexThickness)
-				image.line(xx + columnWidth + columnWidth / 3, yy + tileHeight / 2, xx + columnWidth, yy + tileHeight, hexColour, hexThickness)
-				image.line(xx + columnWidth, yy + tileHeight, xx + columnWidth/3, yy + tileHeight, hexColour, hexThickness)
-				image.line(xx + columnWidth/3, yy + tileHeight, xx, yy + tileHeight/2, hexColour, hexThickness)
-				image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy, hexColour, hexThickness)		
-			}	
+		if (params.hex == "1") {
+			String hexColour = "#44444444"
+			float hexThickness = 3		
+			// Draw a hex grid
+			for (int px = 0; px < w; px ++) {
+				for (int py = 0; py < h; py ++) {
+					double xx = px * columnWidth;
+					double yy = py * tileHeight + (px%2 * tileHeight/2);
+					
+					image.line(xx + columnWidth / 3, yy, xx + columnWidth, yy, hexColour, hexThickness)
+					image.line(xx + columnWidth, yy, xx + columnWidth + columnWidth / 3, yy + tileHeight / 2, hexColour, hexThickness)
+					image.line(xx + columnWidth + columnWidth / 3, yy + tileHeight / 2, xx + columnWidth, yy + tileHeight, hexColour, hexThickness)
+					image.line(xx + columnWidth, yy + tileHeight, xx + columnWidth/3, yy + tileHeight, hexColour, hexThickness)
+					image.line(xx + columnWidth/3, yy + tileHeight, xx, yy + tileHeight/2, hexColour, hexThickness)
+					image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy, hexColour, hexThickness)		
+				}	
+			}
 		}
-
-		// Now do the area borders
-		String borderColour = "#ff0000"
-		float borderThickness = 5
-		for (int px = 0; px < w; px ++) {
-			for (int py = 0; py < h; py ++) {
-				double xx = px * columnWidth;
-				double yy = py * tileHeight + (px%2 * tileHeight/2);
-				
-				if (py > 0 && area[py][px] != area[py-1][px]) {
-					image.line(xx + columnWidth / 3, yy, xx + columnWidth, yy, borderColour, borderThickness)
-				}
-				if (px%2 == 1) {
-					if (px > 0 && area[py][px] != area[py][px-1]) {
-						image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy, borderColour, borderThickness);
+		if (params.areas == "1") {
+			// Now do the area borders
+			String borderColour = "#ff0000"
+			float borderThickness = 5
+			for (int px = 0; px < w; px ++) {
+				for (int py = 0; py < h; py ++) {
+					double xx = px * columnWidth;
+					double yy = py * tileHeight + (px%2 * tileHeight/2);
+					
+					if (py > 0 && area[py][px] != area[py-1][px]) {
+						image.line(xx + columnWidth / 3, yy, xx + columnWidth, yy, borderColour, borderThickness)
 					}
-					if (px > 0 && py < h - 1 && area[py][px] != area[py+1][px-1]) {
-						image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy + tileHeight, borderColour, borderThickness);
+					if (px%2 == 1) {
+						if (px > 0 && area[py][px] != area[py][px-1]) {
+							image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy, borderColour, borderThickness);
+						}
+						if (px > 0 && py < h - 1 && area[py][px] != area[py+1][px-1]) {
+							image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy + tileHeight, borderColour, borderThickness);
+						}
+					} else {
+						if (px > 0 && py > 0 && area[py][px] != area[py-1][px-1]) {
+							image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy, borderColour, borderThickness)
+						}
+						if (px > 0 && area[py][px] != area[py][px-1]) {
+							image.line(xx, yy + tileHeight / 2, xx + columnWidth / 3, yy + tileHeight, borderColour, borderThickness)
+						}					
 					}
-				} else {
-					if (px > 0 && py > 0 && area[py][px] != area[py-1][px-1]) {
-						image.line(xx, yy + tileHeight/2, xx + columnWidth/3, yy, borderColour, borderThickness)
-					}
-					if (px > 0 && area[py][px] != area[py][px-1]) {
-						image.line(xx, yy + tileHeight / 2, xx + columnWidth / 3, yy + tileHeight, borderColour, borderThickness)
-					}					
 				}
 			}
 		}
-
 		// Draw rivers
 		List paths = pathService.getPathsInArea(info, x, y, w, h)
 		paths.each { path ->
@@ -249,7 +249,7 @@ class ImageAPIController {
 			println place.title
 			if (things.get(place.thingId) == null) {
 				Thing thing = Thing.findById(place.thingId)
-				things.put(thing.id, getImage(thing, BASE_PATH, tileWidth, tileHeight))
+				things.put(thing.id, getImage((Thing)thing, BASE_PATH, tileWidth, tileHeight))
 			}
 			Image	img = things.get(place.thingId)
 			if (img != null) {
