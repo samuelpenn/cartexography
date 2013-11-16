@@ -208,3 +208,17 @@ create table vertex(
         primary key (id),
         unique key(path_id, vertex));
 
+create table label(
+        id bigint not null auto_increment,
+        tile_x int,
+        tile_y int,
+        sub_x int,
+        sub_y int,
+        name varchar(32),
+        title varchar(64),
+        font_size int,
+        rotation int,
+        style varchar(16),
+        version int,
+        primary key(id));
+        
