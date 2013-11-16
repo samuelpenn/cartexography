@@ -23,7 +23,7 @@ class Label {
 	int			subY
 	String		name
 	String		title
-	int			size
+	int			fontSize
 	int			rotation
 	LabelStyle	style	
 
@@ -33,5 +33,6 @@ class Label {
 		tileY column: "tile_y"
 		subX column: "sub_x"
 		subY column: "sub_y"
+		fontSize column: "font_size"
     }
 }
