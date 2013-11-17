@@ -294,6 +294,8 @@
 				<br/>
 				<img class="menu" id="areaMenu" onclick="openAreaMenu()" src="${resource(dir: 'images/icons', file: 'areas.png')}"/>
 				<br/>
+				<img id="labelsBtn" onclick="setLabels()" src="${resource(dir: 'images/icons', file: 'labels.png')}"/>
+				<br/>
 				<img id="pathStyleROAD" src="${resource(dir: 'images/icons', file: 'path_road.png')}" onclick="setPathStyle(BRUSH_STYLE.ROAD)"/>
 				<img id="pathStyleRIVER" src="${resource(dir: 'images/icons', file: 'path_river.png')}" onclick="setPathStyle(BRUSH_STYLE.RIVER)"/>
 				<img id="pathStyleCOAST" src="${resource(dir: 'images/icons', file: 'path_coast.png')}" onclick="setPathStyle(BRUSH_STYLE.COAST)"/>

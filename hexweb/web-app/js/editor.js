@@ -61,6 +61,15 @@ function clickThumb(event) {
 	moveMapTo(x, y);
 }
 
+function setLabels() {
+	VIEW.brushMode = BRUSH_MODE.LABELS;
+	VIEW.editMode = EDIT_MODE.PAINT;
+	
+	closeAllDialogs();
+	VIEW.terrainBrush = 0;
+	$("#labelsBtn").addClass("selectedButton");	
+}
+
 function selectTerrain(id) {
 	VIEW.brushMode = BRUSH_MODE.TERRAIN;
 	VIEW.editMode = EDIT_MODE.PAINT;

@@ -18,6 +18,7 @@ import uk.org.glendale.hexweb.Terrain
 import uk.org.glendale.hexweb.Thing
 import uk.org.glendale.hexweb.Area
 import uk.org.glendale.hexweb.Vertex
+import uk.org.glendale.hexweb.Label
 import uk.org.glendale.hexweb.services.AreaService;
 
 
@@ -249,6 +250,11 @@ class MapAPIController {
 		List areas = Area.findAll({
 			eq("mapInfo", info)
 		});
+		List labels = Label.findAll ({
+			eq('mapInfo', info)
+			between('tileX', x, x + w -1)
+			between('tileY', y, y + h - 1)
+		})
 		
 		Map data = new HashMap();
 		data.put("map", map)
@@ -256,6 +262,7 @@ class MapAPIController {
 		data.put("places", places)
 		data.put("paths", paths)
 		data.put("areas", areas)
+		data.put("labels", labels)
 		data.put("info", [ "x": x, "y": y, "width": w, "height": h ]);
 		if (bounds != null) {
 			data.put("bounds", bounds)

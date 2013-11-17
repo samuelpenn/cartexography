@@ -15,6 +15,7 @@ BRUSH_MODE.TERRAIN = "TERRAIN";
 BRUSH_MODE.THING = "THING";
 BRUSH_MODE.PATH = "PATH";
 BRUSH_MODE.AREA = "AREA";
+BRUSH_MODE.LABEL = "LABEL";
 
 var BRUSH_STYLE = new Object();
 BRUSH_STYLE.ROAD = "ROAD";
@@ -293,6 +294,7 @@ function drawSmallScale() {
 		MAP.bounds = data.bounds;
 		MAP.paths = data.paths;
 		MAP.areas = data.areas;
+		MAP.labels = data.labels;
 		sortPaths(MAP.paths);
 		
 		if (MAP.paths != null) {
@@ -311,7 +313,6 @@ function drawSmallScale() {
 			for (var i=0; i < MAP.places.length; i++) {
 				var p = MAP.places[i];
 				debug("Place [" + p.name + "] " + p.x +"," + p.y);
-				debug("  " + MAP.places[i].thing_id);
 			}
 		}
 
@@ -483,6 +484,9 @@ function redrawMap() {
 	for (var i=0; i < MAP.places.length; i++) {
 		drawPlace(MAP.places[i]);
 	}
+	for (var i=0; i < MAP.labels.length; i++) {
+		drawLabel(MAP.labels[i]);
+	}
 }
 
 /**
@@ -510,6 +514,28 @@ function drawPlace(p) {
 		var w = VIEW.context.measureText(p.title).width;
 		VIEW.context.fillText(p.title, x + VIEW.imageWidth/2 - w / 2, y + VIEW.imageHeight);
 	}
+}
+
+function drawLabel(p) {
+	if (p.importance < VIEW.zoom) {
+		return;
+	}
+	var x = (p.x - VIEW.x) * 48 - 24 + (p.sx * 65)/100;
+	var y = (p.y - VIEW.y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
+	
+	var tileWidth = VIEW.currentScale.column;
+	var tileHeight = VIEW.currentScale.row;
+	
+	var x = (p.x - VIEW.x) * tileWidth - tileWidth/2 + (p.sx * VIEW.imageWidth)/100 + 8;
+	var y = (p.y - VIEW.y) * tileHeight + (p.x %2 * VIEW.halfOffset) - tileHeight/2 + (p.sy * VIEW.imageHeight)/100 + 8;
+
+	VIEW.context.save();
+	VIEW.context.font = (p.fontSize * VIEW.currentScale.font) + "px Arial";
+	var w = VIEW.context.measureText(p.title).width;
+	VIEW.context.translate(x + VIEW.imageWidth/2 - w / 2, y + VIEW.imageHeight)
+	VIEW.context.rotate(Math.PI * 2 / 360 * p.rotation);
+	VIEW.context.fillText(p.title, 0, 0);
+	VIEW.context.restore();
 }
 
 /* ---- Path drawing functions ---- */
