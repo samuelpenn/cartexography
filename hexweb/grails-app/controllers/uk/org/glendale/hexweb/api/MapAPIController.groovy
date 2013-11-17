@@ -787,10 +787,17 @@ class MapAPIController {
 		
 		if (label != null) {
 			println "Title: " + params.title
-			label.name = params.name
-			label.title = params.title
-			label.fontSize = params.fontSize as int
-			label.rotation = params.rotation as int
+			if (params.name != null) {
+				label.name = params.name
+				label.title = params.title
+				label.fontSize = params.fontSize as int
+				label.rotation = params.rotation as int
+			} else if ((params.x as int) > -1) {
+				label.tileX = params.x as int
+				label.tileY = params.y as int
+				label.subX = params.sx as int
+				label.subY = params.sy as int
+			}
 			label.save()
 		} else {
 			println "No label found"

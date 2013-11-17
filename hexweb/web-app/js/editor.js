@@ -814,7 +814,18 @@ function drawMap(event) {
 		}
 		recordSubPosition(event, px, py);
 		var label = findNearestLabel(oldRecordX, oldRecordY);
-		if (label != null) {
+		if (label != null && Math.abs(oldRecordX - VIEW.recordX) > 15 && Math.abs(oldRecordY - VIEW.recordY) > 15) {
+			// Click and drag event.
+			label.x = Math.floor(VIEW.recordX / 100);
+			label.y = Math.floor(VIEW.recordY / 100);
+			label.sx = VIEW.recordX % 100;
+			label.sy = VIEW.recordY % 100;
+			$.ajax({
+				type: "PUT",
+				url: "/hexweb/api/map/"+MAP.info.id+"/label/"+label.id+"?x="+(VIEW.x+label.x)+"&y="+(VIEW.y+label.y)+"&sx="+label.sx+"&sy="+label.sy
+			});
+			refreshMap();
+		} else if (label != null) {
 			// Simple click next to an existing label.
 			openEditLabelDialog(label);
 		} else if (label == null && Math.abs(oldRecordX - VIEW.recordX) < 50 && Math.abs(oldRecordY - VIEW.recordY) < 50) {
