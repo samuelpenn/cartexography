@@ -93,7 +93,7 @@ class UrlMappings {
 
 		"/api/map/$id/label/$labelId" {
 			controller = "mapAPI"
-			action = [ PUT: "updateLabel" ]
+			action = [ PUT: "updateLabel", DELETE: "deleteLabel" ]
 			parseRequest: true
 		}
 

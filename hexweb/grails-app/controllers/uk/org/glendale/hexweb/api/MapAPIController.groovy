@@ -798,4 +798,12 @@ class MapAPIController {
 		
 		render label as JSON
 	}
+	
+	def deleteLabel(String id, int labelId) {
+		Label label = Label.findById(labelId)
+		if (label != null) {
+			label.delete()
+		}
+		render labelId
+	}
 }

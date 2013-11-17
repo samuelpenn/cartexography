@@ -532,9 +532,9 @@ function drawLabel(p) {
 	VIEW.context.save();
 	VIEW.context.font = (p.fontSize * VIEW.currentScale.font) + "px Arial";
 	var w = VIEW.context.measureText(p.title).width;
-	VIEW.context.translate(x + VIEW.imageWidth/2 - w / 2, y + VIEW.imageHeight)
+	VIEW.context.translate(x + VIEW.imageWidth/2, y + VIEW.imageHeight);
 	VIEW.context.rotate(Math.PI * 2 / 360 * p.rotation);
-	VIEW.context.fillText(p.title, 0, 0);
+	VIEW.context.fillText(p.title, - w/2, 0);
 	VIEW.context.restore();
 }
 

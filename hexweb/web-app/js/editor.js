@@ -886,6 +886,17 @@ function openEditLabelDialog(label) {
 	$("#labelDialog").append("<p><button onclick='deleteLabel()'>Delete</button> <button onclick='saveEditLabelDialog()'>Save</button></p>");
 }
 
+function deleteLabel() {
+	var id = $("#labelId").val();
+	$.ajax({
+		type: "DELETE",
+		url: "/hexweb/api/map/"+MAP.info.id+"/label/"+id
+	});
+
+	$("#labelDialog").remove();
+	refreshMap();
+}
+
 function saveEditLabelDialog() {
 	var id = $("#labelId").val();
 	var name = $("#labelName").val();
