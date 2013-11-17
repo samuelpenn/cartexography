@@ -86,6 +86,17 @@ class UrlMappings {
 			action = [ PUT: "updatePlace", DELETE: "deletePlace" ]
 		}
 
+		"/api/map/$id/label" {
+			controller = "mapAPI"
+			action = [ POST: "createLabel" ]
+		}
+
+		"/api/map/$id/label/$labelId" {
+			controller = "mapAPI"
+			action = [ PUT: "updateLabel" ]
+			parseRequest: true
+		}
+
 		"/api/map/$id/fill" {
 			controller = "mapAPI"
 			action = "fillMap"

@@ -62,7 +62,7 @@ function clickThumb(event) {
 }
 
 function setLabels() {
-	VIEW.brushMode = BRUSH_MODE.LABELS;
+	VIEW.brushMode = BRUSH_MODE.LABEL;
 	VIEW.editMode = EDIT_MODE.PAINT;
 	
 	closeAllDialogs();
@@ -411,6 +411,33 @@ function findNearestPlace(x, y) {
 		}
 	}
 	return nearestPlace;
+}
+
+function findNearestLabel(x, y) {
+	var nearestLabel = null;
+	var minDistance = 10000;
+	
+	x += VIEW.x * 100;
+	y += VIEW.y * 100;
+
+	for (var i=0; i < MAP.labels.length; i++) {
+		var l = MAP.labels[i];
+		var px = l.x * 100 + l.sx;
+		var py = l.y * 100 + l.sy;
+		
+		// TODO: Need to filter out invisible ones.
+
+		// Distance is actually square of distance.
+		var d = (x - px) * (x - px) + (y - py) * (y - py);
+		if (d < minDistance) {
+			nearestLabel = l;
+			minDistance = d;
+		}
+	}
+	if (nearestLabel != null) {
+		debug(nearestLabel.title);
+	}
+	return nearestLabel;
 }
 
 function showPathDialog() {
@@ -762,6 +789,45 @@ function drawMap(event) {
 
 		VIEW.recordX = -1;
 		VIEW.recordY = -1;
+	} else if (VIEW.brushMode == BRUSH_MODE.LABEL && VIEW.mouseDown == 1) {
+		// This is a click. We don't draw on a click, but record the position.
+		if (VIEW.recordX == -1 && VIEW.recordY == -1) {
+			recordSubPosition(event, px, py);
+		}
+	} else if (VIEW.brushMode == BRUSH_MODE.LABEL && VIEW.mouseDown == 0) {
+		// This is possibly a mouse up event.
+		if (VIEW.recordX == -1 && VIEW.recordY == -1) {
+			// No previous mouse down.
+			return;
+		}
+		var oldRecordX = VIEW.recordX;
+		var oldRecordY = VIEW.recordY;
+		
+		var x = Math.floor(VIEW.recordX / 100);
+		var y = Math.floor(VIEW.recordY / 100);
+		var sx = VIEW.recordX % 100;
+		var sy = VIEW.recordY % 100;
+		if (y < 0 || x < 0 || y >= MAP.info.height || x >= MAP.info.width) {
+			VIEW.recordX = -1;
+			VIEW.recordY = -1;
+			return;
+		}
+		recordSubPosition(event, px, py);
+		var label = findNearestLabel(oldRecordX, oldRecordY);
+		if (label != null) {
+			// Simple click next to an existing label.
+			openEditLabelDialog(label);
+		} else if (label == null && Math.abs(oldRecordX - VIEW.recordX) < 50 && Math.abs(oldRecordY - VIEW.recordY) < 50) {
+			// Paint a new label if the mouse hasn't moved that far.
+			$.ajax({
+				type: "POST",
+				url: "/hexweb/api/map/"+MAP.info.id+"/label?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+"&name=new&title=Untitled&style=STANDARD",
+				async: false
+			});
+			refreshMap();
+		}
+		VIEW.recordX = -1;
+		VIEW.recordY = -1;
 	}
 }
 
@@ -793,7 +859,7 @@ function saveEditPlaceDialog() {
 	var title = $("#placeTitle").val();
 
 	$.ajax({
-		type: "PUT",
+		type: "POST",
 		url: "/hexweb/api/map/"+MAP.info.id+"/place/"+id + "?name="+name+"&title="+title+"&x=-1",
 		data: {
 			"name": name,
@@ -805,4 +871,40 @@ function saveEditPlaceDialog() {
 	refreshMap();
 
 	$("#placeDialog").remove();
+}
+
+function openEditLabelDialog(label) {
+	$("#labelDialog").remove();
+
+	$("body").append("<div id='labelDialog' class='floating'></div>");
+	$("#labelDialog").append("<h4>Edit Label</h4>");
+	$("#labelDialog").append("<p>Name: <input id='labelName' type='text' width='24' value='"+label.name+"'/></p>");
+	$("#labelDialog").append("<p>Title: <input id='labelTitle' type='text' width='40' value='"+label.title+"'/></p>");
+	$("#labelDialog").append("<p>Size: <input id='labelSize' type='text' width='24' value='"+label.fontSize+"'/></p>");
+	$("#labelDialog").append("<p>Angle: <input id='labelAngle' type='text' width='24' value='"+label.rotation+"'/></p>");
+	$("#labelDialog").append("<input id='labelId' type='hidden' value='"+label.id+"'/>");
+	$("#labelDialog").append("<p><button onclick='deleteLabel()'>Delete</button> <button onclick='saveEditLabelDialog()'>Save</button></p>");
+}
+
+function saveEditLabelDialog() {
+	var id = $("#labelId").val();
+	var name = $("#labelName").val();
+	var title = $("#labelTitle").val();
+	var size = $("#labelSize").val();
+	var rotation = $("#labelAngle").val();
+
+	$.ajax({
+		type: "PUT",
+		url: "/hexweb/api/map/"+MAP.info.id+"/label/"+id+"?name="+name+"&title="+title+"&fontSize="+size+"&rotation="+rotation+"&x=-1",
+		data: {
+			"name": name,
+			"title": title,
+			"x": -1,
+			"fontSize": size,
+			"rotation": rotation
+		}
+	});
+	refreshMap();
+
+	$("#labelDialog").remove();
 }

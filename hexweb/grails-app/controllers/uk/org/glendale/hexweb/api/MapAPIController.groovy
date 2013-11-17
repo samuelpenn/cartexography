@@ -19,6 +19,7 @@ import uk.org.glendale.hexweb.Thing
 import uk.org.glendale.hexweb.Area
 import uk.org.glendale.hexweb.Vertex
 import uk.org.glendale.hexweb.Label
+import uk.org.glendale.hexweb.LabelStyle
 import uk.org.glendale.hexweb.services.AreaService;
 
 
@@ -734,5 +735,67 @@ class MapAPIController {
 		pathService.updatePath(p)
 		
 		render p as JSON
+	}
+	
+	/**
+	 * Create a new label on the map.
+	 * 
+	 * @param id
+	 * @param name
+	 * @param title
+	 * @param x
+	 * @param y
+	 * @param sx
+	 * @param sy
+	 * @param style
+	 * @param rotation
+	 * @return
+	 */
+	def createLabel(String id, String name, String title, int x, int y, int sx, int sy, int fontSize, String style, int rotation) {
+		MapInfo	info = mapService.getMapByNameOrId(id)
+		
+		Label	label = new Label()
+		label.mapInfo = info
+		label.name = name
+		label.title = title
+		label.tileX = x
+		label.tileY = y
+		label.subX = sx
+		label.subY = sy
+		label.rotation = rotation
+		if (fontSize > 0) {
+			label.fontSize = fontSize
+		} else {
+			label.fontSize = 2
+		}
+		if (label.style != null) {
+			label.style = LabelStyle.valueOf(style)
+		} else {
+			label.style = LabelStyle.STANDARD
+		}
+		label.save()
+		
+		render label as JSON
+	}
+	
+	def updateLabel(String id, int labelId) {
+		MapInfo	info = mapService.getMapByNameOrId(id)
+		
+		println "updateLabel: ${labelId}"
+		
+		Label	label = Label.findById(labelId)
+		
+		if (label != null) {
+			println "Title: " + params.title
+			label.name = params.name
+			label.title = params.title
+			label.fontSize = params.fontSize as int
+			label.rotation = params.rotation as int
+			label.save()
+		} else {
+			println "No label found"
+		}
+		
+		render label as JSON
 	}
 }

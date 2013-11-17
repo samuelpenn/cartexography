@@ -9,7 +9,7 @@
 package uk.org.glendale.hexweb;
 
 public enum LabelStyle {
-	GRASSLAND,
+	STANDARD,
 	FOREST,
 	WATER,
 	MOUNTAINS,
