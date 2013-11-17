@@ -210,6 +210,7 @@ create table vertex(
 
 create table label(
         id bigint not null auto_increment,
+        mapinfo_id int not null,
         tile_x int,
         tile_y int,
         sub_x int,
