@@ -792,6 +792,7 @@ class MapAPIController {
 				label.title = params.title
 				label.fontSize = params.fontSize as int
 				label.rotation = params.rotation as int
+				label.style = LabelStyle.valueOf(params.style)
 			} else if ((params.x as int) > -1) {
 				label.tileX = params.x as int
 				label.tileY = params.y as int

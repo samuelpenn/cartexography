@@ -530,6 +530,31 @@ function drawLabel(p) {
 	var y = (p.y - VIEW.y) * tileHeight + (p.x %2 * VIEW.halfOffset) - tileHeight/2 + (p.sy * VIEW.imageHeight)/100 + 8;
 
 	VIEW.context.save();
+	VIEW.context.strokeStyle = "#000000";
+	switch (p.style) {
+	case "FOREST":
+		debug("Forest");
+		VIEW.context.strokeStyle = "#002200";
+		VIEW.context.fillStyle = "#003300";
+		break;
+	case "WATER":
+		debug("Water");
+		VIEW.context.strokeStyle = "#000044";
+		VIEW.context.fillStyle = "#000044";
+		break;
+	case "MOUNTAINS":
+		VIEW.context.strokeStyle = "#332200";
+		VIEW.context.fillStyle = "#332200";
+		break;
+	case "DESERT":
+		VIEW.context.strokeStyle = "#000000";
+		VIEW.context.fillStyle = "#777700";
+		break;
+	case "SNOW":
+		VIEW.context.strokeStyle = "#444444";
+		VIEW.context.fillStyle = "#444444";
+		break;
+	}
 	VIEW.context.font = (p.fontSize * VIEW.currentScale.font) + "px Arial";
 	var w = VIEW.context.measureText(p.title).width;
 	VIEW.context.translate(x + VIEW.imageWidth/2, y + VIEW.imageHeight);

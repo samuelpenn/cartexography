@@ -886,11 +886,27 @@ function saveEditPlaceDialog() {
 
 function openEditLabelDialog(label) {
 	$("#labelDialog").remove();
+	
+	debug(label.style);
 
+	var select = "<select id='labelStyle'>";
+	var types = [ "Standard", "Forest", "Water", "Mountains", "Desert", "Snow" ];
+	for (var i = 0; i < types.length; i++) {
+		var type = types[i];
+		if ((label.style+"").toUpperCase() == type.toUpperCase()) {
+			select += "<option selected='1'>" + type + "</option>";
+		} else {
+			select += "<option>" + type + "</option>";
+		}
+	}
+	
+	select += "</select>";
+
+	
 	$("body").append("<div id='labelDialog' class='floating'></div>");
-	$("#labelDialog").append("<h4>Edit Label</h4>");
 	$("#labelDialog").append("<p>Name: <input id='labelName' type='text' width='24' value='"+label.name+"'/></p>");
 	$("#labelDialog").append("<p>Title: <input id='labelTitle' type='text' width='40' value='"+label.title+"'/></p>");
+	$("#labelDialog").append(select);
 	$("#labelDialog").append("<p>Size: <input id='labelSize' type='text' width='24' value='"+label.fontSize+"'/></p>");
 	$("#labelDialog").append("<p>Angle: <input id='labelAngle' type='text' width='24' value='"+label.rotation+"'/></p>");
 	$("#labelDialog").append("<input id='labelId' type='hidden' value='"+label.id+"'/>");
@@ -914,10 +930,13 @@ function saveEditLabelDialog() {
 	var title = $("#labelTitle").val();
 	var size = $("#labelSize").val();
 	var rotation = $("#labelAngle").val();
+	var style = $("#labelStyle").val().toUpperCase();
+	
+	debug("Set to " + style);
 
 	$.ajax({
 		type: "PUT",
-		url: "/hexweb/api/map/"+MAP.info.id+"/label/"+id+"?name="+name+"&title="+title+"&fontSize="+size+"&rotation="+rotation+"&x=-1",
+		url: "/hexweb/api/map/"+MAP.info.id+"/label/"+id+"?name="+name+"&title="+title+"&fontSize="+size+"&rotation="+rotation+"&style="+style+"&x=-1",
 		data: {
 			"name": name,
 			"title": title,
