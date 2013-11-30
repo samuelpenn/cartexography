@@ -7,6 +7,7 @@ package uk.org.glendale.graphics;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -415,6 +416,27 @@ public class SimpleImage implements ImageObserver {
 							RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 		g.drawString(text, x, y);
+	}
+
+	public void text(int x, int y, String text, int style, int size,
+			String colour, int angle) {
+		Graphics2D g = (Graphics2D) image.getGraphics();
+		
+		AffineTransform saved = g.getTransform();
+		
+		g.setColor(getColour(colour));
+		g.setFont(new Font(fontName, style, size));
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+							RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		
+		int fontWidth = getTextWidth(text, 0, size);
+
+		g.translate(x + fontWidth/2,  y);
+		g.rotate(2 * Math.PI * (angle / 360.0));
+
+		g.drawString(text, -fontWidth/2, 0);
+		
+		g.setTransform(saved);
 	}
 
 	public int getTextWidth(String text, int style, int size) {

@@ -553,15 +553,24 @@ function getFontSize(p) {
 
 function getFontAlpha(p) {
 	var alpha = 1.00;
-
-	debug ("Zoom: " + VIEW.zoom);
+	var size = getFontSize(p);
 	
-	if (p.fontSize < VIEW.zoom) {
+	debug (p.title + " " + p.fontSize + " " + size + " " + VIEW.currentScale.column);
+	size = parseInt(size / 10);
+	switch (size) {
+	case 0:
+		debug(size);
 		alpha = 0;
-	} else if (p.fontSize > VIEW.zoom + 1) {
-		alpha -= 0.25 * (p.fontSize - VIEW.zoom); 
+		break;
+	case 1: case 2:
+		debug(size);
+		alpha = 1.00;
+		break;
+	default:
+		debug("default: " + size);
+		alpha = 1.00 - (size -2) * 0.25;
 	}
-	
+
 	return alpha;
 }
 

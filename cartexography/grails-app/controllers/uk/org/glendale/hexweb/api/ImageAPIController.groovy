@@ -10,13 +10,7 @@ package uk.org.glendale.hexweb.api
 
 import java.awt.Image
 import uk.org.glendale.graphics.SimpleImage
-import uk.org.glendale.hexweb.MapInfo
-import uk.org.glendale.hexweb.Terrain
-import uk.org.glendale.hexweb.Hex
-import uk.org.glendale.hexweb.Path
-import uk.org.glendale.hexweb.Thing
-import uk.org.glendale.hexweb.Vertex
-import uk.org.glendale.hexweb.Place
+import uk.org.glendale.hexweb.*
 
 /**
  * Controller which produces images.
@@ -26,6 +20,7 @@ class ImageAPIController {
 	def grailsApplication
 	def pathService
 	def thingService
+	def imageService
 	
 	private Image getImage(Terrain terrain, String path, int width, int height) {
 		URL		url = new URL("file://" + path + "/terrain/${terrain.name}.png")
@@ -266,6 +261,33 @@ class ImageAPIController {
 				xx += tileWidth / 2 - fontWidth / 2
 				yy += tileHeight
 				image.text(xx, yy, place.title, 0,  fontSize, "#000000")
+			}
+		}
+		
+		// Draw labels
+		List labels = Label.findAll ({
+			eq('mapInfo', info)
+			between('tileX', x, x + w -1)
+			between('tileY', y, y + h - 1)
+		})
+		labels.each { label ->
+			int		xx = (label.tileX - x) * columnWidth
+			int		yy = (label.tileY - y) * tileHeight
+			if ((label.tileX - x) %2 == 1) {
+				yy += tileHeight / 2
+			}
+			xx += (label.subX * tileWidth) / 100
+			yy += (label.subY * tileHeight) / 100
+
+			int fontSize = imageService.getLabelSize(label, columnWidth)
+			int alpha = imageService.getLabelAlpha(label, columnWidth)
+			
+			if (alpha > 0) {
+				alpha *= 2.55
+				String colour = label.style.fill + Integer.toHexString(alpha)
+				int fontWidth = image.getTextWidth(label.title, 0, fontSize)
+				xx += tileWidth / 2 - fontWidth / 2
+				image.text(xx, yy, label.title, 0, fontSize, colour, label.rotation)
 			}
 		}
 		

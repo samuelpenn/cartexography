@@ -8,11 +8,24 @@
  */
 package uk.org.glendale.hexweb;
 
+/**
+ * Define the available styles of labels.
+ * The style defines the colours to be used when displaying
+ * a label on the map.
+ */
 public enum LabelStyle {
-	STANDARD,
-	FOREST,
-	WATER,
-	MOUNTAINS,
-	DESERT,
-	SNOW
+	STANDARD("#000000", "#000000"),
+	FOREST("#004400", "#004400"),
+	WATER("#000088", "#000088"),
+	MOUNTAINS("#880000", "#880000"),
+	DESERT("#BBBB00", "#000000"),
+	SNOW("#888888", "#888888");
+
+	public final String  fill;
+	public final String  stroke;
+	
+	private LabelStyle(String fill, String stroke) {
+		this.fill = fill;
+		this.stroke = stroke;
+	}
 }
