@@ -5,7 +5,7 @@
 		<g:javascript src="hexweb.js"/>
 		
 		<g:javascript>
-			var		BASE_PATH = "/hexweb/images/style/standard/";
+			var		BASE_PATH = "${application.contextPath}/images/style/standard/";
 			
 			LIST = ${maps};
 			
@@ -18,7 +18,7 @@
 	
 	<style>
 		div#header {
-			background-image: url('/hexweb/images/img/hexweb.png');
+			background-image: url('${application.contextPath}/images/img/hexweb.png');
 			background-repeat: no-repeat;
 			height: 72px;
 		}
@@ -53,7 +53,7 @@
 			<g:each in="${maps}">
 				<div class="inline">
 					<h4><a href="${it.name}">${it.title}</a></h4>
-					<img src="/hexweb/api/map/${it.id}/thumb?w=48"/><br/>
+					<img src="${application.contextPath}/api/map/${it.id}/thumb?w=48"/><br/>
 					(${it.width}x${it.height})
 				</div>
 			</g:each>

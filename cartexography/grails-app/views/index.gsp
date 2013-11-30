@@ -1,11 +1,14 @@
 <html>
 	<head>
-		<title>HexWeb</title>
+		<title>Cartexography</title>
 		<g:javascript library="jquery"/>
 		<g:javascript src="hexweb.js"/>
 		
 		<g:javascript>
-			var		BASE_PATH = "/hexweb/images/style/standard/";
+			var		BASE_PATH = "${application.contextPath}/images/style/standard/";
+			var 	CONTEXT_PATH = "${application.contextPath}";
+			var		API_PATH = CONTEXT_PATH+"/api";
+			var		ICONS_PATH = CONTEXT_PATH + "/images/icons";
 			
 			LIST = ${maps};
 			
@@ -18,7 +21,7 @@
 	
 	<style>
 		div#header {
-			background-image: url('/hexweb/images/img/hexweb.png');
+			background-image: url('${application.contextPath}/images/img/hexweb.png');
 			background-repeat: no-repeat;
 			height: 72px;
 		}
@@ -50,20 +53,20 @@
 	
 	<body>
 		<div id="header">
-			<h1>HexWeb</h1>
+			<h1>Cartexography</h1>
 		</div>	
 		
 		<div>
 			<div class="inline">
 				<h4 style="color: #888888">new map</h4>
-				<a href="admin/create"><img src="/hexweb/images/icons/newmap.png"/></a>
+				<a href="admin/create"><img src="${application.contextPath}/images/icons/newmap.png"/></a>
 				<br/>
 				&nbsp;
 			</div>
 			<g:each in="${maps}">
 				<div class="inline">
 					<h4>${it.title}</h4>
-					<a href="map/${it.name}"><img src="/hexweb/api/map/${it.id}/thumb?w=128"/></a>
+					<a href="map/${it.name}"><img src="${application.contextPath}/api/map/${it.id}/thumb?w=128"/></a>
 					<br/>
 					(${it.width}x${it.height})
 				</div>

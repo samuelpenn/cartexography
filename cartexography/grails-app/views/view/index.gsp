@@ -5,7 +5,10 @@
 		<g:javascript src="hexweb.js"/>
 		
 		<g:javascript>
-			var		BASE_PATH = "/hexweb/images/style/standard/";
+			var		BASE_PATH = "/cartexography/images/style/standard/";
+			var 	CONTEXT_PATH = "${application.contextPath}";
+			var		API_PATH = CONTEXT_PATH+"/api";
+			var		ICONS_PATH = CONTEXT_PATH + "/images/icons";
 			
 			MAP.info = { id: ${mapInfo.id}, 
 						 name: "${mapInfo.name}",
@@ -20,7 +23,7 @@
 			window.onload = function() {
 				VIEW.context = document.getElementById("map").getContext("2d");
 				
-				$.getJSON("/hexweb/api/map/"+MAP.info.id+"/info", function(data) {
+				$.getJSON("/cartexography/api/map/"+MAP.info.id+"/info", function(data) {
 					MAP.info = data.info;
 					MAP.images = {}; // Hex images
 					MAP.things = {}; // Thing data

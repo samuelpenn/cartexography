@@ -209,7 +209,7 @@ function drawLargeScale() {
 	VIEW.halfOffset = 0;
 	VIEW.tileWidth = tileWidth;
 	VIEW.tileHeight = tileHeight;
-	$.getJSON("/hexweb/api/map/"+MAP.info.id+"/largemap?x="+startX+"&y="+startY+"&w="+
+	$.getJSON(API_PATH+"/map/"+MAP.info.id+"/largemap?x="+startX+"&y="+startY+"&w="+
 			  mapWidth+"&h="+mapHeight+"&scale="+VIEW.currentScale.scale, function(data) {
 		MAP.map = data.map;
 		MAP.bounds = data.bounds;
@@ -287,7 +287,7 @@ function drawSmallScale() {
 	VIEW.tileWidth = tileWidth;
 	VIEW.tileHeight = tileHeight;
 
-	$.getJSON("/hexweb/api/map/"+MAP.info.id+"/map?x="+startX+"&y="+startY+"&w="+mapWidth+"&h="+mapHeight, function(data) {
+	$.getJSON(API_PATH+"/map/"+MAP.info.id+"/map?x="+startX+"&y="+startY+"&w="+mapWidth+"&h="+mapHeight, function(data) {
 		MAP.map = data.map;
 		MAP.area = data.area;
 		MAP.places = data.places;

@@ -39,7 +39,7 @@ function openMap() {
 	$("#mapPopout").css("border", "1px solid #999999");
 	$("#mapPopout").css("opacity", "1");
 	
-	$("#mapPopout").html("<img id='mapThumb' src='/hexweb/api/map/"+MAP.info.name+
+	$("#mapPopout").html("<img id='mapThumb' src='"+API_PATH+"/map/"+MAP.info.name+
 			               "/thumb?w=320&forceWidth=true' width='"+width+
 			               "' height='"+height+"'/>");
 	$("#mapThumb").css("opacity", "1");
@@ -251,7 +251,7 @@ function paintTerrain(event, px, py) {
 	
 	$.ajax({
 		type: "PUT",
-		url: "/hexweb/api/map/"+MAP.info.id+"/update?x="+(VIEW.x+x*scale)+"&y="+(VIEW.y+y*scale)+
+		url: API_PATH+"/map/"+MAP.info.id+"/update?x="+(VIEW.x+x*scale)+"&y="+(VIEW.y+y*scale)+
 			"&radius="+VIEW.brushSize+"&scale="+scale+"&terrain="+VIEW.terrainBrush,
 		async: true
 	});
@@ -271,7 +271,7 @@ function paintArea(event, px, py) {
 	
 	$.ajax({
 		type: "PUT",
-		url: "/hexweb/api/map/"+MAP.info.id+"/update?x="+(VIEW.x+x*scale)+"&y="+(VIEW.y+y*scale)+
+		url: API_PATH+"/map/"+MAP.info.id+"/update?x="+(VIEW.x+x*scale)+"&y="+(VIEW.y+y*scale)+
 			"&radius="+VIEW.brushSize+"&scale="+scale+"&area="+VIEW.areaBrush,
 		async: true
 	});
@@ -470,13 +470,13 @@ function showPathDialog() {
 	
 	$("#pathDialog").append("<div id='pathLength'>1</div>");
 	
-	$("#pathDialog").append("<img src=\"/hexweb/images/icons/path_save.png\" onclick=\"saveCurrentPath()\"/>");
+	$("#pathDialog").append("<img src=\""+ICONS_PATH+"/path_save.png\" onclick=\"saveCurrentPath()\"/>");
 	$("#pathDialog").append("&nbsp;");
-	$("#pathDialog").append("<img src=\"/hexweb/images/icons/path_del.png\" onclick=\"deleteCurrentPath()\"/>");
+	$("#pathDialog").append("<img src=\""+ICONS_PATH+"/path_del.png\" onclick=\"deleteCurrentPath()\"/>");
 	$("#pathDialog").append("&nbsp;");
-	$("#pathDialog").append("<img src=\"/hexweb/images/icons/node_add.png\" onclick=\"addNodeToPath()\"/>");
+	$("#pathDialog").append("<img src=\""+ICONS_PATH+"/node_add.png\" onclick=\"addNodeToPath()\"/>");
 	$("#pathDialog").append("&nbsp;");
-	$("#pathDialog").append("<img src=\"/hexweb/images/icons/node_del.png\" onclick=\"removeNodeFromPath()\"/>");
+	$("#pathDialog").append("<img src=\""+ICONS_PATH+"/node_del.png\" onclick=\"removeNodeFromPath()\"/>");
 }
 
 function changePathName() {
@@ -641,7 +641,7 @@ function saveCurrentPath() {
 		contentType: 'application/json',
 		dataType: 'json',
 		type: "POST",
-		url: "/hexweb/api/map/"+MAP.info.id+"/path",
+		url: API_PATH+"/map/"+MAP.info.id+"/path",
 		data: JSON.stringify(path),
 		processData: false,
 		success: function (data) {
@@ -658,7 +658,7 @@ function deleteCurrentPath() {
 	var  path = VIEW.currentPath;
 	$.ajax({
 		type: "DELETE",
-		url: "/hexweb/api/map/"+MAP.info.id+"/path/"+path.id,
+		url: API_PATH+"/map/"+MAP.info.id+"/path/"+path.id,
 		success: function (data) {
 			VIEW.currentPath = null;
 			refreshMap();
@@ -771,7 +771,7 @@ function drawMap(event) {
 			place.sy = VIEW.recordY % 100;
 			$.ajax({
 				type: "PUT",
-				url: "/hexweb/api/map/"+MAP.info.id+"/place/"+place.id+"?x="+(VIEW.x+place.x)+"&y="+(VIEW.y+place.y)+"&sx="+place.sx+"&sy="+place.sy
+				url: API_PATH+"/map/"+MAP.info.id+"/place/"+place.id+"?x="+(VIEW.x+place.x)+"&y="+(VIEW.y+place.y)+"&sx="+place.sx+"&sy="+place.sy
 			});
 			refreshMap();
 		} else if (place != null) {
@@ -781,7 +781,7 @@ function drawMap(event) {
 			// Paint a new object if the mouse hasn't moved that far.
 			$.ajax({
 				type: "POST",
-				url: "/hexweb/api/map/"+MAP.info.id+"/place?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+"&thingId="+VIEW.thingBrush,
+				url: API_PATH+"/map/"+MAP.info.id+"/place?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+"&thingId="+VIEW.thingBrush,
 				async: false
 			});
 			refreshMap();
@@ -822,7 +822,7 @@ function drawMap(event) {
 			label.sy = VIEW.recordY % 100;
 			$.ajax({
 				type: "PUT",
-				url: "/hexweb/api/map/"+MAP.info.id+"/label/"+label.id+"?x="+(VIEW.x+label.x)+"&y="+(VIEW.y+label.y)+"&sx="+label.sx+"&sy="+label.sy
+				url: API_PATH+"/map/"+MAP.info.id+"/label/"+label.id+"?x="+(VIEW.x+label.x)+"&y="+(VIEW.y+label.y)+"&sx="+label.sx+"&sy="+label.sy
 			});
 			refreshMap();
 		} else if (label != null) {
@@ -832,7 +832,7 @@ function drawMap(event) {
 			// Paint a new label if the mouse hasn't moved that far.
 			$.ajax({
 				type: "POST",
-				url: "/hexweb/api/map/"+MAP.info.id+"/label?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+"&name=new&title=Untitled&style=STANDARD",
+				url: API_PATH+"/map/"+MAP.info.id+"/label?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+"&name=new&title=Untitled&style=STANDARD",
 				async: false
 			});
 			refreshMap();
@@ -857,7 +857,7 @@ function deletePlace() {
 	var id = $("#placeId").val();
 	$.ajax({
 		type: "DELETE",
-		url: "/hexweb/api/map/"+MAP.info.id+"/place/"+id
+		url: API_PATH+"/map/"+MAP.info.id+"/place/"+id
 	});
 
 	$("#placeDialog").remove();
@@ -871,7 +871,7 @@ function saveEditPlaceDialog() {
 
 	$.ajax({
 		type: "POST",
-		url: "/hexweb/api/map/"+MAP.info.id+"/place/"+id + "?name="+name+"&title="+title+"&x=-1",
+		url: API_PATH+"/map/"+MAP.info.id+"/place/"+id + "?name="+name+"&title="+title+"&x=-1",
 		data: {
 			"name": name,
 			"title": title,
@@ -917,7 +917,7 @@ function deleteLabel() {
 	var id = $("#labelId").val();
 	$.ajax({
 		type: "DELETE",
-		url: "/hexweb/api/map/"+MAP.info.id+"/label/"+id
+		url: API_PATH+"/map/"+MAP.info.id+"/label/"+id
 	});
 
 	$("#labelDialog").remove();
@@ -936,7 +936,7 @@ function saveEditLabelDialog() {
 
 	$.ajax({
 		type: "PUT",
-		url: "/hexweb/api/map/"+MAP.info.id+"/label/"+id+"?name="+name+"&title="+title+"&fontSize="+size+"&rotation="+rotation+"&style="+style+"&x=-1",
+		url: API_PATH+"/map/"+MAP.info.id+"/label/"+id+"?name="+name+"&title="+title+"&fontSize="+size+"&rotation="+rotation+"&style="+style+"&x=-1",
 		data: {
 			"name": name,
 			"title": title,

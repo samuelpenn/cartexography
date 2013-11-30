@@ -19,7 +19,10 @@
 			
 	
 			var		imagesToLoad = 0;
-			var		BASE_PATH = "/hexweb/images/style/"+MAP.info.style+"/";
+			var		BASE_PATH = "${application.contextPath}/images/style/"+MAP.info.style+"/";
+			var 	CONTEXT_PATH = "${application.contextPath}";
+			var		API_PATH = CONTEXT_PATH+"/api";
+			var		ICONS_PATH = CONTEXT_PATH + "/images/icons";
 			VIEW.imageBase = BASE_PATH;
 
 
@@ -27,7 +30,7 @@
 				VIEW.context = document.getElementById("map").getContext("2d");
 				document.getElementById("map").onselectstart = function() { return false; };
 				
-				$.getJSON("/hexweb/api/map/"+MAP.info.id+"/info", function(data) {
+				$.getJSON("${application.contextPath}/api/map/"+MAP.info.id+"/info", function(data) {
 					MAP.info = data.info;
 					MAP.images = {}; // Hex images
 					MAP.things = {}; // Thing data
