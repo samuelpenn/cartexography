@@ -516,10 +516,63 @@ function drawPlace(p) {
 	}
 }
 
+function getFontSize(p) {
+	var size = 2;
+	switch (p.fontSize) {
+	case 0: 
+		// xx-small
+		size = 1;
+		break;
+	case 1:
+		// x-small
+		size = 2;
+		break;
+	case 2:
+		// small
+		size = 4;
+		break;
+	case 3:
+		// medium
+		size = 8;
+		break;
+	case 4:
+		// large
+		size = 16;
+		break;
+	case 5:
+		// x-large
+		size = 32;
+		break;
+	case 6:
+		// xx-large
+		size = 48;
+		break;
+	}
+	return parseInt(size * VIEW.currentScale.column / 3);
+}
+
+function getFontAlpha(p) {
+	var alpha = 1.00;
+
+	debug ("Zoom: " + VIEW.zoom);
+	
+	if (p.fontSize < VIEW.zoom) {
+		alpha = 0;
+	} else if (p.fontSize > VIEW.zoom + 1) {
+		alpha -= 0.25 * (p.fontSize - VIEW.zoom); 
+	}
+	
+	return alpha;
+}
+
 function drawLabel(p) {
-	if (p.importance < VIEW.zoom) {
+	var size = getFontSize(p);
+	var alpha = getFontAlpha(p);
+	debug ("Alpha: " + alpha);
+	if (alpha <= 0) {
 		return;
 	}
+
 	var x = (p.x - VIEW.x) * 48 - 24 + (p.sx * 65)/100;
 	var y = (p.y - VIEW.y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
 	
@@ -531,31 +584,33 @@ function drawLabel(p) {
 
 	VIEW.context.save();
 	VIEW.context.strokeStyle = "#000000";
+	VIEW.context.fillStyle = "rgba(0, 0, 0, " + alpha + ")";
 	switch (p.style) {
 	case "FOREST":
 		debug("Forest");
-		VIEW.context.strokeStyle = "#002200";
-		VIEW.context.fillStyle = "#003300";
+		VIEW.context.strokeStyle = "rgba(0, 50, 0, " + alpha + ")";
+		VIEW.context.fillStyle = "rgba(0, 50, 0, " + alpha + ")";
 		break;
 	case "WATER":
 		debug("Water");
-		VIEW.context.strokeStyle = "#000044";
-		VIEW.context.fillStyle = "#000044";
+		VIEW.context.strokeStyle = "rgba(0, 0, 100, " + alpha + ")";
+		VIEW.context.fillStyle = "rgba(0, 0, 100, " + alpha + ")";
 		break;
 	case "MOUNTAINS":
-		VIEW.context.strokeStyle = "#332200";
-		VIEW.context.fillStyle = "#332200";
+		VIEW.context.strokeStyle = "rgba(100, 0, 0, " + alpha + ")";
+		VIEW.context.fillStyle = "rgba(100, 0, 0, " + alpha + ")";
 		break;
 	case "DESERT":
-		VIEW.context.strokeStyle = "#000000";
-		VIEW.context.fillStyle = "#777700";
+		VIEW.context.strokeStyle = "rgba(0, 0, 0, " + alpha + ")";
+		VIEW.context.fillStyle = "rgba(150, 150, 0, " + alpha + ")";
 		break;
 	case "SNOW":
-		VIEW.context.strokeStyle = "#444444";
-		VIEW.context.fillStyle = "#444444";
+		VIEW.context.strokeStyle = "rgba(100, 100, 100, " + alpha + ")";
+		VIEW.context.fillStyle = "rgba(100, 100, 100, " + alpha + ")";
 		break;
 	}
-	VIEW.context.font = (p.fontSize * VIEW.currentScale.font) + "px Arial";
+	VIEW.context.fillStyle += "77";
+	VIEW.context.font = size + "px Arial";
 	var w = VIEW.context.measureText(p.title).width;
 	VIEW.context.translate(x + VIEW.imageWidth/2, y + VIEW.imageHeight);
 	VIEW.context.rotate(Math.PI * 2 / 360 * p.rotation);
