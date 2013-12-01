@@ -446,12 +446,15 @@ public class SimpleImage implements ImageObserver {
 		FontRenderContext frc = g.getFontRenderContext();
 		Rectangle2D		  box = font.getStringBounds(text, frc);
 		return (int)(box.getMaxX() - box.getMinX());
-/*
+	}
+
+	public int getTextHeight(String text, int style, int size) {
+		Graphics2D g = (Graphics2D) image.getGraphics();
+		Font font = new Font(fontName, style, size);
+		
 		FontMetrics metrics = g.getFontMetrics(font);
-		if (metrics == null)
-			return 0;
-		return metrics.stringWidth(text);
-*/
+		
+		return metrics.getHeight();
 	}
 
 	public void arc(int x, int y, int size, String colour) {

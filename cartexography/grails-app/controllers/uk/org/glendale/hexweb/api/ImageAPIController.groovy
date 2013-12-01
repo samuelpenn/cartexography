@@ -293,8 +293,10 @@ class ImageAPIController {
 				alpha *= 2.55
 				String colour = label.style.fill + Integer.toHexString(alpha)
 				int fontWidth = image.getTextWidth(label.title, 0, fontSize)
-				xx += tileWidth / 2 - fontWidth / 2
+				image.circle(xx, yy, 8, "#000000")
+				xx -= fontWidth / 2
 				image.text(xx, yy, label.title, 0, fontSize, colour, label.rotation)
+				
 			}
 		}
 		
