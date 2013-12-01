@@ -496,8 +496,6 @@ function drawPlace(p) {
 	if (p.importance < VIEW.zoom) {
 		return;
 	}
-	var x = (p.x - VIEW.x) * 48 - 24 + (p.sx * 65)/100;
-	var y = (p.y - VIEW.y) * 56 + (p.x %2 * 28) - 20 + (p.sy * 56)/100;
 	
 	var tileWidth = VIEW.currentScale.column;
 	var tileHeight = VIEW.currentScale.row;
@@ -588,8 +586,8 @@ function drawLabel(p) {
 	var tileWidth = VIEW.currentScale.column;
 	var tileHeight = VIEW.currentScale.row;
 	
-	var x = (p.x - VIEW.x) * tileWidth - tileWidth/2 + (p.sx * VIEW.imageWidth)/100 + 8;
-	var y = (p.y - VIEW.y) * tileHeight + (p.x %2 * VIEW.halfOffset) - tileHeight/2 + (p.sy * VIEW.imageHeight)/100 + 8;
+	var x = (p.x - VIEW.x) * tileWidth + (p.sx * VIEW.imageWidth)/100 + 8;
+	var y = (p.y - VIEW.y) * tileHeight + (p.x %2 * VIEW.halfOffset) + (p.sy * VIEW.imageHeight)/100 + 8;
 
 	VIEW.context.save();
 	VIEW.context.strokeStyle = "#000000";
@@ -621,7 +619,15 @@ function drawLabel(p) {
 	VIEW.context.fillStyle += "77";
 	VIEW.context.font = size + "px Arial";
 	var w = VIEW.context.measureText(p.title).width;
-	VIEW.context.translate(x + VIEW.imageWidth/2, y + VIEW.imageHeight);
+	VIEW.context.translate(x, y);
+
+	if (VIEW.brushMode == BRUSH_MODE.LABEL) {
+		VIEW.context.beginPath();
+		VIEW.context.arc(0, 0, 2, 0, 2 * Math.PI, false);
+		VIEW.context.fill();
+		VIEW.context.stroke();
+	}
+
 	VIEW.context.rotate(Math.PI * 2 / 360 * p.rotation);
 	VIEW.context.fillText(p.title, - w/2, 0);
 	VIEW.context.restore();

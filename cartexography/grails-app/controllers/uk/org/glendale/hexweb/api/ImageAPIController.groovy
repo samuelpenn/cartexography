@@ -226,6 +226,13 @@ class ImageAPIController {
 				x1 += vertices[i + 1].subX / 100.0
 				y1 += vertices[i + 1].subY / 100.0
 				
+				if (vertices[i].x %2 == 1) {
+					y0 += 0.5
+				}
+				if (vertices[i+1].x %2 == 1) {
+					y1 += 0.5
+				}
+
 				float thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / vertices.length
 				thickness *= (s / 20)
 				image.line(x0 * columnWidth, y0 * tileHeight, x1 * columnWidth, y1 * tileHeight, 
@@ -248,8 +255,8 @@ class ImageAPIController {
 			}
 			Image	img = things.get(place.thingId)
 			if (img != null) {
-				int		xx = (place.tileX - x) * columnWidth
-				int		yy = (place.tileY - y) * tileHeight
+				int		xx = (place.tileX - x) * columnWidth - columnWidth / 2
+				int		yy = (place.tileY - y) * tileHeight - tileHeight / 2
 				if ((place.tileX - x) %2 == 1) {
 					yy += tileHeight / 2
 				}
