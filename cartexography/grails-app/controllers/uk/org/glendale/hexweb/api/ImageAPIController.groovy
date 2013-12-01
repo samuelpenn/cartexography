@@ -287,13 +287,13 @@ class ImageAPIController {
 			yy += (label.subY * tileHeight) / 100
 
 			int fontSize = imageService.getLabelSize(label, columnWidth)
-			int alpha = imageService.getLabelAlpha(label, columnWidth)
+			int alpha = imageService.getLabelAlpha(label, columnWidth, Math.min(w,  h))
 			
 			if (alpha > 0) {
 				alpha *= 2.55
 				String colour = label.style.fill + Integer.toHexString(alpha)
 				int fontWidth = image.getTextWidth(label.title, 0, fontSize)
-				image.circle(xx, yy, 8, "#000000")
+				//image.circle(xx, yy, 8, "#000000")
 				xx -= fontWidth / 2
 				image.text(xx, yy, label.title, 0, fontSize, colour, label.rotation)
 				

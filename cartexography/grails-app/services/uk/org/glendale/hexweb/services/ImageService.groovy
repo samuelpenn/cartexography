@@ -59,28 +59,28 @@ class ImageService {
 		return size
 	}
 	
-	def getLabelAlpha(Label label, int width) {
+	def getLabelAlpha(Label label, int width, int min) {
 		int alpha = 100;
 		int size = getLabelSize(label, width)
 		
 		println "${label.title} - ${size}"
 		
-		size /= 10;
-		switch (size) {
-		case 0:
-			alpha = 0;
-			break;
-		case 1: case 2:
-			alpha = 100;
-			break;
-		default:
-			alpha = 100 - (size -2) * 25;
+		if (size < 10) {
+			alpha = 0
+		} else if (size < 30) {
+			alpha = 100
+		} else {
+			size /= width
+			switch (size) {
+			case 0: case 1:
+				alpha = 100
+				break;
+			default:
+				alpha = 100 - size * 10
+			}
+			alpha = Math.max(alpha, (int)((min - 50) / 2))
 		}
 
 		return alpha;
 	}
-	
-    def serviceMethod() {
-
-    }
 }
