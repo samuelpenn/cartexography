@@ -870,13 +870,19 @@ function saveEditPlaceDialog() {
 	var title = $("#placeTitle").val();
 
 	$.ajax({
-		type: "POST",
-		url: API_PATH+"/map/"+MAP.info.id+"/place/"+id + "?name="+name+"&title="+title+"&x=-1",
+		type: "PUT",
+		url: API_PATH+"/map/"+MAP.info.id+"/place/"+id + "?name="+name+"&title="+title+"&x=-1&y=-1&sx=0&sy=0",
 		data: {
 			"name": name,
 			"title": title,
 			"x": -1,
-			"y": -1
+			"y": -1,
+			"sx": 0,
+			"sy": 0
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			debug(xhr.status);
+			debug(thrownError);
 		}
 	});
 	refreshMap();
