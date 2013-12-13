@@ -494,7 +494,7 @@ class MapAPIController {
 	
 	def updatePlace(String id, String placeId, String name, String title, int x, int y, int sx, int sy) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
-		Place		place = thingService.getPlaceByNameOrId(placeId)
+		Place		place = thingService.getPlaceByNameOrId(info, placeId)
 		
 		println "Updating place [${place.name}] to [${name}/${title}]"
 		if (name != null) {
@@ -514,9 +514,18 @@ class MapAPIController {
 	}
 	
 	def deletePlace(String id, String placeId) {
-		println "Delete " + placeId
-		Place		place = thingService.getPlaceByNameOrId(placeId)
-		place.delete()
+		println "Delete place ${placeId} in map ${id}"
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		Place		place = thingService.getPlaceByNameOrId(info, placeId)
+		if (place != null) {
+			// XXX: place.delete() doesn't seem to work. Just get transaction errors.
+			sessionFactory.currentSession.doWork(new Work() {
+				public void execute(Connection connection) {
+					String sql = String.format("DELETE FROM place WHERE id=%d", place.id)
+					connection.createStatement().executeUpdate(sql)
+				}
+			})
+		}
 	}
 	
 	def areas() {

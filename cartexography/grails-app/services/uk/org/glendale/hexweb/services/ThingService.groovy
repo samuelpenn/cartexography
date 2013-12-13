@@ -32,17 +32,17 @@ class ThingService {
 		return Thing.findByName(name)
 	}
 
-	def getPlaceByNameOrId(int id) {
+	def getPlaceByNameOrId(MapInfo info, int id) {
 		return Place.findById(id)
 	}
 
-	def getPlaceByNameOrId(String name) {
+	def getPlaceByNameOrId(MapInfo info, String name) {
 		if (name == null) {
 			throw new IllegalArgumentException("Place name cannot be null")
 		}
 		try {
 			int id = Integer.parseInt(name)
-			return getPlaceByNameOrId(id)
+			return getPlaceByNameOrId(info, id)
 		} catch (NumberFormatException e) {
 			// Not an integer, so try by name.
 		}
