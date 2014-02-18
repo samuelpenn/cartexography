@@ -124,6 +124,12 @@ function setViewPort(forceClear) {
 	if (VIEW.width % 2 == 1) {
 		VIEW.width = VIEW.width + 1;
 	}
+	if (VIEW.width > MAP.width) {
+		VIEW.width = MAP.width;
+	}
+	if (VIEW.height > MAP.height) {
+		VIEW.height = MAP.height;
+	}
 	
 	if (forceClear) {
 		var canvas = document.getElementById("map");
