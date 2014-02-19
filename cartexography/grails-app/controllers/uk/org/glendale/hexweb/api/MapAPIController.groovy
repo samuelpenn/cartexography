@@ -227,7 +227,7 @@ class MapAPIController {
 					} else {
 						if (map[yy][xx] == 0) {
 							int b = map[yy - yy%10][xx10]
-							println "${xx},${yy} is zero, b is ${b} from ${xx10},${yy - yy%10}"
+							//println "${xx},${yy} is zero, b is ${b} from ${xx10},${yy - yy%10}"
 							if (b != info.oob && b != 0) {
 								map[yy][xx] = b
 							} else {
