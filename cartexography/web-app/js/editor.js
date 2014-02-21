@@ -695,8 +695,16 @@ function updateInfoBar(px, py) {
 	} else if (areaId > 0) {
 		title = "(" + areaId + ")";
 	}
-	
-	
+	if (MAP.map[y - VIEW.y][x - VIEW.x] != MAP.info.oob && MAP.bounds != null) {
+		var lat = Math.floor(180 * (y / MAP.info.height));
+		var ns = "N";
+		if (lat > 90) {
+			ns = "S";
+		}
+		lat = Math.abs(lat - 90);
+		title += " " + lat + ns;
+	}
+
 	$("#infobar").html("<b>X:</b> " + x + ", <b>Y:</b> " + y + "  " + title);
 	
 }
