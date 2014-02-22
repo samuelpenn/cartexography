@@ -145,7 +145,16 @@ class ImageAPIController {
 			for (int py = 0; py < h; py ++) {
 				int		tid = map[py][px]
 				if (tid == 0) {
-					tid = background.id
+					// No hex data, do we have sparse data?
+					tid = map[py - py%10][px - px%10];
+					if (tid == 0) {
+						// Default to background terrain.
+						if (mapService.isOut(info, x + px, y + py)) {
+							tid = oob.id
+						} else {
+							tid = background.id
+						}
+					}
 				}
 				Image img = images[tid]
 				if (img != null) {
