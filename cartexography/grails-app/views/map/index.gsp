@@ -269,8 +269,7 @@
 				<img src="${resource(dir: 'images/icons', file: 'left.png')}" alt="Left" onclick="moveMap(-1, 0)"/>
 				<img src="${resource(dir: 'images/icons', file: 'right.png')}" alt="Right" onclick="moveMap(+1, 0)"/>
 				<br />
-				<b>X: </b> <span id="x-orig-view">?</span><br/>
-				<b>Y: </b> <span id="y-orig-view">?</span><br/>
+				<br/><span id="links">Download</span><br/><br/>
 				<img id="zoomBtn0" src="${resource(dir: 'images/icons', file: 'zoom_0.png')}" title="Large" alt="Large" onclick="setZoom(0)"/>
 				<img id="zoomBtn1" src="${resource(dir: 'images/icons', file: 'zoom_1.png')}" title="Medium" alt="Medium" onclick="setZoom(1)"/>
 				<img id="zoomBtn2" src="${resource(dir: 'images/icons', file: 'zoom_2.png')}" title="Small" alt="Small" onclick="setZoom(2)"/>
