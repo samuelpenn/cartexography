@@ -681,7 +681,9 @@ class MapService {
 						int sy = rs.getInt(1)
 						int terrainId = rs.getInt(2)
 						int areaId = rs.getInt(3)
-						rows[sy] = [ 't': terrainId, 'a': areaId ]
+						if (sy < srcInfo.height) { 
+							rows[sy] = [ 't': terrainId, 'a': areaId ]
+						}
 					}
 					rs.close()
 
