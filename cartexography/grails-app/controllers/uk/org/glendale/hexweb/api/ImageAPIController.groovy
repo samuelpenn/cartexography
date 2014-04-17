@@ -276,36 +276,40 @@ class ImageAPIController {
 				int fontWidth = image.getTextWidth(place.title, 0, fontSize)
 				xx += tileWidth / 2 - fontWidth / 2
 				yy += tileHeight
-				image.text(xx, yy, place.title, 0,  fontSize, "#000000")
+				if (params.l != "0") {
+					image.text(xx, yy, place.title, 0,  fontSize, "#000000")
+				}
 			}
 		}
 		
 		// Draw labels
-		List labels = Label.findAll ({
-			eq('mapInfo', info)
-			between('tileX', x, x + w -1)
-			between('tileY', y, y + h - 1)
-		})
-		labels.each { label ->
-			int		xx = (label.tileX - x) * columnWidth
-			int		yy = (label.tileY - y) * tileHeight
-			if ((label.tileX - x) %2 == 1) {
-				yy += tileHeight / 2
-			}
-			xx += (label.subX * tileWidth) / 100
-			yy += (label.subY * tileHeight) / 100
-
-			int fontSize = imageService.getLabelSize(label, columnWidth)
-			int alpha = imageService.getLabelAlpha(label, columnWidth, Math.min(w,  h))
-			
-			if (alpha > 0) {
-				alpha *= 2.55
-				String colour = label.style.fill + Integer.toHexString(alpha)
-				int fontWidth = image.getTextWidth(label.title, 0, fontSize)
-				//image.circle(xx, yy, 8, "#000000")
-				xx -= fontWidth / 2
-				image.text(xx, yy, label.title, 0, fontSize, colour, label.rotation)
+		if (params.l != "0") {
+			List labels = Label.findAll ({
+				eq('mapInfo', info)
+				between('tileX', x, x + w -1)
+				between('tileY', y, y + h - 1)
+			})
+			labels.each { label ->
+				int		xx = (label.tileX - x) * columnWidth
+				int		yy = (label.tileY - y) * tileHeight
+				if ((label.tileX - x) %2 == 1) {
+					yy += tileHeight / 2
+				}
+				xx += (label.subX * tileWidth) / 100
+				yy += (label.subY * tileHeight) / 100
+	
+				int fontSize = imageService.getLabelSize(label, columnWidth)
+				int alpha = imageService.getLabelAlpha(label, columnWidth, Math.min(w,  h))
 				
+				if (alpha > 0) {
+					alpha *= 2.55
+					String colour = label.style.fill + Integer.toHexString(alpha)
+					int fontWidth = image.getTextWidth(label.title, 0, fontSize)
+					//image.circle(xx, yy, 8, "#000000")
+					xx -= fontWidth / 2
+					image.text(xx, yy, label.title, 0, fontSize, colour, label.rotation)
+					
+				}
 			}
 		}
 		
