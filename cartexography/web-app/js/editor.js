@@ -73,6 +73,8 @@ function setLabels() {
 function selectTerrain(id) {
 	VIEW.brushMode = BRUSH_MODE.TERRAIN;
 	VIEW.editMode = EDIT_MODE.PAINT;
+	VIEW.selectedPathId = 0;
+	VIEW.selectedVertexId = 0;
 	
 	if (id == 0) {
 		id = 3;
@@ -122,6 +124,8 @@ function openTerrainMenu() {
 function selectThing(id) {
 	VIEW.brushMode = BRUSH_MODE.THING;
 	VIEW.editMode = EDIT_MODE.ADD;
+	VIEW.selectedPathId = 0;
+	VIEW.selectedVertexId = 0;
 
 	$("#pathStyle"+VIEW.brushStyle).removeClass("selectedButton");
 	closeAllDialogs();
@@ -164,6 +168,8 @@ function openThingMenu() {
 function selectArea(id) {
 	VIEW.brushMode = BRUSH_MODE.AREA;
 	VIEW.editMode = EDIT_MODE.PAINT;
+	VIEW.selectedPathId = 0;
+	VIEW.selectedVertexId = 0;
 
 	$("#pathStyle"+VIEW.brushStyle).removeClass("selectedButton");
 	closeAllDialogs();
