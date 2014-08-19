@@ -54,33 +54,29 @@ class ImageService {
 		}
 		size = (int)(size * width / 3.0);
 		
-		println "${label.title} ${width} ${label.fontSize} ${size}"
-		
 		return size
 	}
 	
-	def getLabelAlpha(Label label, int width, int min) {
+	/**
+	 * Gets the font alpha for a given label and map scale.
+	 * 
+	 * @param label		Label to get alpha transparency for.
+	 * @param width		Column width of the map.
+	 * 
+	 * @return			Alpha transparency to use. 
+	 * 					0 is fully transparent, 100 is solid.
+	 */
+	def getLabelAlpha(Label label, int width) {
 		int alpha = 100;
 		int size = getLabelSize(label, width)
+		double ratio = size / width
 		
-		println "${label.title} - ${size}"
-		
-		if (size < 10) {
+		alpha = (int) (100.0 / ratio)
+		if (alpha > 400) {
 			alpha = 0
-		} else if (size < 30) {
+		} else if (alpha > 100) {
 			alpha = 100
-		} else {
-			size /= width
-			switch (size) {
-			case 0: case 1:
-				alpha = 100
-				break;
-			default:
-				alpha = 100 - size * 10
-			}
-			alpha = Math.max(alpha, (int)((min - 50) / 2))
-		}
-
-		return alpha;
+		}		
+		return alpha
 	}
 }

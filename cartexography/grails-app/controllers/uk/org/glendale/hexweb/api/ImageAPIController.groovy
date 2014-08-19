@@ -56,16 +56,20 @@ class ImageAPIController {
 		def bounds = areaService.getBounds(info, area)
 		int x = bounds.min_x
 		int y = bounds.min_y
-		int w = bounds.max_x - x
-		int h = bounds.max_y - y
+		int w = (bounds.max_x - x)
+		int h = (bounds.max_y - y)
 		
 		if (border > 0) {
 			x -= border
-			w += border * 2
+			w += border * 2 + 1
 			y -= border
-			h += border * 2
+			h += border * 2 + 1
 		}
-		
+		if (x%2 == 1) {
+			x -= 1
+			w += 1
+		}
+
 		print bounds
 		print "${x} ${y} ${w} ${h}"
 		
@@ -261,7 +265,6 @@ class ImageAPIController {
 		List paths = pathService.getPathsInArea(info, x, y, w, h)
 		paths.each { path ->
 			Vertex[] vertices = path.vertex.toArray()
-			println path.name + " " +  vertices.length
 			
 			for (int i=0; i < vertices.length - 1; i++) {
 				double		x0 = vertices[i].x - x
@@ -296,7 +299,6 @@ class ImageAPIController {
 		})
 		Map	things = [:]
 		places.each { place ->
-			println place.title
 			if (things.get(place.thingId) == null) {
 				Thing thing = Thing.findById(place.thingId)
 				things.put(thing.id, getImage((Thing)thing, BASE_PATH, tileWidth, tileHeight))
@@ -338,7 +340,7 @@ class ImageAPIController {
 				yy += (label.subY * tileHeight) / 100
 	
 				int fontSize = imageService.getLabelSize(label, columnWidth)
-				int alpha = imageService.getLabelAlpha(label, columnWidth, Math.min(w,  h))
+				int alpha = imageService.getLabelAlpha(label, columnWidth)
 				
 				if (alpha > 0) {
 					alpha *= 2.55
