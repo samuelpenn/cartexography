@@ -8,6 +8,12 @@
  */
 package uk.org.glendale.hexweb.services
 
+import java.sql.Connection
+import java.sql.ResultSet
+import java.sql.Statement
+import org.hibernate.SessionFactory;
+import org.hibernate.jdbc.Work
+
 import uk.org.glendale.hexweb.Area
 import uk.org.glendale.hexweb.MapInfo
 
@@ -18,7 +24,8 @@ import uk.org.glendale.hexweb.MapInfo
  * visibly denoted on the map by borders.
  */
 class AreaService {
-
+	def SessionFactory		sessionFactory
+	
     def getAreaByName(MapInfo info, String name) {
 		return Area.find ({
 			eq("mapInfo", info)
@@ -45,5 +52,28 @@ class AreaService {
 		}.each {
 			it.delete()
 		}
+	}
+	
+	
+	def getBounds(MapInfo info, Area area) {
+		println "AreaService.getBounds: ${info.id} Area ${area.id}"
+
+		def bounds = null
+		sessionFactory.currentSession.doWork(new Work() {
+			public void execute(Connection connection) {
+				
+				def sql = String.format("select min(x) as min_x, max(x) as max_x, min(y) as min_y, max(y) as max_y from map "+
+					"where mapinfo_id=%d and area_id = %d", info.id, area.id)
+
+				Statement stmnt = connection.prepareStatement(sql)
+				ResultSet rs = stmnt.executeQuery(sql)
+				if (rs.next()) {
+					bounds = [ "min_x": rs.getInt(1), "max_x": rs.getInt(2), "min_y" : rs.getInt(3), "max_y" : rs.getInt(4)]
+				}
+				rs.close()
+			}
+		})
+		return bounds
+
 	}
 }

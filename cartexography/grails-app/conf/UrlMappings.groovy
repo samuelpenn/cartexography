@@ -138,9 +138,14 @@ class UrlMappings {
 			action = "test"
 		}
 		
-		"/image/$id" {
+		"/image/map/$id" {
 			controller = "imageAPI"
 			action = "imageByCoord"
+		}
+
+		"/image/area/$id" {
+			controller = "imageAPI"
+			action = "imageByArea"
 		}
 
 	}

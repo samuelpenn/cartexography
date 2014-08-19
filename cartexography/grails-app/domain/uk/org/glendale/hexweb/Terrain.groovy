@@ -14,6 +14,8 @@ package uk.org.glendale.hexweb
  * terrain, so similar types of terrain appear together in the palates.
  */
 class Terrain {
+	static final UNKNOWN = 1
+
 	MapInfo		mapInfo
 	String		name
 	String		title

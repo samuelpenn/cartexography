@@ -21,6 +21,7 @@ class ImageAPIController {
 	def pathService
 	def thingService
 	def imageService
+	def areaService
 	
 	private Image getImage(Terrain terrain, String path, int width, int height) {
 		URL		url = new URL("file://" + path + "/terrain/${terrain.name}.png")
@@ -42,6 +43,33 @@ class ImageAPIController {
 		}
 		
 		return image
+	}
+	
+	def imageByArea(String id, String areaId, int border, int s) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		Area		area = areaService.getAreaByName(info, areaId)
+		
+		if (area == null) {
+			throw new IllegalArgumentException("Unknown area [${areaId}]")
+		}
+		
+		def bounds = areaService.getBounds(info, area)
+		int x = bounds.min_x
+		int y = bounds.min_y
+		int w = bounds.max_x - x
+		int h = bounds.max_y - y
+		
+		if (border > 0) {
+			x -= border
+			w += border * 2
+			y -= border
+			h += border * 2
+		}
+		
+		print bounds
+		print "${x} ${y} ${w} ${h}"
+		
+		return imageByCoord(id, x, y, w, h, s)
 	}
 
 	/**
@@ -97,6 +125,10 @@ class ImageAPIController {
 				
 		int[][]		map = new int[h][w]
 		int[][]		area = new int[h][w]
+		Area		selectedArea = null
+		if (params.areaId != null) {
+			selectedArea = areaService.getAreaByName(info, params.areaId)
+		}
 		
 		List list = Hex.findAll ({
 			eq('mapInfo', info)
@@ -124,9 +156,11 @@ class ImageAPIController {
 		terrain.put(info.background, background)
 		Terrain oob = Terrain.findById(info.oob)
 		terrain.put(info.oob, oob)
+		Terrain unknown = Terrain.findById(Terrain.UNKNOWN)
 		
 		images.put(info.background, getImage(background, BASE_PATH, tileWidth, tileHeight))
 		images.put(info.oob, getImage(oob, BASE_PATH, tileWidth, tileHeight))
+		images.put(Terrain.UNKNOWN, getImage(unknown, BASE_PATH, tileWidth, tileHeight))
 
 		list.each { hex ->
 			//println "${hex[0]},${hex[1]}"
@@ -163,7 +197,12 @@ class ImageAPIController {
 					if (px %2 == 1) {
 						yy += tileHeight / 2
 					}
-					image.paint(img, xx, yy, tileWidth, tileHeight)
+					if (selectedArea == null || selectedArea.id == area[py][px]) {
+						image.paint(img, xx, yy, tileWidth, tileHeight)
+					} else {
+						image.paint(img, xx, yy, tileWidth, tileHeight)
+						image.paint(images[Terrain.UNKNOWN], xx, yy, tileWidth, tileHeight)
+					}
 				} else {
 					println "No image for ${px}, ${py}"
 				}
