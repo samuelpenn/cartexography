@@ -844,9 +844,11 @@ function drawMap(event) {
 			openEditLabelDialog(label);
 		} else if (label == null && Math.abs(oldRecordX - VIEW.recordX) < 50 && Math.abs(oldRecordY - VIEW.recordY) < 50) {
 			// Paint a new label if the mouse hasn't moved that far.
+			var fontSize = VIEW.zoom
 			$.ajax({
 				type: "POST",
-				url: API_PATH+"/map/"+MAP.info.id+"/label?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+"&name=new&title=Untitled&style=STANDARD",
+				url: API_PATH+"/map/"+MAP.info.id+"/label?x="+(VIEW.x+x)+"&y="+(VIEW.y+y)+"&sx="+sx+"&sy="+sy+
+						"&name=new&title=Untitled&style=STANDARD&fontSize="+fontSize,
 				async: false
 			});
 			refreshMap();

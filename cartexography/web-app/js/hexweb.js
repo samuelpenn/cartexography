@@ -236,10 +236,9 @@ function drawLargeScale() {
 			}
 		}
 
-		$("#links").html("<a target='new' href='/cartexography/image/"+MAP.info.id+"?x="+VIEW.x+"&y="+VIEW.y+"&w="+VIEW.width+"&h="+VIEW.height+"&s="+tileHeight+"'>Download</a>");
+		$("#links").html("<a target='new' href='/cartexography/image/map/"+MAP.info.id+"?x="+VIEW.x+"&y="+VIEW.y+"&w="+VIEW.width+"&h="+VIEW.height+"&s="+tileHeight+"&areas=1'>Download</a>");
 		
 	});
-
 }
 
 /**
@@ -478,7 +477,7 @@ function redrawMap() {
 			}
 		}
 	}
-	$("#links").html("<a target='new' href='/cartexography/image/"+MAP.info.id+"?x="+VIEW.x+"&y="+VIEW.y+"&w="+VIEW.width+"&h="+VIEW.height+"&s="+tileHeight+"'>Download</a>");
+	$("#links").html("<a target='new' href='/cartexography/image/map/"+MAP.info.id+"?x="+VIEW.x+"&y="+VIEW.y+"&w="+VIEW.width+"&h="+VIEW.height+"&s="+tileHeight+"&areas=1'>Download</a>");
 	
 	// Draw all the paths visible on this map view.
 	for (var i=0; i < MAP.paths.length; i++) {
