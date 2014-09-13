@@ -8,6 +8,7 @@ package uk.org.glendale.graphics;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -330,6 +331,22 @@ public class SimpleImage implements ImageObserver {
 		g.setStroke(new BasicStroke(width));
 		g.setColor(getColour(colour));
 		g.drawLine(x0, y0, x1, y1);
+	}
+	
+	/**
+	 * Draws a bezier curve starting at the first coordinate and ending at the
+	 * fourth coordinate, using the middle two coordinates as control points.
+	 */
+	public void curve(double[] x, double[] y, String colour, double width) {
+		Graphics2D 		g = (Graphics2D) image.getGraphics();
+		Path2D.Double	path = new Path2D.Double();
+		
+		g.setStroke(new BasicStroke((float)width));
+		g.setColor(getColour(colour));
+		path.moveTo(x[0], y[0]);
+		path.curveTo(x[1], y[1], x[2], y[2], x[3], y[3]);
+		
+		g.draw(path);
 	}
 
 	public void rectangle(int x, int y, int w, int h, String colour) {

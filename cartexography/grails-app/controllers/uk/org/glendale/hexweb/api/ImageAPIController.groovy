@@ -262,34 +262,7 @@ class ImageAPIController {
 			}
 		}
 		// Draw rivers
-		List paths = pathService.getPathsInArea(info, x, y, w, h)
-		paths.each { path ->
-			Vertex[] vertices = path.vertex.toArray()
-			
-			for (int i=0; i < vertices.length - 1; i++) {
-				double		x0 = vertices[i].x - x
-				double		y0 = vertices[i].y - y
-				double		x1 = vertices[i+1].x - x
-				double		y1 = vertices[i+1].y - y
-				
-				x0 += vertices[i].subX / 100.0
-				y0 += vertices[i].subY / 100.0
-				x1 += vertices[i + 1].subX / 100.0
-				y1 += vertices[i + 1].subY / 100.0
-				
-				if (vertices[i].x %2 == 1) {
-					y0 += 0.5
-				}
-				if (vertices[i+1].x %2 == 1) {
-					y1 += 0.5
-				}
-
-				float thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / vertices.length
-				thickness *= (s / 20)
-				image.line(x0 * columnWidth, y0 * tileHeight, x1 * columnWidth, y1 * tileHeight, 
-					       "#a4f8ff", thickness)
-			}
-		}
+		drawRivers(info, image, columnWidth, tileHeight, s, x, y, w, h)
 		
 		// Draw places
 		List places = Place.findAll ({
@@ -355,5 +328,100 @@ class ImageAPIController {
 		}
 		
 		return image
+	}
+	
+	/**
+	 * Draw rivers on the map as bezier curves. Extra control points are calculated
+	 * dynamically to give a smooth curve across the length of the river.
+	 * 
+	 * Paths are cropped to the area specified.
+	 * 
+	 * @param info			Map to display.
+	 * @param image			Image to write into.
+	 * @param columnWidth	Width of a hex column.
+	 * @param tileHeight	Height of a hex tile.
+	 * @param s				Scale of the map.
+	 * @param x				X coordinate to start from.
+	 * @param y				Y coordinate to start from.
+	 * @param w				Width of map to display.
+	 * @param h				Height of map to display.
+	 */
+	private void drawRivers(MapInfo info, SimpleImage image, int columnWidth, int tileHeight, int s, int x, int y, int w, int h) {
+		List paths = pathService.getPathsInArea(info, x, y, w, h)
+
+		paths.each { path ->
+			Vertex[] vertices = path.vertex.toArray()
+			double[]	vx = new double[vertices.length+1]
+			double[]	vy = new double[vertices.length+1]
+	
+			// Work out actual coordinates of each vertex on the map.
+			for (int i=0; i < vertices.length - 1; i++) {
+				vx[i+1] = vertices[i].x - x
+				vy[i+1] = vertices[i].y - y
+				
+				vx[i+1] += vertices[i].subX / 100.0
+				vy[i+1] += vertices[i].subY / 100.0
+				
+				if (vertices[i].x %2 == 1) {
+					vy[i+1] += 0.5
+				}				
+				vx[i+1] *= columnWidth
+				vy[i+1] *= tileHeight
+			}
+			vx[0] = vx[1]
+			vy[0] = vy[1]
+			vx[vx.length-1] = vx[vx.length-2]
+			vy[vy.length-1] = vy[vy.length-2]
+			
+			// Now calculate bezier control points and draw.
+			for (int i=1; i < vx.length - 2; i++) {
+				double[]	xp = new double[4];
+				double[]	yp = new double[4];
+				xp[0] = vx[i]
+				yp[0] = vy[i]
+				xp[3] = vx[i+1]
+				yp[3] = vy[i+1]
+				
+				// Work out control points dynamically.
+				int ax, bx, cx, dx, xx
+				int ay, by, cy, dy, yy
+				// A is halfway point on previous line.
+				ax = (vx[i-1] + vx[i]) / 2.0
+				ay = (vy[i-1] + vy[i]) / 2.0
+				// B is halfway point on this line.
+				bx = (vx[i] + vx[i+1]) / 2.0
+				by = (vy[i] + vy[i+1]) / 2.0
+				// Halfway point between A and B
+				xx = (ax + bx) / 2.0
+				yy = (ay + by) / 2.0
+				// Shift B control point up so A/B line intersects start of line
+				ax -= xx - vx[i]
+				ay -= yy - vy[i]
+				bx -= xx - vx[i]
+				by -= yy - vy[i]
+				
+				// C is equal to B
+				cx = bx
+				cy = by
+				// D is halfway point on next line.
+				dx = (vx[i+1] + vx[i+2]) / 2.0
+				dy = (vy[i+1] + vy[i+2]) / 2.0
+				// Halfway point between A and B
+				xx = (cx + dx) / 2.0
+				yy = (cy + dy) / 2.0
+				// Shift B control point up so A/B line intersects start of line
+				cx -= xx - vx[i+1]
+				cy -= yy - vy[i+1]
+	
+				xp[1] = bx
+				yp[1] = by
+				xp[2] = cx
+				yp[2] = cy 
+
+				double thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / vertices.length
+				thickness *= (s / 20)
+				image.curve(xp, yp, "#b7f9ff", thickness)
+			}
+		}
 	}
 }
