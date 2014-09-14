@@ -656,17 +656,13 @@ function getVertexY(vertex) {
  */
 function drawPath(path) {
 	debug("Path " + path.style);
+	var pathColour = "#b7f9ff";
 	if (VIEW.selectedPathId == path.id) {
-		VIEW.context.strokeStyle = "#FF4444";
+		pathColour = "#FF4444";
 	} else if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.brushStyle == path.style) {
-		VIEW.context.strokeStyle = "#880000";
-	} else {
-		VIEW.context.strokeStyle = "#a4f8ff";
+		pathColour = "#880000";
 	}
-	VIEW.context.lineWidth = 5;
-	VIEW.context.beginPath();
 	var v = path.vertex[0];
-	VIEW.context.moveTo(getVertexX(v), getVertexY(v));
 	var	selectedV = -1;
 	if (v.vertex == VIEW.selectedVertexId) {
 		selectedV = 0;
@@ -678,25 +674,83 @@ function drawPath(path) {
 			selectedV = i;
 		}
 	}
-	VIEW.context.stroke();
 	
-	if (VIEW.selectedPathId == path.id && selectedV >= 0) {
-		VIEW.context.strokeStyle = "#000000";
-		VIEW.context.beginPath();
-		if (selectedV > 0) {
-			var v = path.vertex[selectedV - 1];
-			VIEW.context.moveTo(getVertexX(v), getVertexY(v));
-			var v = path.vertex[selectedV];
-			VIEW.context.lineTo(getVertexX(v), getVertexY(v));
-		}
-		var v = path.vertex[selectedV];
-		VIEW.context.arc(getVertexX(v), getVertexY(v), 5, 0, 2 * Math.PI, false);
-		VIEW.context.fillStyle = "black";
-		VIEW.context.fill();
-		VIEW.context.stroke();
+	var  	vx = new Array();
+	var		vy = new Array(); 
+	
+	// Pre-calculate screen X and Y coordinates for each vertex.
+	vx[0] = getVertexX(path.vertex[0])
+	vy[0] = getVertexY(path.vertex[0])
+	for (var i = 0; i < path.vertex.length; i++) {
+		vx[i+1] = getVertexX(path.vertex[i])
+		vy[i+1] = getVertexY(path.vertex[i])
+	}
+	vx[path.vertex.length+1] = getVertexX(path.vertex[path.vertex.length-1])
+	vy[path.vertex.length+1] = getVertexY(path.vertex[path.vertex.length-1])
+	
+	
+	for (var i = 1; i < vx.length; i++) {
+		// Work out control points dynamically.
+		var ax, bx, cx, dx, xx
+		var ay, by, cy, dy, yy
+		// A is halfway point on previous line.
+		ax = (vx[i-1] + vx[i]) / 2.0
+		ay = (vy[i-1] + vy[i]) / 2.0
+		// B is halfway point on this line.
+		bx = (vx[i] + vx[i+1]) / 2.0
+		by = (vy[i] + vy[i+1]) / 2.0
+		// Halfway point between A and B
+		xx = (ax + bx) / 2.0
+		yy = (ay + by) / 2.0
+		// Shift B control point up so A/B line intersects start of line
+		ax -= xx - vx[i]
+		ay -= yy - vy[i]
+		bx -= xx - vx[i]
+		by -= yy - vy[i]
 		
+		// C is equal to B
+		cx = bx
+		cy = by
+		// D is halfway point on next line.
+		dx = (vx[i+1] + vx[i+2]) / 2.0
+		dy = (vy[i+1] + vy[i+2]) / 2.0
+		// Halfway point between A and B
+		xx = (cx + dx) / 2.0
+		yy = (cy + dy) / 2.0
+		// Shift B control point up so A/B line intersects start of line
+		cx -= xx - vx[i+1]
+		cy -= yy - vy[i+1]
+
+		var thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / path.vertex.length
+		thickness *= (VIEW.currentScale.column / 20.0)
+		
+		if (VIEW.selectedPathId == path.id && selectedV == i-1) {
+			VIEW.context.strokeStyle = "#000000";
+		} else {
+			VIEW.context.strokeStyle = pathColour;
+		}
+
+		// Draw the path segment.
+		VIEW.context.lineWidth = thickness;
+		VIEW.context.lineCap = 'round';
+		VIEW.context.beginPath();
+		VIEW.context.moveTo(vx[i], vy[i]);
+		VIEW.context.bezierCurveTo(bx, by, cx, cy, vx[i+1], vy[i+1])
+		VIEW.context.stroke();
+
+		if (VIEW.selectedPathId == path.id) {
+			VIEW.context.moveTo(vx[i], vy[i]);
+			VIEW.context.arc(vx[i], vy[i], thickness, 0, 2 * Math.PI, false);
+			//VIEW.context.fillStyle = "black";
+			//VIEW.context.fill();
+			VIEW.context.stroke();
+		}
 	}
 }
+
+
+
+
 
 function closeAllDialogs() {
 	$("#placeDialog").remove();
