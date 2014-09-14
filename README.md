@@ -28,6 +28,9 @@ The current status is "Get It Working", so it's neither pretty nor usable
 for an end user. There is no documentation other than code comments, and
 no installation or setup instructions.
 
+See https://github.com/samuelpenn/cartexography/wiki/Screenshots for an
+idea of what it looks like at the moment.
+
 
 Samuel Penn  
 sam@glendale.org.uk
