@@ -657,6 +657,11 @@ function getVertexY(vertex) {
 function drawPath(path) {
 	debug("Path " + path.style);
 	var pathColour = "#b7f9ff";
+	
+	if (path.style == "ROAD") {
+		pathColour = "#555555";
+	}
+	
 	if (VIEW.selectedPathId == path.id) {
 		pathColour = "#FF4444";
 	} else if (VIEW.brushMode == BRUSH_MODE.PATH && VIEW.brushStyle == path.style) {
