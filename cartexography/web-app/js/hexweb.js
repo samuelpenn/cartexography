@@ -37,7 +37,7 @@ EDIT_MODE.DELETE = "DELETE";  // Delete existing items
 
 
 /* Global variables */
-var MAP = { id: 0 };					// This will be populated directly from JSON
+var MAP = { id: 0, map: null };					// This will be populated directly from JSON
 var VIEW = { width: 32, height: 20, x: 0, y: 0, context: null } 	// View port configuration.
 
 VIEW.brushMode = BRUSH_MODE.TERRAIN;
@@ -280,6 +280,10 @@ function drawSmallScale() {
 	mapHeight = parseInt(VIEW.port.height / tileHeight) - 1;
 	mapWidth = VIEW.width;
 	mapHeight = VIEW.height;
+	
+	if (mapWidth < 1 || mapHeight < 1) {
+		return;
+	}
 
 	var 	imageWidth = VIEW.scale[VIEW.zoom].width;
 	var 	imageHeight = VIEW.scale[VIEW.zoom].height;
@@ -739,9 +743,13 @@ function drawPath(path) {
 		VIEW.context.lineWidth = thickness;
 		VIEW.context.lineCap = 'round';
 		VIEW.context.beginPath();
+		if (path.style == "ROAD") {
+			setLineDash([3,10]);
+		}
 		VIEW.context.moveTo(vx[i], vy[i]);
 		VIEW.context.bezierCurveTo(bx, by, cx, cy, vx[i+1], vy[i+1])
 		VIEW.context.stroke();
+		setLineDash([1,0]);
 
 		if (VIEW.selectedPathId == path.id) {
 			VIEW.context.moveTo(vx[i], vy[i]);
@@ -753,7 +761,13 @@ function drawPath(path) {
 	}
 }
 
-
+function setLineDash(a) {
+	try {
+		VIEW.context.setLineDash(a);
+	} catch (e) {
+		// Not supported by browser.
+	}
+}
 
 
 

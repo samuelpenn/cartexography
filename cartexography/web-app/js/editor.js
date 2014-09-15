@@ -676,6 +676,9 @@ function deleteCurrentPath() {
 var mouseHasBeenUp = false;
 
 function updateInfoBar(px, py) {
+	if (!MAP.map) {
+		return;
+	}
 	var x = Math.floor(px / VIEW.currentScale.column);
 	var scale = VIEW.currentScale.scale;
 	if (x %2 == 1 && scale == 1) {
