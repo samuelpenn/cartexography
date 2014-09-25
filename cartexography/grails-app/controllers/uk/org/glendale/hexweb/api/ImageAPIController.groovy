@@ -119,6 +119,17 @@ class ImageAPIController {
     }
 	
 	private SimpleImage getMapImage(MapInfo info, int x, int y, int w, int h, int s) {
+		// Use a default scale if none is given. Based on largest dimension.
+		if (s < 1) {
+			int size = w * h
+			if (size > 10000) {
+				s = 1000000 / size 
+			} else {
+				s = 100
+			}
+			print "Using scale: " + s
+		}
+		
 		int			height = (h * s + s / 2) * 0.86
 		int			width = (w * s) * 0.73 + s * 0.25 
 		
