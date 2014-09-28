@@ -287,22 +287,24 @@ class ImageAPIController {
 				Thing thing = Thing.findById(place.thingId)
 				things.put(thing.id, getImage((Thing)thing, BASE_PATH, tileWidth, tileHeight))
 			}
-			Image	img = things.get(place.thingId)
-			if (img != null) {
-				int		xx = (place.tileX - x) * columnWidth - columnWidth / 2
-				int		yy = (place.tileY - y) * tileHeight - tileHeight / 2
-				if ((place.tileX - x) %2 == 1) {
-					yy += tileHeight / 2
-				}
-				xx += (place.subX * tileWidth) / 100
-				yy += (place.subY * tileHeight) / 100
-				image.paint(img, xx, yy, tileWidth, tileHeight)
-				int	fontSize = s / 5 + place.importance * 2
-				int fontWidth = image.getTextWidth(place.title, 0, fontSize)
-				xx += tileWidth / 2 - fontWidth / 2
-				yy += tileHeight
-				if (params.l != "0") {
-					image.text(xx, yy, place.title, 0,  fontSize, "#000000")
+			if (selectedArea == null || selectedArea.id == area[place.tileX - x][place.tileY - y]) {
+				Image	img = things.get(place.thingId)
+				if (img != null) {
+					int		xx = (place.tileX - x) * columnWidth - columnWidth / 2
+					int		yy = (place.tileY - y) * tileHeight - tileHeight / 2
+					if ((place.tileX - x) %2 == 1) {
+						yy += tileHeight / 2
+					}
+					xx += (place.subX * tileWidth) / 100
+					yy += (place.subY * tileHeight) / 100
+					image.paint(img, xx, yy, tileWidth, tileHeight)
+					int	fontSize = s / 5 + place.importance * 2
+					int fontWidth = image.getTextWidth(place.title, 0, fontSize)
+					xx += tileWidth / 2 - fontWidth / 2
+					yy += tileHeight
+					if (params.l != "0") {
+						image.text(xx, yy, place.title, 0,  fontSize, "#000000")
+					}
 				}
 			}
 		}
@@ -315,25 +317,27 @@ class ImageAPIController {
 				between('tileY', y, y + h - 1)
 			})
 			labels.each { label ->
-				int		xx = (label.tileX - x) * columnWidth
-				int		yy = (label.tileY - y) * tileHeight
-				if ((label.tileX - x) %2 == 1) {
-					yy += tileHeight / 2
-				}
-				xx += (label.subX * tileWidth) / 100
-				yy += (label.subY * tileHeight) / 100
-	
-				int fontSize = imageService.getLabelSize(label, columnWidth)
-				int alpha = imageService.getLabelAlpha(label, columnWidth)
-				
-				if (alpha > 0) {
-					alpha *= 2.55
-					String colour = label.style.fill + Integer.toHexString(alpha)
-					int fontWidth = image.getTextWidth(label.title, 0, fontSize)
-					//image.circle(xx, yy, 8, "#000000")
-					xx -= fontWidth / 2
-					image.text(xx, yy, label.title, 0, fontSize, colour, label.rotation)
+				if (selectedArea == null || selectedArea.id == area[label.tileX - x][label.tileY - y]) {
+					int		xx = (label.tileX - x) * columnWidth
+					int		yy = (label.tileY - y) * tileHeight
+					if ((label.tileX - x) %2 == 1) {
+						yy += tileHeight / 2
+					}
+					xx += (label.subX * tileWidth) / 100
+					yy += (label.subY * tileHeight) / 100
+		
+					int fontSize = imageService.getLabelSize(label, columnWidth)
+					int alpha = imageService.getLabelAlpha(label, columnWidth)
 					
+					if (alpha > 0) {
+						alpha *= 2.55
+						String colour = label.style.fill + Integer.toHexString(alpha)
+						int fontWidth = image.getTextWidth(label.title, 0, fontSize)
+						//image.circle(xx, yy, 8, "#000000")
+						xx -= fontWidth / 2
+						image.text(xx, yy, label.title, 0, fontSize, colour, label.rotation)
+						
+					}
 				}
 			}
 		}
