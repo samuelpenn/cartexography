@@ -287,7 +287,7 @@ class ImageAPIController {
 				Thing thing = Thing.findById(place.thingId)
 				things.put(thing.id, getImage((Thing)thing, BASE_PATH, tileWidth, tileHeight))
 			}
-			if (selectedArea == null || selectedArea.id == area[place.tileX - x][place.tileY - y]) {
+			if (selectedArea == null || selectedArea.id == area[place.tileY - y][place.tileX - x]) {
 				Image	img = things.get(place.thingId)
 				if (img != null) {
 					int		xx = (place.tileX - x) * columnWidth - columnWidth / 2
@@ -317,7 +317,7 @@ class ImageAPIController {
 				between('tileY', y, y + h - 1)
 			})
 			labels.each { label ->
-				if (selectedArea == null || selectedArea.id == area[label.tileX - x][label.tileY - y]) {
+				if (selectedArea == null || selectedArea.id == area[label.tileY - y][label.tileX - x]) {
 					int		xx = (label.tileX - x) * columnWidth
 					int		yy = (label.tileY - y) * tileHeight
 					if ((label.tileX - x) %2 == 1) {
