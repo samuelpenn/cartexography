@@ -275,6 +275,16 @@ public class SimpleImage implements ImageObserver {
 		g.fillOval(x - radius / 2, y - radius / 2, radius, radius);
 	}
 	
+	/**
+	 * Draw a regular filled hexagon of a given side length. The hexagon
+	 * is always drawn with edges aligned horizontally at the top and
+	 * bottom.
+	 * 
+	 * @param x			X coordinate of left vertex.
+	 * @param y			Y coordinate of top edge.
+	 * @param r			Length of a side.
+	 * @param colour	Fill colour of hexagon.
+	 */
 	public void hex(int x, int y, int r, String colour) {
 		Graphics2D g = (Graphics2D) image.getGraphics();
 		g.setColor(getColour(colour));
@@ -284,29 +294,75 @@ public class SimpleImage implements ImageObserver {
 		int[]	xp = new int[6];
 		int[]	yp = new int[6];
 		
-		int h = (int)(r * ROOT3 / 2.0);
-		int	o = r / 2;
+		// Height of the hexagon is '2h'
+		double h = (r * ROOT3 / 2.0);
+		// x offset between top right vertex and right vertex is 'o'
+		double	o = r / 2;
 		
-		xp[0] = x + o;		// Done
-		yp[0] = y;			// Done
+		xp[0] = (int) (x + o);		// Done
+		yp[0] = (int) y;			// Done
 		
-		xp[1] = x + o + r;	// Done
-		yp[1] = y;			// Done
+		xp[1] = (int) (x + o + r);	// Done
+		yp[1] = (int) y;			// Done
 		
-		xp[2] = x + r * 2; 	// Done
-		yp[2] = y + h;		// Done
+		xp[2] = (int) (x + r * 2); 	// Done
+		yp[2] = (int) (y + h);		// Done
 		
-		xp[3] = x + o + r;	// Done
-		yp[3] = y + h * 2;	// Done
+		xp[3] = (int) (x + o + r);	// Done
+		yp[3] = (int) (y + h * 2);	// Done
 		
-		xp[4] = x + o;
-		yp[4] = y + h * 2;	// Done
+		xp[4] = (int) (x + o);
+		yp[4] = (int) (y + h * 2);	// Done
 		
-		xp[5] = x;
-		yp[5] = y + h;
+		xp[5] = (int) x;
+		yp[5] = (int) (y + h);
 		
 		g.fillPolygon(xp, yp, 6);
+	}
 
+	/**
+	 * Draw a regular filled hexagon of a given side length. The hexagon
+	 * is always drawn with edges aligned horizontally at the top and
+	 * bottom.
+	 * 
+	 * @param x			X coordinate of left vertex.
+	 * @param y			Y coordinate of top edge.
+	 * @param r			Length of a side.
+	 * @param colour	Fill colour of hexagon.
+	 */
+	public void hexByHeight(int x, int y, int h, String colour) {
+		Graphics2D g = (Graphics2D) image.getGraphics();
+		g.setColor(getColour(colour));
+		
+		double ROOT3 = Math.sqrt(3);
+		
+		int[]	xp = new int[6];
+		int[]	yp = new int[6];
+		
+		// Height of the hexagon is 'h'
+		double r = (h * 1.0) / ROOT3;
+		// x offset between top right vertex and right vertex is 'o'
+		double	o = r / 2;
+		
+		xp[0] = (int) (x + o);		// Done
+		yp[0] = (int) y;			// Done
+		
+		xp[1] = (int) (x + o + r);	// Done
+		yp[1] = (int) y;			// Done
+		
+		xp[2] = (int) (x + r * 2); 	// Done
+		yp[2] = (int) (y + h / 2);		// Done
+		
+		xp[3] = (int) (x + o + r);	// Done
+		yp[3] = (int) (y + h);	// Done
+		
+		xp[4] = (int) (x + o);
+		yp[4] = (int) (y + h);	// Done
+		
+		xp[5] = (int) x;
+		yp[5] = (int) (y + h / 2);
+		
+		g.fillPolygon(xp, yp, 6);
 	}
 
 	public void line(double x0, double y0, double x1, double y1) {

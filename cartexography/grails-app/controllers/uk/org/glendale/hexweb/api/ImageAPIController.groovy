@@ -45,6 +45,29 @@ class ImageAPIController {
 		return image
 	}
 	
+	/**
+	 * Draws a single hexagon of the specified height.
+	 * 
+	 * @param 	height
+	 * @return	PNG image containing a hexagon.
+	 */
+	def Image drawHex(int height) {
+		int		width = (int) (2.0 * height / Math.sqrt(3))
+		
+		SimpleImage image = new SimpleImage(width, height, "#FFFFFF")
+		
+		image.hexByHeight(0, 0, height, "#000000")
+				
+		byte[] data = image.toPng().toByteArray()
+		
+		response.setContentType("image/png")
+		response.setContentLength(data.length)
+		OutputStream	out = response.getOutputStream();
+		out.write(data)
+		out.close()
+		return null
+	}
+	
 	def imageByArea(String id, String areaId, int border, int s) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		Area		area = areaService.getAreaByName(info, areaId)

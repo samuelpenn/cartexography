@@ -147,6 +147,11 @@ class UrlMappings {
 			controller = "imageAPI"
 			action = "imageByArea"
 		}
+		
+		"/image/hex" {
+			controller = "imageAPI"
+			action = "drawHex"
+		}
 
 	}
 }
