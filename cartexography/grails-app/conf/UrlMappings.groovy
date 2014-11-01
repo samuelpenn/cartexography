@@ -153,5 +153,10 @@ class UrlMappings {
 			action = "drawHex"
 		}
 
+		"/image/dump/$id" {
+			controller = "imageAPI"
+			action = "dumpTerrain"
+		}
+
 	}
 }
