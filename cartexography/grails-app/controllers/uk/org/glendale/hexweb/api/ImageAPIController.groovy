@@ -68,6 +68,56 @@ class ImageAPIController {
 		return null
 	}
 	
+	/**
+	 * Test API to display a list of all images for a particular graphic
+	 * style. Displays a web page with a count of available images for each
+	 * terrain type.
+	 * 
+	 * @param id		Map to check.
+	 * @param style		Style to use, leave blank for default.
+	 * @return
+	 */
+	def String dumpTerrain(String id, String style) {
+		MapInfo		info = mapService.getMapByNameOrId(id)
+		
+		if (style == null) {
+			style = info.style
+		}
+		render "<b>" + style + "</b><br/>"
+		String BASE_PATH = grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+style).file.absolutePath
+		
+		List<Terrain>  list = Terrain.findAllByMapInfo(info)
+		while (info.template > 0) {
+			MapInfo	template = mapService.getMapByNameOrId(info.template)
+			list.addAll(Terrain.findAllByMapInfo(template))
+			info = mapService.getMapByNameOrId(info.template)
+		}
+
+		render "<ul>"
+		list.each() { t ->
+			render "<li>"
+			
+			File file = new File(BASE_PATH + "/terrain/" + t.name + ".png")
+			if (file.exists()) {
+				render "<b>${t.name}</b>"
+			} else {
+				file = new File(BASE_PATH + "/terrain/" + t.name + "_0.png")
+				if (file.exists()) {
+					int count = 1
+					while (new File("${BASE_PATH}/terrain/${t.name}_${count}.png").exists()) {
+						count++
+					}
+					render "<b>${t.name} ${count}</b>"
+				} else {
+					render "${t.name}"
+				}
+			}
+			render "</li>"
+		}
+		render "</ul>"
+		
+	}
+	
 	def imageByArea(String id, String areaId, int border, int s) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		Area		area = areaService.getAreaByName(info, areaId)
