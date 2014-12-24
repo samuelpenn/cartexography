@@ -439,11 +439,11 @@ class ImageAPIController {
 
 		paths.each { path ->
 			Vertex[] vertices = path.vertex.toArray()
-			double[]	vx = new double[vertices.length+1]
-			double[]	vy = new double[vertices.length+1]
+			double[]	vx = new double[vertices.length+2]
+			double[]	vy = new double[vertices.length+2]
 	
 			// Work out actual coordinates of each vertex on the map.
-			for (int i=0; i < vertices.length - 1; i++) {
+			for (int i=0; i < vertices.length; i++) {
 				vx[i+1] = vertices[i].x - x
 				vy[i+1] = vertices[i].y - y
 				
