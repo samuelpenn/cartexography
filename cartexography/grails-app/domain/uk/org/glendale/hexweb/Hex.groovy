@@ -19,8 +19,8 @@ class Hex {
 	int			y
 	int			terrainId
 	int			areaId
-	
-	
+	int			variant
+
 	Hex(Hex h) {
 		this.mapInfo = h.mapInfo
 		this.x = h.x

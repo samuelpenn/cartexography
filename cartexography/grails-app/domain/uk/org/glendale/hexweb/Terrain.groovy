@@ -18,6 +18,7 @@ class Terrain {
 
 	MapInfo		mapInfo
 	String		name
+	int			variants
 	String		title
 	boolean		water
 	String		colour

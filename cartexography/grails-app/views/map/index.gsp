@@ -45,10 +45,21 @@
 						MAP.images[data.terrain[i].id] = data.terrain[i];
 
 						var d = data.terrain[i];
-						d.image = new Image();
-						d.image.src = BASE_PATH + "terrain/" + d.name + ".png";
-						d.image.onload = function() {
-							imagesToLoad--;
+						d.image = new Array();
+						if (d.variants == 0) {
+							d.image[0] = new Image();
+							d.image[0].src = BASE_PATH + "terrain/" + d.name + ".png";
+							d.image[0].onload = function() {
+								imagesToLoad--;
+							}
+						} else {
+							for (var v=0; v <= d.variants; v++) {
+								d.image[v] = new Image();
+								d.image[v].src = BASE_PATH + "terrain/" + d.name + "_" + v + ".png";
+								d.image[v].onload = function() {
+									imagesToLoad--;
+								}
+							}
 						}
 						if (d.name == "ocean") {
 							VIEW.terrainBrush = d.id;

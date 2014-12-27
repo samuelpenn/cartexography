@@ -40,12 +40,15 @@ EDIT_MODE.DELETE = "DELETE";  // Delete existing items
 var MAP = { id: 0, map: null };					// This will be populated directly from JSON
 var VIEW = { width: 32, height: 20, x: 0, y: 0, context: null } 	// View port configuration.
 
+var MAX_VARIANTS = 10;
+
 VIEW.brushMode = BRUSH_MODE.TERRAIN;
 VIEW.brushSize = BRUSH_SIZE.SMALL;
 VIEW.editMode = EDIT_MODE.PAINT;
 VIEW.brushStyle = BRUSH_STYLE.RIVER;
 
 VIEW.terrainBrush = 0;
+VIEW.variantBrush = -1;
 VIEW.thingBrush = 0;
 VIEW.areaBrush = 0;
 VIEW.showGrid = false;
@@ -227,7 +230,7 @@ function drawLargeScale() {
 
 		for (var y=0; y < mapHeight; y++) {
 			for (var x=0; x < mapWidth; x++) {
-				var t = MAP.map[y][x];
+				var t = MAP.map[y][x] / MAX_VARIANTS;
 				var px = x * tileWidth + 8;
 				var py = y * tileHeight + 8;
 				
@@ -356,7 +359,7 @@ function redrawHex(x, y) {
 	var px = x * tileWidth + 8;
 	var py = y * tileHeight + (x%2 * halfOffset) + 8;
 	
-	VIEW.context.drawImage(MAP.images[t].image, 
+	VIEW.context.drawImage(MAP.images[t].image[0], 
 			px, py, imageWidth, imageHeight);
 
 	if (VIEW.showGrid) {
@@ -420,15 +423,16 @@ function redrawMap() {
 
 	for (var y=0; y < mapHeight; y++) {
 		for (var x=0; x < mapWidth; x++) {
-			var t = MAP.map[y][x];
+			var t = Math.floor(MAP.map[y][x] / MAX_VARIANTS);
+			var v = MAP.map[y][x] % MAX_VARIANTS;
 			var px = x * tileWidth + 8;
 			var py = y * tileHeight + (x%2 * halfOffset) + 8;
-			
+			debug("Terrain " + t + " variant " + v);
 			if (MAP.images[t] == null) {
 				debug("Cannot get terrain ["+t+"] for "+(VIEW.x + x)+","+(VIEW.y + y));
 				continue;
 			} else {
-				VIEW.context.drawImage(MAP.images[t].image, 
+				VIEW.context.drawImage(MAP.images[t].image[v], 
 						px, py, imageWidth, imageHeight);
 			}
 		}
@@ -513,7 +517,7 @@ function drawPlace(p) {
 	if (MAP.things[p.thing_id] == null) {
 		debug("Unable to find thing "+p.thing_id + " for place " + p.title);
 	} else {
-		VIEW.context.drawImage(MAP.things[p.thing_id].image, x, y, 
+		VIEW.context.drawImage(MAP.things[p.thing_id].image[0], x, y, 
 				VIEW.imageWidth, VIEW.imageHeight);
 		VIEW.context.font = VIEW.currentScale.font + "px Arial";
 		var w = VIEW.context.measureText(p.title).width;

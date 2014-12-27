@@ -113,6 +113,9 @@ function openTerrainMenu() {
 			continue;
 		}
 		var  path = VIEW.imageBase + "terrain/" + t.name + ".png";
+		if (t.variants > 0) {
+			path = VIEW.imageBase + "terrain/" + t.name + "_0.png";
+		}
 		
 		$("#terrainPopout").append("<div class='tilebox' id='t_"+id+"' onclick='selectTerrain("+id+")'></div>");
 		
@@ -258,7 +261,8 @@ function paintTerrain(event, px, py) {
 	$.ajax({
 		type: "PUT",
 		url: API_PATH+"/map/"+MAP.info.id+"/update?x="+(VIEW.x+x*scale)+"&y="+(VIEW.y+y*scale)+
-			"&radius="+VIEW.brushSize+"&scale="+scale+"&terrain="+VIEW.terrainBrush,
+			"&radius="+VIEW.brushSize+"&scale="+scale+"&terrain="+VIEW.terrainBrush+
+			"&variant="+VIEW.variantBrush,
 		async: true
 	});
 	paintUpdate(event, x, y, ox, oy, scale);
@@ -284,6 +288,22 @@ function paintArea(event, px, py) {
 	paintUpdate(event, x, y, ox, oy, scale);	
 }
 
+
+function getRandomVariant(x, y) {
+	if (VIEW.variantBrush >= 0) {
+		return VIEW.variantBrush;
+	} else if ( MAP.images[VIEW.terrainBrush].image.length == 1) {
+		return 0;
+	} else {
+		var r = "0000" + Math.sqrt(x*x + y*y);
+		r = r.replace(".", "");
+		r = r.substring(r.length - 5, r.length);
+		var l = parseInt(r);
+		return l % (MAP.images[VIEW.terrainBrush].image.length);
+	}
+}
+
+
 function paintUpdate(event, x, y, ox, oy, scale) {
 	if (scale == 1) {
 		for (var px = 0; px < parseInt(VIEW.brushSize / 2 + 1); px++) {
@@ -300,7 +320,7 @@ function paintUpdate(event, x, y, ox, oy, scale) {
 				if (VIEW.brushMode == BRUSH_MODE.TERRAIN) {
 					x = ox + px;
 					if (isIn(x, y)) {
-						VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
+						VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image[getRandomVariant(x, y)], 
 								x * VIEW.currentScale.column + 8, 
 								y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
 								VIEW.currentScale.width, VIEW.currentScale.height);
@@ -310,7 +330,7 @@ function paintUpdate(event, x, y, ox, oy, scale) {
 					}
 					x = ox - px;
 					if (isIn(x, y)) {
-						VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image, 
+						VIEW.context.drawImage(MAP.images[VIEW.terrainBrush].image[getRandomVariant(x, y)], 
 								x * VIEW.currentScale.column + 8, 
 								y * VIEW.currentScale.row + (x%2 * VIEW.currentScale.row / 2) + 8, 
 								VIEW.currentScale.width, VIEW.currentScale.height);

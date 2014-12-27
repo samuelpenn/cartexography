@@ -201,13 +201,14 @@ class MapAPIController {
 				property("y")
 				property("terrainId")
 				property("areaId")
+				property("variant")
 			}
 			order("y")
 			order("x")
 		})
 		
 		list.each { hex ->
-			map[hex[1] - y][hex[0] - x] = hex[2]
+			map[hex[1] - y][hex[0] - x] = hex[2] * 10 + hex[4]
 			area[hex[1] - y][hex[0] - x] = hex[3]
 		}
 		long start = System.currentTimeMillis()
@@ -359,15 +360,21 @@ class MapAPIController {
 	static int lastY = -1
 	static int lastRadius = -1
 	static int lastTerrain = -1
+	static int lastVariant = -1
 	static int lastArea = -1
 	
-	private synchronized boolean isdup(id, x, y, radius, terrain, area) {
-		if (x == lastX && y == lastY && radius == lastRadius && terrain == lastTerrain && id == lastId && area == lastArea) {
+	/**
+	 * True if this update request is identical to the previous update request.
+	 * Helps performance if we get multiple updates to the same hex.
+	 */
+	private synchronized boolean isdup(id, x, y, radius, terrain, variant, area) {
+		if (x == lastX && y == lastY && radius == lastRadius && terrain == lastTerrain && id == lastId && area == lastArea && variant == lastVariant) {
 			return true
 		}
 		lastX = x
 		lastY = y
 		lastTerrain = terrain
+		lastVariant = variant
 		lastRadius = radius
 		lastId = id
 		lastArea = area
@@ -376,12 +383,13 @@ class MapAPIController {
 	}
 	
 	/**
-	 * Updates a hex with a new terrain.
+	 * Updates a hex with a new terrain, variant and area.
+	 * The radius is actually the diameter, and is used for a large brush.
 	 */
-	def update(String id, int x, int y, int radius, int terrain, int area, int scale) {
+	def update(String id, int x, int y, int radius, int terrain, int variant, int area, int scale) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
-		if (isdup(info.id, x, y, radius, terrain, area)) {
+		if (isdup(info.id, x, y, radius, terrain, variant, area)) {
 			render terrain
 			return
 		}		
@@ -412,14 +420,14 @@ class MapAPIController {
 						if (x%10 == 0 && y%10 == 0) {
 							mapService.fillBlock(info, x, y);
 						}
-						setHex(info, x, y, terrain, area);
+						setHex(info, x, y, terrain, variant, area);
 					}
 					x = ox - px;
 					if (x >= 0 && x < info.width) {
 						if (x%10 == 0 && y%10 == 0) {
 							mapService.fillBlock(info, x, y);
 						}
-						setHex(info, x, y, terrain, area);
+						setHex(info, x, y, terrain, variant, area);
 					}
 				}
 			}
@@ -431,19 +439,35 @@ class MapAPIController {
 			for (int px = x - r; px <= x + r; px+=10) {
 				for (int py = y - r; py <= y + r; py+=10) {
 					mapService.deleteRectangle(info, px, py, scale, scale)
-					setHex(info, px, py, terrain, area)
+					setHex(info, px, py, terrain, variant, area)
 				}
 			}
 		}
 		
 		render terrain
 	}
+	
+	private int getRandomVariant(int x, int y, int terrain) {
+		Terrain		t = terrainService.getTerrainByNameOrId(terrain)
+		
+		if (t.variants > 0) {
+			String 	r = "0000" + Math.sqrt(x*x + y*y)
+			r = r.replaceAll('\\.', '')[-5..-1]
+			long	l = Long.parseLong(r)
+			return l % (t.variants + 1)
+		} else {
+			return 0
+		}
+	}
 
 	/**
-	 * Set a specific hex to be of the specified terrain type.
+	 * Set a specific hex to be of the specified terrain type. If variant is
+	 * negative, leave it unset if the terrain type itself is not changing.
+	 * If the terrain type is also changing, set variant to zero.
+	 * 
 	 * TODO: Can we make this more efficient?
 	 */
-	private void setHex(MapInfo info, int x, int y, int terrain, int area) {
+	private void setHex(MapInfo info, int x, int y, int terrain, int variant, int area) {
 		if (!mapService.isOut(info, x, y)) {
 			Hex hex = Hex.find ({
 				eq("mapInfo", info)
@@ -452,9 +476,14 @@ class MapAPIController {
 			});
 			if (hex == null) {
 				hex = new Hex(x: x, y: y, mapInfo: info)
+			} else if (variant == -1 && terrain == hex.terrainId) {
+				variant = hex.variant
+			} else if (variant == -1) {
+				variant = getRandomVariant(x, y, terrain)
 			}
 			if (terrain > 0) {
 				hex.terrainId = terrain
+				hex.variant = variant
 			} else {
 				hex.areaId = area
 			}
