@@ -43,6 +43,8 @@ class MapAPIController {
 	def pathService
 	def areaService
 	
+	private static int MAX_VARIANTS = 10
+	
 	/**
 	 * Returns information about this map. Includes the map metadata, list of
 	 * terrain and things for the palettes.
@@ -208,7 +210,7 @@ class MapAPIController {
 		})
 		
 		list.each { hex ->
-			map[hex[1] - y][hex[0] - x] = hex[2] * 10 + hex[4]
+			map[hex[1] - y][hex[0] - x] = hex[2] * MAX_VARIANTS + hex[4]
 			area[hex[1] - y][hex[0] - x] = hex[3]
 		}
 		long start = System.currentTimeMillis()
@@ -224,15 +226,15 @@ class MapAPIController {
 				int xx10 = xx - xx%10;
 				for (int yy=0; yy < h; yy++) {
 					if (bounds.size() > 0 && (yy+y < bounds[xx].min || yy+y > bounds[xx].max)) {
-						map[yy][xx] = info.oob
+						map[yy][xx] = info.oob * MAX_VARIANTS
 					} else {
 						if (map[yy][xx] == 0) {
 							int b = map[yy - yy%10][xx10]
 							//println "${xx},${yy} is zero, b is ${b} from ${xx10},${yy - yy%10}"
-							if (b != info.oob && b != 0) {
+							if (b != info.oob * MAX_VARIANTS && b != 0) {
 								map[yy][xx] = b
 							} else {
-								map[yy][xx] = info.background
+								map[yy][xx] = info.background * MAX_VARIANTS
 							}
 						}
 					}
@@ -476,6 +478,7 @@ class MapAPIController {
 			});
 			if (hex == null) {
 				hex = new Hex(x: x, y: y, mapInfo: info)
+				variant = getRandomVariant(x, y, terrain)
 			} else if (variant == -1 && terrain == hex.terrainId) {
 				variant = hex.variant
 			} else if (variant == -1) {

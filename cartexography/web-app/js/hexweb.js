@@ -432,8 +432,12 @@ function redrawMap() {
 				debug("Cannot get terrain ["+t+"] for "+(VIEW.x + x)+","+(VIEW.y + y));
 				continue;
 			} else {
-				VIEW.context.drawImage(MAP.images[t].image[v], 
-						px, py, imageWidth, imageHeight);
+				try {
+					VIEW.context.drawImage(MAP.images[t].image[v], 
+							px, py, imageWidth, imageHeight);
+				} catch (err) {
+					debug("Unable to draw (" + x +"," + y + ") [" + t + ":" + v + "]");
+				}
 			}
 		}
 	}
