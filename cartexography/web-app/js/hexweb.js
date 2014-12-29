@@ -230,7 +230,7 @@ function drawLargeScale() {
 
 		for (var y=0; y < mapHeight; y++) {
 			for (var x=0; x < mapWidth; x++) {
-				var t = MAP.map[y][x] / MAX_VARIANTS;
+				var t = MAP.map[y][x];
 				var px = x * tileWidth + 8;
 				var py = y * tileHeight + 8;
 				
