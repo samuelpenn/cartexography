@@ -295,6 +295,8 @@ function getRandomVariant(x, y) {
 	} else if ( MAP.images[VIEW.terrainBrush].image.length == 1) {
 		return 0;
 	} else {
+		x += VIEW.x;
+		y += VIEW.y;
 		var r = "0000" + Math.sqrt(x*x + y*y);
 		r = r.replace(".", "");
 		r = r.substring(r.length - 5, r.length);
