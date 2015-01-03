@@ -521,7 +521,7 @@ function drawPlace(p) {
 	if (MAP.things[p.thing_id] == null) {
 		debug("Unable to find thing "+p.thing_id + " for place " + p.title);
 	} else {
-		VIEW.context.drawImage(MAP.things[p.thing_id].image[0], x, y, 
+		VIEW.context.drawImage(MAP.things[p.thing_id].image, x, y, 
 				VIEW.imageWidth, VIEW.imageHeight);
 		VIEW.context.font = VIEW.currentScale.font + "px Arial";
 		var w = VIEW.context.measureText(p.title).width;
