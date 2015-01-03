@@ -118,7 +118,7 @@ class ImageAPIController {
 		
 	}
 	
-	def imageByArea(String id, String areaId, int border, int s) {
+	def imageByArea(String id, String areaId, int border, int s, String style) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		Area		area = areaService.getAreaByName(info, areaId)
 		
@@ -146,7 +146,7 @@ class ImageAPIController {
 		print bounds
 		print "${x} ${y} ${w} ${h}"
 		
-		return imageByCoord(id, x, y, w, h, s)
+		return imageByCoord(id, x, y, w, h, s, style)
 	}
 
 	/**
@@ -160,7 +160,7 @@ class ImageAPIController {
 	 * @param s			Size (width) of each tile.
 	 * @return
 	 */
-    def imageByCoord(String id, int x, int y, int w, int h, int s) { 
+    def imageByCoord(String id, int x, int y, int w, int h, int s, String style) { 
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		
 		if (x < 0) {
@@ -179,7 +179,7 @@ class ImageAPIController {
 			h = info.height - y;
 		}
 		
-		SimpleImage image = getMapImage(info, x, y, w, h, s)
+		SimpleImage image = getMapImage(info, x, y, w, h, s, style)
 		
 		byte[] data = image.toPng().toByteArray()
 		
@@ -191,7 +191,7 @@ class ImageAPIController {
 		return null
     }
 	
-	private SimpleImage getMapImage(MapInfo info, int x, int y, int w, int h, int s) {
+	private SimpleImage getMapImage(MapInfo info, int x, int y, int w, int h, int s, String style) {
 		// Use a default scale if none is given. Based on largest dimension.
 		if (s < 1) {
 			int size = w * h
@@ -204,12 +204,15 @@ class ImageAPIController {
 		}
 		
 		int			height = (h * s + s / 2) * 0.86
-		int			width = (w * s) * 0.73 + s * 0.25 
+		int			width = (w * s) * 0.73 + s * 0.25
 		
+		if (style == null || style.length() == 0) {
+			style = info.style;
+		}
 		
 		SimpleImage image = new SimpleImage(width, height, "#ffffff")
 
-		String BASE_PATH = grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+info.style).file.absolutePath
+		String BASE_PATH = grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+style).file.absolutePath
 				
 		int[][]		map = new int[h][w]
 		int[][]		area = new int[h][w]
