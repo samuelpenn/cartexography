@@ -323,7 +323,6 @@ function drawSmallScale() {
 		if (MAP.places != null) {
 			for (var i=0; i < MAP.places.length; i++) {
 				var p = MAP.places[i];
-				debug("Place [" + p.name + "] " + p.x +"," + p.y);
 			}
 		}
 
@@ -427,7 +426,6 @@ function redrawMap() {
 			var v = MAP.map[y][x] % MAX_VARIANTS;
 			var px = x * tileWidth + 8;
 			var py = y * tileHeight + (x%2 * halfOffset) + 8;
-			debug("Terrain " + t + " variant " + v);
 			if (MAP.images[t] == null) {
 				debug("Cannot get terrain ["+t+"] for "+(VIEW.x + x)+","+(VIEW.y + y));
 				continue;
@@ -590,7 +588,6 @@ function getFontAlpha(p) {
 function drawLabel(p) {
 	var size = getFontSize(p);
 	var alpha = getFontAlpha(p);
-	debug ("Alpha: " + alpha);
 	if (alpha <= 0) {
 		return;
 	}
@@ -609,12 +606,10 @@ function drawLabel(p) {
 	VIEW.context.fillStyle = "rgba(0, 0, 0, " + alpha + ")";
 	switch (p.style) {
 	case "FOREST":
-		debug("Forest");
 		VIEW.context.strokeStyle = "rgba(0, 50, 0, " + alpha + ")";
 		VIEW.context.fillStyle = "rgba(0, 50, 0, " + alpha + ")";
 		break;
 	case "WATER":
-		debug("Water");
 		VIEW.context.strokeStyle = "rgba(0, 0, 100, " + alpha + ")";
 		VIEW.context.fillStyle = "rgba(0, 0, 100, " + alpha + ")";
 		break;
@@ -667,7 +662,6 @@ function getVertexY(vertex) {
  * Display a given path on the map.
  */
 function drawPath(path) {
-	debug("Path " + path.style);
 	var pathColour = "#b7f9ff";
 	
 	if (path.style == "ROAD") {
@@ -704,8 +698,7 @@ function drawPath(path) {
 	}
 	vx[path.vertex.length+1] = getVertexX(path.vertex[path.vertex.length-1])
 	vy[path.vertex.length+1] = getVertexY(path.vertex[path.vertex.length-1])
-	
-	
+
 	for (var i = 1; i < vx.length; i++) {
 		// Work out control points dynamically.
 		var ax, bx, cx, dx, xx
@@ -776,8 +769,6 @@ function setLineDash(a) {
 		// Not supported by browser.
 	}
 }
-
-
 
 function closeAllDialogs() {
 	$("#placeDialog").remove();
