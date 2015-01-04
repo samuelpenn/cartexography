@@ -25,7 +25,6 @@
 			var		ICONS_PATH = CONTEXT_PATH + "/images/icons";
 			VIEW.imageBase = BASE_PATH;
 
-
 			window.onload = function() {
 				VIEW.context = document.getElementById("map").getContext("2d");
 				document.getElementById("map").onselectstart = function() { return false; };
@@ -46,20 +45,12 @@
 
 						var d = data.terrain[i];
 						d.image = new Array();
-						if (d.variants == 0) {
-							d.image[0] = new Image();
-							d.image[0].src = BASE_PATH + "terrain/" + d.name + ".png";
-							d.image[0].onload = function() {
+						for (var v=0; v <= d.variants; v++) {
+							d.image[v] = new Image();
+							d.image[v].src = BASE_PATH + "terrain/" + d.name + "_" + v + ".png";
+							d.image[v].onload = function() {
 								imagesToLoad--;
-							}
-						} else {
-							for (var v=0; v <= d.variants; v++) {
-								d.image[v] = new Image();
-								d.image[v].src = BASE_PATH + "terrain/" + d.name + "_" + v + ".png";
-								d.image[v].onload = function() {
-									imagesToLoad--;
-								}
-							}
+							};
 						}
 						if (d.name == "ocean") {
 							VIEW.terrainBrush = d.id;
@@ -70,17 +61,14 @@
 					// Build the thing palette.
 					console.log("Number of things: " + data.things.length);
 					for (var i=0; i < data.things.length; i++) {
-						console.log(i);
 						imagesToLoad++;
 						var t = data.things[i];
 						if (t == null) {
 							continue;
 						}
-						console.log("things["+i+":"+t.id+"] ["+t.name+"]");
 						MAP.things[t.id] = t;
 						t.image = new Image();
 						t.image.src = BASE_PATH + "things/" + t.name + ".png";
-						console.log(t.image.src);
 						t.image.onload = function() {
 							imagesToLoad--;
 						}						

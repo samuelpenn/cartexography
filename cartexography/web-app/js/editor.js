@@ -83,7 +83,7 @@ function selectTerrain(id) {
 	closeAllDialogs();
 	VIEW.terrainBrush = id;
 	
-	var url = VIEW.imageBase + "/terrain/" + MAP.images[VIEW.terrainBrush].name + ".png";
+	var url = VIEW.imageBase + "/terrain/" + MAP.images[VIEW.terrainBrush].name + "_0.png";
 	$("#terrainMenu").attr("src", url);
 }
 
@@ -112,10 +112,7 @@ function openTerrainMenu() {
 		if (id < 3) {
 			continue;
 		}
-		var  path = VIEW.imageBase + "terrain/" + t.name + ".png";
-		if (t.variants > 0) {
-			path = VIEW.imageBase + "terrain/" + t.name + "_0.png";
-		}
+		var path = VIEW.imageBase + "terrain/" + t.name + "_0.png";
 		
 		$("#terrainPopout").append("<div class='tilebox' id='t_"+id+"' onclick='selectTerrain("+id+")'></div>");
 		
@@ -587,7 +584,6 @@ function removeNodeFromPath() {
 		path.vertex[i] = path.vertex[i+1];
 	}
 	path.vertex.length --;
-	debug("Path length is now " + path.vertex.length);
 	redrawMap();
 }
 
