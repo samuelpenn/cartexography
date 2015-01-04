@@ -23,8 +23,8 @@ class ImageAPIController {
 	def imageService
 	def areaService
 	
-	private Image getImage(Terrain terrain, String path, int width, int height) {
-		URL		url = new URL("file://" + path + "/terrain/${terrain.name}.png")
+	private Image getImage(Terrain terrain, int variant, String path, int width, int height) {
+		URL		url = new URL("file://" + path + "/terrain/${terrain.name}_${variant}.png")
 		
 		Image image = SimpleImage.createImage(width, height, url)
 		if (image == null) {
@@ -191,6 +191,26 @@ class ImageAPIController {
 		return null
     }
 	
+	private addVariantImage(Map images, Terrain terrain, int variant, String path, int w, int h) {
+		if (images.get((int)terrain.id) == null) {
+			images.put((int)terrain.id, [:]) 
+		}
+		Map varmap = images.get((int)terrain.id)
+		if (varmap.get(variant) == null) {
+			varmap.put(variant, getImage(terrain, variant, path, w, h))
+		} else {
+			varmap.put(variant, getImage(terrain, variant, path, w, h))
+		}
+	}
+	
+	private Image getVariantImage(Map images, int tid, int var) {
+		Map varmap = images.get(tid)
+		if (varmap != null) {
+			return varmap.get(var)
+		}
+		return null
+	}
+	
 	private SimpleImage getMapImage(MapInfo info, int x, int y, int w, int h, int s, String style) {
 		// Use a default scale if none is given. Based on largest dimension.
 		if (s < 1) {
@@ -231,6 +251,7 @@ class ImageAPIController {
 				property("y")
 				property("terrainId")
 				property("areaId")
+				property("variant")
 			}
 			order("y")
 			order("x")
@@ -249,18 +270,18 @@ class ImageAPIController {
 		terrain.put(info.oob, oob)
 		Terrain unknown = Terrain.findById(Terrain.UNKNOWN)
 		
-		images.put(info.background, getImage(background, BASE_PATH, tileWidth, tileHeight))
-		images.put(info.oob, getImage(oob, BASE_PATH, tileWidth, tileHeight))
-		images.put(Terrain.UNKNOWN, getImage(unknown, BASE_PATH, tileWidth, tileHeight))
+		addVariantImage(images, background, 0, BASE_PATH, tileWidth, tileHeight)
+		addVariantImage(images, oob, 0, BASE_PATH, tileWidth, tileHeight)
+		addVariantImage(images, unknown, 0, BASE_PATH, tileWidth, tileHeight)
 
 		list.each { hex ->
 			//println "${hex[0]},${hex[1]}"
-			map[hex[1] - y][hex[0] - x] = hex[2]
+			map[hex[1] - y][hex[0] - x] = hex[2] * 10 + hex[4]
 			area[hex[1] - y][hex[0] - x] = hex[3]
-			if (images.get(hex[2]) == null) {
+			if (getVariantImage(images, hex[2], hex[4]) == null) {
 				Terrain 	t = Terrain.findById(hex[2])
 				if (t != null) {
-					images.put(hex[2], getImage((Terrain)t, BASE_PATH, tileWidth, tileHeight))
+					addVariantImage(images, t, (int)hex[4], BASE_PATH, tileWidth, tileHeight)
 				}
 			}
 		}
@@ -268,7 +289,8 @@ class ImageAPIController {
 		// Draw terrain layer.
 		for (int px = 0; px < w; px ++) {
 			for (int py = 0; py < h; py ++) {
-				int		tid = map[py][px]
+				int		tid = (int)(map[py][px] / 10)
+				int		var = map[py][px] % 10
 				if (tid == 0) {
 					// No hex data, do we have sparse data?
 					tid = map[py - py%10][px - px%10];
@@ -279,9 +301,10 @@ class ImageAPIController {
 						} else {
 							tid = background.id
 						}
+						var = 0
 					}
 				}
-				Image img = images[tid]
+				Image img = getVariantImage(images, tid, var)
 				if (img != null) {
 					int		xx = px * columnWidth
 					int		yy = py * tileHeight
@@ -295,7 +318,7 @@ class ImageAPIController {
 						image.paint(images[Terrain.UNKNOWN], xx, yy, tileWidth, tileHeight)
 					}
 				} else {
-					println "No image for ${px}, ${py}"
+					//println "No image for ${px}, ${py} ${tid} ${var}"
 				}
 			}
 		}
