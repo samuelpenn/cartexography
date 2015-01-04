@@ -1,0 +1,8 @@
+#!/bin/sh
+
+src=$1
+dir=`echo $src | sed 's/.xcf//g'`
+dest=$dir"_0.xcf"
+echo $dir $dest
+mkdir -p $dir
+git mv $src $dir/$dest
