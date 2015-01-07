@@ -315,7 +315,7 @@ class ImageAPIController {
 						image.paint(img, xx, yy, tileWidth, tileHeight)
 					} else {
 						image.paint(img, xx, yy, tileWidth, tileHeight)
-						image.paint(images[Terrain.UNKNOWN], xx, yy, tileWidth, tileHeight)
+						image.paint(getVariantImage(images, Terrain.UNKNOWN, 0), xx, yy, tileWidth, tileHeight)
 					}
 				} else {
 					//println "No image for ${px}, ${py} ${tid} ${var}"
