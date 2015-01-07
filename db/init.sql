@@ -165,6 +165,15 @@ insert into thing values(9, 1, 'peak', 'Peak', 3, 0);
 insert into thing values(10, 1, 'monument', 'Monument', 2, 0);
 insert into thing values(11, 1, 'label', 'Label', 3, 0);
 
+insert into thing values(12, 3, 'farm', 'Farm', 1, 0);
+insert into thing values(13, 3, 'hamlet', 'Hamlet', 1, 0);
+insert into thing values(14, 3, 'village', 'Village', 1, 0);
+insert into thing values(15, 3, 'town_small', 'Small Town', 2, 0);
+insert into thing values(16, 3, 'town_large', 'Large Town', 2, 0);
+insert into thing values(17, 3, 'city_small', 'Small City', 3, 0);
+insert into thing values(18, 3, 'city_large', 'Large City', 3, 0);
+insert into thing values(19, 3, 'metropolis', 'Metropolis', 3, 0);
+
 create table place(id int not null auto_increment,
         mapinfo_id int,
         thing_id int,
