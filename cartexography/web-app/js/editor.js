@@ -135,6 +135,11 @@ function selectThing(id) {
 	$("#thingMenu").attr("src", url);
 }
 
+function imageForThing(id) {
+	var	t = MAP.things[id];
+	return VIEW.imageBase + "things/" + t.name + ".png";
+}
+
 function openThingMenu() {
 	var x = $("#thingMenu").position().left + 96;
 	var y = $("#thingMenu").position().top;
@@ -879,15 +884,52 @@ function drawMap(event) {
 	}
 }
 
+function openEditPlaceDialog_selectThing() {
+	debug("Selected");
+	var placeId = $("#placeId").val();
+	var thingId = $("#placeDialogSelect").val();
+	var place = null; 
+	for (var i=0; i < MAP.places.length; i++) {
+		var p = MAP.places[i];
+		if (p.id == placeId) {
+			place = p;
+			break;
+		}
+	}
+	if (p == null) {
+		return;
+	}
+	place.thing_id = thingId;
+	var img = imageForThing(place.thing_id);
+	debug(img);
+	$("#placeDialog2").html("<img src='"+img+"'/>");
+}
+
 function openEditPlaceDialog(place) {
 	$("#placeDialog").remove();
 
-	$("body").append("<div id='placeDialog' class='floating'></div>");
+	$("body").append("<div id='placeDialog' class='floating dialog'></div>");
+	$("#placeDialog").append("<div id='placeDialog2' class='tileHolder'></div>");
+	$("#placeDialog").append("<div id='placeDialog3'></div>");
 	$("#placeDialog").append("<h4>Edit place</h4>");
 	$("#placeDialog").append("<p>Name: <input id='placeName' type='text' width='24' value='"+place.name+"'/></p>");
 	$("#placeDialog").append("<p>Title: <input id='placeTitle' type='text' width='40' value='"+place.title+"'/></p>");
 	$("#placeDialog").append("<input id='placeId' type='hidden' value='"+place.id+"'/>");
 	$("#placeDialog").append("<p><button onclick='deletePlace()'>Delete</button> <button onclick='saveEditPlaceDialog()'>Save</button></p>");
+
+	var img = imageForThing(place.thing_id);
+	debug(img);
+	$("#placeDialog2").append("<img src='"+img+"'/>");
+	$("#placeDialog3").append("<select id='placeDialogSelect' onchange='openEditPlaceDialog_selectThing()'></select>");
+	
+	for (var tid in MAP.things) {
+		var thing = MAP.things[tid];
+		var selected = "";
+		if (tid == place.thing_id) {
+			selected=" selected ";
+		}
+		$("#placeDialogSelect").append("<option value='"+thing.id+"'" + selected+">" + thing.title + "</option>");		
+	}
 }
 
 function deletePlace() {
@@ -905,13 +947,15 @@ function saveEditPlaceDialog() {
 	var id = $("#placeId").val();
 	var name = $("#placeName").val();
 	var title = $("#placeTitle").val();
+	var thingId = $("#placeDialogSelect").val();
 
 	$.ajax({
 		type: "PUT",
-		url: API_PATH+"/map/"+MAP.info.id+"/place/"+id + "?name="+name+"&title="+title+"&x=-1&y=-1&sx=0&sy=0",
+		url: API_PATH+"/map/"+MAP.info.id+"/place/"+id + "?name="+name+"&title="+title+"&thingId="+thingId+"&x=-1&y=-1&sx=0&sy=0",
 		data: {
 			"name": name,
 			"title": title,
+			"thingId": thingId,
 			"x": -1,
 			"y": -1,
 			"sx": 0,

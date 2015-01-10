@@ -524,16 +524,22 @@ class MapAPIController {
 		render place as JSON
 	}
 	
-	def updatePlace(String id, String placeId, String name, String title, int x, int y, int sx, int sy) {
+	def updatePlace(String id, String placeId, String name, String title, int thingId, int x, int y, int sx, int sy) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		Place		place = thingService.getPlaceByNameOrId(info, placeId)
 		
-		println "Updating place [${place.name}] to [${name}/${title}]"
+		println "Updating place [${place.name}] to [${name}/${title}] thing [${thingId}]"
 		if (name != null) {
 			place.name = name;
 		}
 		if (title != null) {
 			place.title = title;
+		}
+		if (thingId > 0) {
+			Thing thing = thingService.getThingByNameOrId(thingId)
+			if (thing != null) {
+				place.thing = thing
+			}
 		}
 		if (x >= 0 && y >= 0) {
 			place.tileX = x;

@@ -256,6 +256,39 @@
 			border-radius: 3px;
 			padding: 3px;
 		}
+
+        div.dialog h4 {
+            margin: 0px;
+            padding-left: 5px;
+            padding-top: 5px;
+            color: #444444;
+        }
+        
+        div.tileHolder {
+            border: 1px solid #777777;
+            border-radius: 2px;
+            margin: 2px;
+            width: 100px;
+            height: 100px;
+        }
+        
+        div.tileHolder img {
+            width: 100%;
+            text-align: center;
+            v-align: center;
+            opacity: 1.0;
+        }
+		
+		#placeDialog2 {
+		  float: right;
+		}
+		
+		#placeDialog3 {
+		  clear: right;
+		  float: right;
+		  width: 100px;
+		  margin: 2px;
+		}
 	</style>
 	
 	<body>
