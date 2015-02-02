@@ -354,11 +354,12 @@ function redrawHex(x, y) {
 	var 	imageHeight = VIEW.scale[VIEW.zoom].height;
 	var		halfOffset = parseInt(imageHeight / 2);
 
-	var t = MAP.map[y][x];
+	var t = Math.floor(MAP.map[y][x] / MAX_VARIANTS);
+	var v = MAP.map[y][x] % MAX_VARIANTS;
 	var px = x * tileWidth + 8;
 	var py = y * tileHeight + (x%2 * halfOffset) + 8;
-	
-	VIEW.context.drawImage(MAP.images[t].image[0], 
+
+	VIEW.context.drawImage(MAP.images[t].image[v], 
 			px, py, imageWidth, imageHeight);
 
 	if (VIEW.showGrid) {
