@@ -469,7 +469,7 @@ class ImageAPIController {
 			boolean isRoad = false
 			if (style.equals("ROAD")) {
 				isRoad = true
-				colour = "#555555"
+				colour = "#000000"
 			}
 
 			Vertex[] vertices = path.vertex.toArray()
@@ -496,57 +496,108 @@ class ImageAPIController {
 			vy[vy.length-1] = vy[vy.length-2]
 			
 			// Now calculate bezier control points and draw.
-			for (int i=1; i < vx.length - 2; i++) {
-				double[]	xp = new double[4];
-				double[]	yp = new double[4];
-				xp[0] = vx[i]
-				yp[0] = vy[i]
-				xp[3] = vx[i+1]
-				yp[3] = vy[i+1]
-				
-				// Work out control points dynamically.
-				int ax, bx, cx, dx, xx
-				int ay, by, cy, dy, yy
-				// A is halfway point on previous line.
-				ax = (vx[i-1] + vx[i]) / 2.0
-				ay = (vy[i-1] + vy[i]) / 2.0
-				// B is halfway point on this line.
-				bx = (vx[i] + vx[i+1]) / 2.0
-				by = (vy[i] + vy[i+1]) / 2.0
-				// Halfway point between A and B
-				xx = (ax + bx) / 2.0
-				yy = (ay + by) / 2.0
-				// Shift B control point up so A/B line intersects start of line
-				ax -= xx - vx[i]
-				ay -= yy - vy[i]
-				bx -= xx - vx[i]
-				by -= yy - vy[i]
-				
-				// C is equal to B
-				cx = bx
-				cy = by
-				// D is halfway point on next line.
-				dx = (vx[i+1] + vx[i+2]) / 2.0
-				dy = (vy[i+1] + vy[i+2]) / 2.0
-				// Halfway point between A and B
-				xx = (cx + dx) / 2.0
-				yy = (cy + dy) / 2.0
-				// Shift B control point up so A/B line intersects start of line
-				cx -= xx - vx[i+1]
-				cy -= yy - vy[i+1]
+			drawBezierPath(image, vx, vy, colour, 
+				path.thickness1, path.thickness2, (double)(s / 20.0),
+				vertices.length, isRoad)
+			if (path.thickness1 == 4 && isRoad) {
+				drawBezierPath(image, vx, vy, "#ffffff",
+					path.thickness1, path.thickness2, (double)(s / 30.0),
+					vertices.length, isRoad)
+			}
+		}
+	}
 	
-				xp[1] = bx
-				yp[1] = by
-				xp[2] = cx
-				yp[2] = cy 
+	/**
+	 * Actually draw a path on the image. Called after all the coordinates
+	 * have been calculated. For roads, this may get called twice, so we
+	 * can have a white road bordered with black.
+	 * 
+	 * @param image		SimpleImage to draw onto.
+	 * @param vx		Array of X coordinates.
+	 * @param vy		Array of Y coordinates.
+	 * @param colour	Colour to use.
+	 * @param t1		Starting thickness.
+	 * @param t2		Ending thickness.
+	 * @param scale		Scale factor for thickness.
+	 * @param length	Actual length of path.
+	 * @param isRoad	iff true if a road, otherwise it's a river or coastline.
+	 */
+	private void drawBezierPath(SimpleImage image, double[] vx, double[] vy, 
+		String colour, int t1, int t2, double scale, int length, boolean isRoad) {
+		for (int i=1; i < vx.length - 2; i++) {
+			double[]	xp = new double[4];
+			double[]	yp = new double[4];
+			xp[0] = vx[i]
+			yp[0] = vy[i]
+			xp[3] = vx[i+1]
+			yp[3] = vy[i+1]
+			
+			// Work out control points dynamically.
+			int ax, bx, cx, dx, xx
+			int ay, by, cy, dy, yy
+			// A is halfway point on previous line.
+			ax = (vx[i-1] + vx[i]) / 2.0
+			ay = (vy[i-1] + vy[i]) / 2.0
+			// B is halfway point on this line.
+			bx = (vx[i] + vx[i+1]) / 2.0
+			by = (vy[i] + vy[i+1]) / 2.0
+			// Halfway point between A and B
+			xx = (ax + bx) / 2.0
+			yy = (ay + by) / 2.0
+			// Shift B control point up so A/B line intersects start of line
+			ax -= xx - vx[i]
+			ay -= yy - vy[i]
+			bx -= xx - vx[i]
+			by -= yy - vy[i]
+			
+			// C is equal to B
+			cx = bx
+			cy = by
+			// D is halfway point on next line.
+			dx = (vx[i+1] + vx[i+2]) / 2.0
+			dy = (vy[i+1] + vy[i+2]) / 2.0
+			// Halfway point between A and B
+			xx = (cx + dx) / 2.0
+			yy = (cy + dy) / 2.0
+			// Shift B control point up so A/B line intersects start of line
+			cx -= xx - vx[i+1]
+			cy -= yy - vy[i+1]
 
-				double thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / vertices.length
-				thickness *= (s / 20)
-				if (isRoad) {
-					image.curve(xp, yp, colour, thickness, (double)10.0, (double)5.0)	
-				} else {
-					image.curve(xp, yp, colour, thickness)
+			xp[1] = bx
+			yp[1] = by
+			xp[2] = cx
+			yp[2] = cy
+
+			double thickness = t1 - i * (t1 - t2) / length
+			if (isRoad) {
+				// This is currently ugly. Want to be able to change the dash
+				// pattern based on the thickness. Also, roads should be thinner
+				// than rivers. Roads of thickness '4' are drawn twice, first
+				// time in black, second time in white but thinner.
+				double width = thickness * scale / 3.0
+				switch ((int)(thickness + 0.5)) {
+				case 0:
+					colour = "#777755"
+					image.curve(xp, yp, colour, width, (double)2.0, (double)5.0)
+					break;
+				case 1:
+					colour = "#777755"
+					image.curve(xp, yp, colour, width, (double)5.0, (double)5.0)
+					break;
+				case 2:
+					colour = "#555555"
+					image.curve(xp, yp, colour, width, (double)10.0, (double)5.0)
+					break;
+				case 3:
+					colour = "#555555"
+					image.curve(xp, yp, colour, width, (double)15.0, (double)5.0)
+					break;
+				default:
+					image.curve(xp, yp, colour, width)
+					break;
 				}
+			} else {
+				image.curve(xp, yp, colour, thickness * scale)
 			}
 		}
 	}
