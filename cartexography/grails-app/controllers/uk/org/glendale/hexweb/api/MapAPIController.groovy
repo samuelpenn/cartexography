@@ -528,7 +528,7 @@ class MapAPIController {
 		MapInfo		info = mapService.getMapByNameOrId(id)
 		Place		place = thingService.getPlaceByNameOrId(info, placeId)
 		
-		println "Updating place [${place.name}] to [${name}/${title}] thing [${thingId}]"
+		println "Updating place [${place.id}:${place.name}] to [${name}/${title}] thing [${thingId}]"
 		if (name != null) {
 			place.name = name;
 		}
@@ -536,8 +536,11 @@ class MapAPIController {
 			place.title = title;
 		}
 		if (thingId > 0) {
+			println "Getting a thing"
 			Thing thing = thingService.getThingByNameOrId(thingId)
+			println "Have a thing"
 			if (thing != null) {
+				println "Setting thing"
 				place.thing = thing
 			}
 		}
@@ -546,8 +549,9 @@ class MapAPIController {
 			place.tileY = y;
 			place.subX = sx;
 			place.subY = sy;
-			place.save();
 		}
+		println "Saving the place"
+		place.save();
 		render place as JSON
 	}
 	
@@ -761,6 +765,7 @@ class MapAPIController {
 			pathService.createPath(path)
 		} else {
 			pathService.updatePath(path)
+			println "Updated path"
 		}
 		
 		render path as JSON

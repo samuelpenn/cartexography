@@ -462,12 +462,20 @@ class ImageAPIController {
 	 */
 	private void drawRivers(MapInfo info, SimpleImage image, int columnWidth, int tileHeight, int s, int x, int y, int w, int h) {
 		List paths = pathService.getPathsInArea(info, x, y, w, h)
-
+		
 		paths.each { path ->
+			String colour = "#b7f9ff"
+			String style = "${path.style}"
+			boolean isRoad = false
+			if (style.equals("ROAD")) {
+				isRoad = true
+				colour = "#555555"
+			}
+
 			Vertex[] vertices = path.vertex.toArray()
 			double[]	vx = new double[vertices.length+2]
 			double[]	vy = new double[vertices.length+2]
-	
+
 			// Work out actual coordinates of each vertex on the map.
 			for (int i=0; i < vertices.length; i++) {
 				vx[i+1] = vertices[i].x - x
@@ -534,7 +542,11 @@ class ImageAPIController {
 
 				double thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / vertices.length
 				thickness *= (s / 20)
-				image.curve(xp, yp, "#b7f9ff", thickness)
+				if (isRoad) {
+					image.curve(xp, yp, colour, thickness, (double)10.0, (double)5.0)	
+				} else {
+					image.curve(xp, yp, colour, thickness)
+				}
 			}
 		}
 	}

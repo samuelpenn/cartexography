@@ -405,6 +405,28 @@ public class SimpleImage implements ImageObserver {
 		g.draw(path);
 	}
 
+	/**
+	 * Draws a dashed bezier curve starting at the first coordinate and ending 
+	 * at the fourth coordinate, using the middle two coordinates as control 
+	 * points.
+	 * 
+	 * Setting a dash of 1 defines a short dash, larger values define longer
+	 * dashes.
+	 */
+	public void curve(double[] x, double[] y, String colour, double width, double dash, double space) {
+		Graphics2D 		g = (Graphics2D) image.getGraphics();
+		Path2D.Double	path = new Path2D.Double();
+		
+		float dashes[]= { (float) dash, (float) space };
+		g.setStroke(new BasicStroke((float)width, BasicStroke.CAP_BUTT,
+				BasicStroke.JOIN_MITER, (float)dash, dashes, (float)space));
+		g.setColor(getColour(colour));
+		path.moveTo(x[0], y[0]);
+		path.curveTo(x[1], y[1], x[2], y[2], x[3], y[3]);
+		
+		g.draw(path);
+	}
+
 	public void rectangle(int x, int y, int w, int h, String colour) {
 		Graphics2D g = (Graphics2D) image.getGraphics();
 
