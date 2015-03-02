@@ -567,7 +567,6 @@ function getFontAlpha(p) {
 	var alpha = 1.00;
 	var size = getFontSize(p);
 	
-	debug (p.title + " " + p.fontSize + " " + size + " " + VIEW.currentScale.column);
 	size = parseInt(size / 10);
 	switch (size) {
 	case 0:
@@ -579,7 +578,6 @@ function getFontAlpha(p) {
 		alpha = 1.00;
 		break;
 	default:
-		debug("default: " + size);
 		alpha = 1.00 - (size -2) * 0.25;
 	}
 

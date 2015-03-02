@@ -500,6 +500,38 @@ function showPathDialog() {
 	
 	$("#pathDialog").append("<div id='pathLength'>1</div>");
 	
+	switch (type) {
+	case "Road":
+		$("#pathDialog").append("<div><select id='startThickness' onchange='showPathDialog_setRoad()'></select></div>");
+		debug("Display road " + VIEW.currentPath.thickness1);
+		var roads = [ "Track", "Trail", "Path", "Road", "Paved" ];
+		for (var i=0; i < 5; i++) {
+			var selected = "";
+			if (VIEW.currentPath.thickness1 == i) {
+				selected = "selected";
+			}
+			$("#startThickness").append("<option "+selected+" value='"+i+"'>"+roads[i]+"</option>");
+		}
+		break;
+	case "River":
+		$("#pathDialog").append("<div><select id='startThickness' onchange='showPathDialog_setRiver()'></select></div>");
+		$("#startThickness").parent().append("<select id='endThickness' onchange='showPathDialog_setRiver()'></select>");
+		var rivers = [ "Minor", "Lesser", "Medium", "Wide", "Great" ];
+		for (var i=0; i < 5; i++) {
+			var selected = "";
+			if (VIEW.currentPath.thickness1 == i) {
+				selected = "selected";
+			}
+			$("#startThickness").append("<option "+selected+" value='"+i+"'>"+rivers[i]+"</option>");
+			if (VIEW.currentPath.thickness2 == i) {
+				selected = "selected";
+			}
+			$("#endThickness").append("<option "+selected+" value='"+i+"'>"+rivers[i]+"</option>");
+		}
+
+		break;
+	}
+	
 	$("#pathDialog").append("<img src=\""+ICONS_PATH+"/path_save.png\" onclick=\"saveCurrentPath()\"/>");
 	$("#pathDialog").append("&nbsp;");
 	$("#pathDialog").append("<img src=\""+ICONS_PATH+"/path_del.png\" onclick=\"deleteCurrentPath()\"/>");
@@ -507,6 +539,21 @@ function showPathDialog() {
 	$("#pathDialog").append("<img src=\""+ICONS_PATH+"/node_add.png\" onclick=\"addNodeToPath()\"/>");
 	$("#pathDialog").append("&nbsp;");
 	$("#pathDialog").append("<img src=\""+ICONS_PATH+"/node_del.png\" onclick=\"removeNodeFromPath()\"/>");
+}
+
+function showPathDialog_setRoad() {
+	var thickness = parseInt($("#startThickness").val());
+	debug("showPathDialog_setRoad: " + thickness);
+	VIEW.currentPath.thickness1 = thickness;
+	VIEW.currentPath.thickness2 = thickness;
+}
+
+function showPathDialog_setRiver() {
+	var thickness1 = parseInt($("#startThickness").val());
+	var thickness2 = parseInt($("#endThickness").val());
+	debug("showPathDialog_setRiver: " + thickness1 + " - " + thickness2);
+	VIEW.currentPath.thickness1 = thickness1;
+	VIEW.currentPath.thickness2 = thickness2;
 }
 
 function changePathName() {
