@@ -463,6 +463,7 @@ class ImageAPIController {
 	private void drawRivers(MapInfo info, SimpleImage image, int columnWidth, int tileHeight, int s, int x, int y, int w, int h) {
 		List paths = pathService.getPathsInArea(info, x, y, w, h)
 		
+		def roads = []
 		paths.each { path ->
 			String colour = "#b7f9ff"
 			String style = "${path.style}"
@@ -500,10 +501,18 @@ class ImageAPIController {
 				path.thickness1, path.thickness2, (double)(s / 20.0),
 				vertices.length, isRoad)
 			if (path.thickness1 == 4 && isRoad) {
-				drawBezierPath(image, vx, vy, "#ffffff",
-					path.thickness1, path.thickness2, (double)(s / 30.0),
-					vertices.length, isRoad)
+				// If this is a full road, need to append to list to draw again
+				// later in an overlay. All overlays must be drawn after all base
+				// roads, so that crossroads look right.
+				roads.add([ vx: vx, vy: vy, width: path.thickness1, len: vertices.length ] )
 			}
+		}
+		
+		// Draw full roads again, this time in white but slightly thinner. This
+		// gives roads as a white line with a black border.
+		roads.each { road ->
+			drawBezierPath(image, road.vx, road.vy, "#ffffff",
+				road.width, road.width, (double)(s / 30.0), road.len, true)
 		}
 	}
 	
@@ -577,20 +586,21 @@ class ImageAPIController {
 				double width = thickness * scale / 3.0
 				switch ((int)(thickness + 0.5)) {
 				case 0:
-					colour = "#777755"
+					// Roads of thickness 0 shouldn't actually exist.
+					colour = "#997733"
 					image.curve(xp, yp, colour, width, (double)2.0, (double)5.0)
 					break;
 				case 1:
-					colour = "#777755"
+					colour = "#774400"
 					image.curve(xp, yp, colour, width, (double)5.0, (double)5.0)
 					break;
 				case 2:
-					colour = "#555555"
-					image.curve(xp, yp, colour, width, (double)10.0, (double)5.0)
+					colour = "#774400"
+					image.curve(xp, yp, colour, width, (double)20.0, (double)10.0)
 					break;
 				case 3:
 					colour = "#555555"
-					image.curve(xp, yp, colour, width, (double)15.0, (double)5.0)
+					image.curve(xp, yp, colour, width)
 					break;
 				default:
 					image.curve(xp, yp, colour, width)

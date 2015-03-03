@@ -672,11 +672,11 @@ function drawPath(path, isOverlay) {
 	if (path.style == "ROAD") {
 		switch (path.thickness1) {
 		case 1:
-			pathColour = "#777744";
+			pathColour = "#777755";
 			lineDash = [ 1, 5 ];
 			break;
 		case 2:
-			pathColour = "#777744";
+			pathColour = "#777755";
 			lineDash = [ 5, 10 ];
 			break;
 		case 3:
