@@ -504,29 +504,30 @@ function showPathDialog() {
 	case "Road":
 		$("#pathDialog").append("<div><select id='startThickness' onchange='showPathDialog_setRoad()'></select></div>");
 		debug("Display road " + VIEW.currentPath.thickness1);
-		var roads = [ "Track", "Trail", "Path", "Road", "Paved" ];
-		for (var i=0; i < 5; i++) {
+		var roads = [ "Track", "Trail", "Path", "Road" ];
+		for (var i=0; i < 4; i++) {
 			var selected = "";
 			if (VIEW.currentPath.thickness1 == i) {
 				selected = "selected";
 			}
-			$("#startThickness").append("<option "+selected+" value='"+i+"'>"+roads[i]+"</option>");
+			$("#startThickness").append("<option "+selected+" value='"+(i+1)+"'>"+roads[i]+"</option>");
 		}
 		break;
 	case "River":
 		$("#pathDialog").append("<div><select id='startThickness' onchange='showPathDialog_setRiver()'></select></div>");
 		$("#startThickness").parent().append("<select id='endThickness' onchange='showPathDialog_setRiver()'></select>");
 		var rivers = [ "Minor", "Lesser", "Medium", "Wide", "Great" ];
+		var widths = [ 1, 3, 5, 7, 10 ];
 		for (var i=0; i < 5; i++) {
 			var selected = "";
 			if (VIEW.currentPath.thickness1 == i) {
 				selected = "selected";
 			}
-			$("#startThickness").append("<option "+selected+" value='"+i+"'>"+rivers[i]+"</option>");
+			$("#startThickness").append("<option "+selected+" value='"+widths[i]+"'>"+rivers[i]+"</option>");
 			if (VIEW.currentPath.thickness2 == i) {
 				selected = "selected";
 			}
-			$("#endThickness").append("<option "+selected+" value='"+i+"'>"+rivers[i]+"</option>");
+			$("#endThickness").append("<option "+selected+" value='"+widths[i]+"'>"+rivers[i]+"</option>");
 		}
 
 		break;

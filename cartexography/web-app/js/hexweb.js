@@ -492,7 +492,12 @@ function redrawMap() {
 	
 	// Draw all the paths visible on this map view.
 	for (var i=0; i < MAP.paths.length; i++) {
-		drawPath(MAP.paths[i]);
+		drawPath(MAP.paths[i], false);
+	}
+	for (var i=0; i < MAP.paths.length; i++) {
+		if (MAP.paths[i].style == "ROAD" && MAP.paths[i].thickness1 == 4) {
+			drawPath(MAP.paths[i], true);
+		}
 	}
 	// Draw all the places visible on this map view.
 	for (var i=0; i < MAP.places.length; i++) {
@@ -660,11 +665,31 @@ function getVertexY(vertex) {
 /**
  * Display a given path on the map.
  */
-function drawPath(path) {
+function drawPath(path, isOverlay) {
 	var pathColour = "#b7f9ff";
+	var lineDash = null;
 	
 	if (path.style == "ROAD") {
-		pathColour = "#555555";
+		switch (path.thickness1) {
+		case 1:
+			pathColour = "#777744";
+			lineDash = [ 1, 5 ];
+			break;
+		case 2:
+			pathColour = "#777744";
+			lineDash = [ 5, 10 ];
+			break;
+		case 3:
+			pathColour = "#555555";
+			break;
+		case 4:
+			if (isOverlay) {
+				pathColour = "#FFFFFF";
+			} else {
+				pathColour = "#000000";
+			}
+			break;
+		}
 	}
 	
 	if (VIEW.selectedPathId == path.id) {
@@ -731,6 +756,12 @@ function drawPath(path) {
 		cy -= yy - vy[i+1]
 
 		var thickness = path.thickness1 - i * (path.thickness1 - path.thickness2) / path.vertex.length
+		if (path.style == "ROAD") {
+			thickness *= 0.5;
+			if (isOverlay) {
+				thickness *= 0.75;
+			}
+		}
 		thickness *= (VIEW.currentScale.column / 20.0)
 		
 		if (VIEW.selectedPathId == path.id && selectedV == i-1) {
@@ -743,8 +774,8 @@ function drawPath(path) {
 		VIEW.context.lineWidth = thickness;
 		VIEW.context.lineCap = 'round';
 		VIEW.context.beginPath();
-		if (path.style == "ROAD") {
-			setLineDash([3,10]);
+		if (path.style == "ROAD" && lineDash != null) {
+			setLineDash(lineDash);
 		}
 		VIEW.context.moveTo(vx[i], vy[i]);
 		VIEW.context.bezierCurveTo(bx, by, cx, cy, vx[i+1], vy[i+1])
