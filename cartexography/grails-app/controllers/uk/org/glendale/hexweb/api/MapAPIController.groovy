@@ -733,6 +733,13 @@ class MapAPIController {
 		return null
 	}
 	
+	/**
+	 * Draws a hexagon of the specified size and returns it as an image.
+	 * This is for development purposes only, to be able to generate
+	 * plain hexagons to use as a basis for hex tiles.
+	 * 
+	 * @param size		Length of a hex side, in pixels.
+	 */
 	def hex (int size) {
 		SimpleImage image = new SimpleImage(512, 512, "#000000")
 		
@@ -750,7 +757,11 @@ class MapAPIController {
 	}
 	
 	/**
-	 * Create a new path.
+	 * Create a new path, or update an existing one. The path is passed as
+	 * JSON data, and if the id is non-zero then this is considered to be
+	 * an update, otherwise it is a creation.
+	 * 
+	 * @param id	Id of the map this path applies to.
 	 */
 	def createPath(String id) {
 		MapInfo		info = mapService.getMapByNameOrId(id)
@@ -758,6 +769,9 @@ class MapAPIController {
 		JSON.use('deep')
 		def data = request.JSON
 		Path path = pathService.jsonToPath(info, data)
+		if (path == null) {
+			return null
+		}
 		path.mapInfo = info
 		
 		if (path.id == 0 || path.id == null) {

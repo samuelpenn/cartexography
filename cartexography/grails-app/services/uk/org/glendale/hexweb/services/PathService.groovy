@@ -49,14 +49,24 @@ class PathService {
 	def jsonToPath(MapInfo info, json) {
 		Path path = new Path()
 		
+		if (json == null || json.size() == 0) {
+			print "JSON is not set"
+			return null
+		}
+		print "Json data for path is [${json}]"
+		
 		path.id = json.id
 		path.mapInfo = info
 		path.name = json.name
 		if (path.name == "untitled") {
 			setUniquePathName(path)
 		}
-		path.thickness1 = json.thickness1
-		path.thickness2 = json.thickness2
+		if (json.thickness1 != null) {
+			path.thickness1 = json.thickness1
+		}
+		if (json.thickness2 != null) {
+			path.thickness2 = json.thickness2
+		}
 		path.style = json.style
 
 		path.vertex = new HashSet()
@@ -128,6 +138,7 @@ class PathService {
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
 				String sql = String.format("DELETE FROM vertex WHERE path_id=%d", path.id)
+				println sql
 				stmnt = connection.prepareStatement(sql)
 				stmnt.executeUpdate(sql)				
 			}
@@ -135,13 +146,25 @@ class PathService {
 		sessionFactory.currentSession.doWork(new Work() {
 			public void execute(Connection connection) {
 				path.vertex.each { v ->
-					String sql = String.format("INSERT INTO vertex (path_id, vertex, x, y, sub_x, sub_y) VALUES (%d, %d, %d, %d, %d, %d)",
-						path.id, v.vertex, v.x, v.y, v.subX, v.subY)
-					stmnt = connection.prepareStatement(sql)
-					stmnt.executeUpdate()
+					if (v != null) {
+						println "Insert..."
+						String sql = String.format("INSERT INTO vertex (path_id, vertex, x, y, sub_x, sub_y) VALUES (%d, %d, %d, %d, %d, %d)",
+							path.id, v.vertex, v.x, v.y, v.subX, v.subY)
+						println sql
+						try {
+							stmnt = connection.prepareStatement(sql)
+							stmnt.executeUpdate()
+						} catch (Exception e) {
+							println "Exception ${e}"
+							throw e
+						}
+						println "...Done"
+					}
 				}
+				println "Done all vertices"
 			}
 		})
+		println "Done all sessions"
 	}
 	
 	def addVertices(Path path, List vertices) {
@@ -164,7 +187,7 @@ class PathService {
 	 * @param path		Path to be saved.
 	 */
 	def updatePath(Path path) {
-		println "Save path ${path.name}"
+		println "Save path [${path.id}:${path.name}]"
 		
 		Path	p = Path.findById(path.id)
 		p.name = path.name
@@ -172,8 +195,12 @@ class PathService {
 		p.thickness2 = path.thickness2
 		p.style = path.style
 		p.save()
+		println "Saved path"
 		
 		saveVertices(path)
+		println "Saved vertices"
+		
+		return null
 	}
 	
 	/**

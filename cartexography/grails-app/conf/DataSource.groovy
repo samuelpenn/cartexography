@@ -15,7 +15,7 @@ environments {
     development {
         dataSource {
             dbCreate = "" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:mysql://appleseed:3306/hexweb_test"
+            url = "jdbc:mysql://192.168.1.99:3306/hexweb_test"
 			username = "hexweb"
 			password = "hexweb"
             properties {

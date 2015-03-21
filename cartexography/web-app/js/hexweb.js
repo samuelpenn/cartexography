@@ -174,6 +174,7 @@ function drawHexGrid(x, y) {
  * canvas.
  */
 function refreshMap() {
+	console.log("refreshMap:");
 	setViewPort();
 	if (VIEW.x < 0) {
 		VIEW.x = 0;
@@ -666,7 +667,7 @@ function getVertexY(vertex) {
  * Display a given path on the map.
  */
 function drawPath(path, isOverlay) {
-	var pathColour = "#b7f9ff";
+	var pathColour = "#b7f9ff"; // Default river colour.
 	var lineDash = null;
 	
 	if (path.style == "ROAD") {
@@ -784,7 +785,7 @@ function drawPath(path, isOverlay) {
 
 		if (VIEW.selectedPathId == path.id) {
 			VIEW.context.moveTo(vx[i], vy[i]);
-			VIEW.context.arc(vx[i], vy[i], thickness, 0, 2 * Math.PI, false);
+			VIEW.context.arc(vx[i], vy[i], Math.sqrt(thickness)*2, 0, 2 * Math.PI, false);
 			//VIEW.context.fillStyle = "black";
 			//VIEW.context.fill();
 			VIEW.context.stroke();

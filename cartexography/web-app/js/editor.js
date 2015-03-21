@@ -472,6 +472,10 @@ function findNearestLabel(x, y) {
 
 function showPathDialog() {
 	closeAllDialogs();
+	if (VIEW.currentPath == null) {
+		return;
+	}
+	
 	$("body").append("<div id='pathDialog' class='floating'></div>");
 	$("#pathDialog").css("position", "absolute");
 	$("#pathDialog").css("left", 128);
@@ -577,6 +581,10 @@ function findClosestPath(event, px, py) {
 	var		vertexId = -1;
 	var		closest = 50;
 	VIEW.currentPath = null;
+	VIEW.selectedPathId = -1;
+	VIEW.selectedVertexId = -1;
+	
+	console.log("findClosestPath:");
 	
 	var		x = getMapX(px, py);
 	var		y = getMapY(px, py);
@@ -596,8 +604,13 @@ function findClosestPath(event, px, py) {
 			}
 		}
 	}
-	VIEW.selectedPathId = pathId;
-	VIEW.selectedVertexId = vertexId;
+	if (pathId > 0) {
+		VIEW.selectedPathId = pathId;
+		VIEW.selectedVertexId = vertexId;
+		console.log("findClosestPath: ["+pathId+"] ["+vertexId+"] ["+VIEW.currentPath.id+"]");
+	} else {
+		console.log("findClosestPath: None found");
+	}
 }
 
 /**
@@ -605,7 +618,7 @@ function findClosestPath(event, px, py) {
  */
 function selectPath(event, px, py) {
 	findClosestPath(event, px, py);
-	refreshMap();
+	redrawMap();
 	if (VIEW.selectedPathId != 0) {
 		showPathDialog();
 	} else {
@@ -614,6 +627,7 @@ function selectPath(event, px, py) {
 }
 
 function movePath(event, px, py) {
+	console.log("movePath: [" + VIEW.selectedPathId + "]");
 	findClosestPath(event, px, py);
 	if (VIEW.currentPath != null && VIEW.selectedVertexId >= 0) {
 		var		x = getMapX(px, py);
@@ -714,6 +728,8 @@ function paintPath(event, px, py) {
 function saveCurrentPath() {
 	var path = VIEW.currentPath;
 
+	console.log("saveCurrentPath: " + path.id);
+	
 	$.ajax({
 		contentType: 'application/json',
 		dataType: 'json',
