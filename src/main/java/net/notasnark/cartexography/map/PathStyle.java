@@ -6,7 +6,7 @@
  * as published by the Free Software Foundation version 3, or
  * any later version. See the file COPYING.
  */
-package uk.org.glendale.hexweb;
+package net.notasnark.cartexography.map;
 
 /**
  * Type of vector path. Defines the colour and other graphical stylings.

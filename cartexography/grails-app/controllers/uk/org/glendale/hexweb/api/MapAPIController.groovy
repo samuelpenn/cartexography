@@ -248,8 +248,10 @@ class MapAPIController {
 		List places = Place.findAll ({
 			eq('mapInfo', info)
 			between('tileX', x, x + w -1)
-			between('tileY', y, y + h - 1)			
+			between('tileY', y, y + h - 1)		
 		})
+		
+		
 		List paths = pathService.getPathsInArea(info, x, y, w, h)
 		List areas = Area.findAll({
 			eq("mapInfo", info)
