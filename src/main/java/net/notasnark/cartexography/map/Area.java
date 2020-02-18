@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.List;
 
+/**
+ * A named area of a map. Each tile may have an area associated with it.
+ */
 @Entity
 @Table(name = "area")
 public class Area {

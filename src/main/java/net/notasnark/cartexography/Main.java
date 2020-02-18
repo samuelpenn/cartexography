@@ -4,10 +4,14 @@
  */
 package net.notasnark.cartexography;
 
+import net.notasnark.cartexography.data.MapInfoDao;
+import net.notasnark.cartexography.map.MapInfo;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -16,6 +20,8 @@ public class Main {
 
     static {
         configuration = Config.getConfiguration();
+
+        System.out.println("Connecting to " + configuration.getDatabaseURL());
 
         Configuration cfg = new Configuration();
         cfg.configure("hibernate.cfg.xml");
@@ -28,6 +34,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        MapInfoDao dao = new MapInfoDao(sessionFactory.createEntityManager());
+        List<MapInfo> maps = dao.getAll();
 
+        System.out.println("Maps:");
+        for (MapInfo map : maps) {
+            System.out.println(map.getName());
+        }
     }
 }

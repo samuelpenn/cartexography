@@ -7,6 +7,10 @@ package net.notasnark.cartexography.map;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+
+/**
+ * Defines the bounds for a map.
+ */
 @Entity
 @Table(name = "bound")
 public class Bound {
