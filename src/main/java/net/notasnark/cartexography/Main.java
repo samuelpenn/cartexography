@@ -4,6 +4,9 @@
  */
 package net.notasnark.cartexography;
 
+import net.notasnark.cartexography.map.area.Area;
+import net.notasnark.cartexography.map.area.AreaDao;
+import net.notasnark.cartexography.map.area.Bounds;
 import net.notasnark.cartexography.map.info.MapInfoDao;
 import net.notasnark.cartexography.map.info.MapInfo;
 import org.hibernate.SessionFactory;
@@ -50,5 +53,15 @@ public class Main {
         for (MapInfo map : maps) {
             System.out.println(map.getName());
         }
+        System.out.println("\n----\n");
+        AreaDao areaDao = new AreaDao(sessionFactory.createEntityManager());
+        Area a = areaDao.get(793);
+        System.out.println(a.getTitle());
+        Bounds b = areaDao.getBounds(a);
+        System.out.println(b.minX);
+        System.out.println(b.maxX);
+        System.out.println(b.minY);
+        System.out.println(b.maxY);
+
     }
 }

@@ -79,5 +79,33 @@ public class MapInfo {
         }
     }
 
+    public String getStyle() {
+        return style;
+    }
+
+    public int getOob() {
+        return oob;
+    }
+
+    public int getBackground() {
+        return background;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getScale() {
+        return scale;
+    }
+
+    public boolean isWorld() {
+        return world;
+    }
+
 
 }

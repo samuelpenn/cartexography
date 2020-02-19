@@ -29,9 +29,20 @@ public class MapInfoDao extends Dao {
     }
 
     public MapInfo get(String name) {
-        Query query = session.createQuery(NAME_QUERY);
-        query.setParameter("name", name);
-        MapInfo map = (MapInfo) query.getSingleResult();
+        MapInfo map;
+
+        if (name.matches("[0-9]+")) {
+            try {
+                int id = Integer.parseInt(name);
+                map = get(id);
+            } catch(NumberFormatException e){
+                throw new IllegalArgumentException(String.format("Map name [%s] is not a valid id", name));
+            }
+        } else {
+            Query query = session.createQuery(NAME_QUERY);
+            query.setParameter("name", name);
+            map = (MapInfo) query.getSingleResult();
+        }
 
         return map;
     }

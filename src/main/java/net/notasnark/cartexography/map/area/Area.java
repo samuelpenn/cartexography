@@ -2,7 +2,7 @@
  * Copyright (c) 2020, Samuel Penn (sam@notasnark.net).
  * See the file LICENSE at the root of the project.
  */
-package net.notasnark.cartexography.map;
+package net.notasnark.cartexography.map.area;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,6 +29,29 @@ public class Area {
 
     //List<Area>  children;
     //Area        parent;
+
+    public Area() {
+        this.id = 0;
+        this.mapInfoId = 0;
+        this.name = "untitled";
+        this.title = "Untitled";
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getMapInfoId() {
+        return mapInfoId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 
 }
 

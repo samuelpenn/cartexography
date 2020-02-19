@@ -4,6 +4,7 @@
  */
 package net.notasnark.cartexography;
 
+import net.notasnark.cartexography.map.area.AreaDao;
 import net.notasnark.cartexography.map.info.MapInfoDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,9 @@ public class Cartexography implements AutoCloseable {
 		return new MapInfoDao(session);
 	}
 
+	public AreaDao getAreaDao() {
+		return new AreaDao(session);
+	}
 
 	public static void main(String[] args) {
 		System.out.println("Cartexography");

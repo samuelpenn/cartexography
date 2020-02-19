@@ -30,6 +30,8 @@
         <property name="hbm2ddl.auto">update</property>
 
         <mapping class="net.notasnark.cartexography.map.info.MapInfo" />
+        <mapping class="net.notasnark.cartexography.map.area.Area" />
+        <mapping class="net.notasnark.cartexography.map.hex.Hex" />
     </session-factory>
 
 </hibernate-configuration>

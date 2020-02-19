@@ -4,12 +4,14 @@
  */
 package net.notasnark.cartexography.map.hex;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "map")
 public class Hex {
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
     long        id;
     int 		mapInfoId;
     int			x;
