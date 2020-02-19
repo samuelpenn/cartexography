@@ -4,13 +4,14 @@
  */
 package net.notasnark.cartexography;
 
-import net.notasnark.cartexography.data.MapInfoDao;
-import net.notasnark.cartexography.map.MapInfo;
+import net.notasnark.cartexography.map.info.MapInfoDao;
+import net.notasnark.cartexography.map.info.MapInfo;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public class Main {
@@ -31,6 +32,14 @@ public class Main {
         cfg.getProperties().setProperty("hibernate.connection.password", configuration.getDatabasePassword());
 
         sessionFactory = cfg.buildSessionFactory();
+    }
+
+    protected static EntityManager getSession() {
+        return sessionFactory.createEntityManager();
+    }
+
+    public synchronized static Cartexography getApp() {
+        return new Cartexography(getSession(), configuration);
     }
 
     public static void main(String[] args) {

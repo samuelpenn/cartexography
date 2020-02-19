@@ -4,6 +4,8 @@
  */
 package net.notasnark.cartexography.map;
 
+import net.notasnark.cartexography.map.info.MapInfo;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -16,7 +18,7 @@ import javax.persistence.Table;
 @Table(name = "thing")
 public class Thing {
     int         id;
-    MapInfo		mapInfo;
+    MapInfo mapInfo;
     String		name;
     String		title;
     int			importance;

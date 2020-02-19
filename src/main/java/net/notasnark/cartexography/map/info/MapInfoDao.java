@@ -2,10 +2,10 @@
  * Copyright (c) 2020, Samuel Penn (sam@notasnark.net).
  * See the file LICENSE at the root of the project.
  */
-package net.notasnark.cartexography.data;
+package net.notasnark.cartexography.map.info;
 
-import net.notasnark.cartexography.Cartexography;
-import net.notasnark.cartexography.map.MapInfo;
+import net.notasnark.cartexography.data.Dao;
+import net.notasnark.cartexography.map.info.MapInfo;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

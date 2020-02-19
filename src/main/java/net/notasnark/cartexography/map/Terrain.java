@@ -4,6 +4,8 @@
  */
 package net.notasnark.cartexography.map;
 
+import net.notasnark.cartexography.map.info.MapInfo;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -17,7 +19,7 @@ import javax.persistence.Table;
 public class Terrain {
     static final int UNKNOWN = 1;
     int         id;
-    MapInfo		mapInfo;
+    MapInfo mapInfo;
     String		name;
     int			variants;
     String		title;

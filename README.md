@@ -1,8 +1,14 @@
-Cartexography
-=============
+# Cartexography
 
 **Author:** Samuel Penn  
 **License:** GPL v3
+
+## What's New
+
+Moving the code base from _Grails_ to _SparkJava_ and _React_. The code
+will be non-functional whilst this move is in progress,
+
+## About
 
 Cartexography is a web based hex mapper, designed for drawing large scale 
 fantasy (or other) maps, for regions the size of countries, continents or 

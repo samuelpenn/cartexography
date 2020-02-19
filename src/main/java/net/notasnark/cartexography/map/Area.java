@@ -4,8 +4,7 @@
  */
 package net.notasnark.cartexography.map;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -14,13 +13,22 @@ import java.util.List;
 @Entity
 @Table(name = "area")
 public class Area {
-    MapInfo		mapInfo;
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
     int         id;
+
+    @Column(name = "mapinfo_id")
+    int		mapInfoId;
+
+    @Column(name = "name")
     String		name;
+
+    @Column(name = "title")
     String		title;
 
-    List<Area>  children;
-    Area        parent;
+    //List<Area>  children;
+    //Area        parent;
 
 }
 
