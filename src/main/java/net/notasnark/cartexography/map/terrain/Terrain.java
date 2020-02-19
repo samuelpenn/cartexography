@@ -2,12 +2,11 @@
  * Copyright (c) 2020, Samuel Penn (sam@notasnark.net).
  * See the file LICENSE at the root of the project.
  */
-package net.notasnark.cartexography.map;
+package net.notasnark.cartexography.map.terrain;
 
 import net.notasnark.cartexography.map.info.MapInfo;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Defines the type of a hex tile. Specifies the image that is used, the flat
@@ -17,12 +16,26 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "terrain")
 public class Terrain {
-    static final int UNKNOWN = 1;
+    public static final int UNKNOWN = 1;
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
     int         id;
-    MapInfo mapInfo;
+
+    @Column(name = "mapinfo_id")
+    int         mapInfoId;
+
+    @Column(name = "name")
     String		name;
+
+    @Column(name = "variants")
     int			variants;
+
+    @Column(name = "title")
     String		title;
+
+    @Column(name = "water")
     boolean		water;
     String		colour;
     /* Order used to group similar types. An order of zero means that
@@ -30,4 +43,20 @@ public class Terrain {
      * drawn onto the map.
      */
     int			ordering;
+
+    public Terrain() {
+        this.id = 0;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getVariants() {
+        return variants;
+    }
 }

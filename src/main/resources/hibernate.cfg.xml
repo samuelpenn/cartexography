@@ -31,6 +31,7 @@
 
         <mapping class="net.notasnark.cartexography.map.info.MapInfo" />
         <mapping class="net.notasnark.cartexography.map.area.Area" />
+        <mapping class="net.notasnark.cartexography.map.terrain.Terrain" />
         <mapping class="net.notasnark.cartexography.map.hex.Hex" />
     </session-factory>
 

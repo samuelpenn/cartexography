@@ -6,12 +6,15 @@ package net.notasnark.cartexography.web.api;
 
 import net.notasnark.cartexography.Cartexography;
 import net.notasnark.cartexography.map.area.Area;
-import net.notasnark.cartexography.map.Terrain;
+import net.notasnark.cartexography.map.hex.Hex;
+import net.notasnark.cartexography.map.hex.HexDao;
+import net.notasnark.cartexography.map.terrain.Terrain;
 import net.notasnark.cartexography.map.Thing;
 import net.notasnark.cartexography.map.area.AreaDao;
 import net.notasnark.cartexography.map.area.Bounds;
 import net.notasnark.cartexography.map.info.MapInfo;
 import net.notasnark.cartexography.map.info.MapInfoDao;
+import net.notasnark.cartexography.map.terrain.TerrainDao;
 import net.notasnark.cartexography.web.Controller;
 import net.notasnark.cartexography.web.Server;
 import net.notasnark.utils.SimpleImage;
@@ -20,14 +23,16 @@ import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 
-import java.awt.*;
+import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hibernate.criterion.Projections.property;
 import static spark.Spark.get;
 
 public class ImageAPI extends Controller {
@@ -36,11 +41,13 @@ public class ImageAPI extends Controller {
     public void setupEndpoints() {
         logger.info("Setting up endpoints for ImageAPI");
         get("/api/image/hex", (request, response) -> drawHex(request, response));
+        get( "/api/image/map/:id", (request, response) -> imageByCoord(request, response));
     }
 
-
     private Image getImage(Terrain terrain, int variant, String path, int width, int height) throws MalformedURLException {
-        URL url = new URL("file://" + path + "/terrain/${terrain.name}_${variant}.png");
+        String fullpath = "file://" + path + "/terrain/" + terrain.getName() + "_" + variant + ".png";
+        System.out.println(fullpath);
+        URL url = new URL(fullpath);
 
         return SimpleImage.createImage(width, height, url);
     }
@@ -104,7 +111,7 @@ public class ImageAPI extends Controller {
                 w += 1;
             }
 
-            //return imageByCoord(mapId, x, y, w, h, s, style);
+            getImageByCoord(app, info, x, y, w, h, s, style);
         } catch (Exception e) {
             response.status(404);
         }
@@ -114,16 +121,43 @@ public class ImageAPI extends Controller {
     /**
      * Get an image of the map according to the given set of coordinates.
      *
-     * @param id		Map to get image of.
-     * @param x			Origin x coordinate (top left).
-     * @param y			Origin y coordinate (top left).
-     * @param w			Width in tiles.
-     * @param h			Height in tiles.
-     * @param s			Size (width) of each tile.
      * @return
-     *
-    def imageByCoord(String id, int x, int y, int w, int h, int s, String style) {
-        MapInfo		info = mapService.getMapByNameOrId(id);
+     */
+    Object imageByCoord(Request request, Response response) throws ApiException {
+        logger.info("imageByCoord:");
+        try (Cartexography app = Server.getApp()) {
+            MapInfoDao mapInfoDao = app.getMapInfoDao();
+
+            String mapId = getStringParam(request, "id");
+            MapInfo info = mapInfoDao.get(mapId);
+
+            System.out.println("Looking for " + mapId);
+
+            if (info == null) {
+                throw new ApiException("Unable to find map with name [" + mapId + "]");
+            }
+
+            int x = getIntParamWithDefault(request, "x", 0);
+            int y = getIntParamWithDefault(request, "y", 0);
+            int w = getIntParamWithDefault(request, "w", info.getWidth() - x);
+            int h = getIntParamWithDefault(request, "h", info.getHeight() - y);
+            String style = getStringParamWithDefault(request, "style", info.getStyle());
+            int s = getIntParamWithDefault(request, "s", 32);
+
+
+            response.type("image/png");
+            SimpleImage image = getImageByCoord(app, info, x, y, w, h, s, style);
+
+            return image.save().toByteArray();
+        } catch (Exception e) {
+            response.status(404);
+        }
+        return null;
+    }
+
+    private SimpleImage getImageByCoord(Cartexography app, MapInfo info, int x, int y, int w, int h, int scale, String style) throws MalformedURLException {
+
+        logger.info(String.format("getImageByCoord: [%s] [%d]+[%d] [%d]x[%d]", info.getTitle(), x, y, w, h));
 
         if (x < 0) {
             x = 0;
@@ -131,50 +165,43 @@ public class ImageAPI extends Controller {
         if (y < 0) {
             y = 0;
         }
-        if (x%2 == 1) {
-            x --
+        if (x % 2 == 1) {
+            x--;
         }
-        if (x + w > info.width) {
-            w = info.width - x;
+        if (x + w > info.getWidth()) {
+            w = info.getWidth() - x;
         }
-        if (y + h > info.height) {
-            h = info.height - y;
+        if (y + h > info.getHeight()) {
+            h = info.getHeight() - y;
         }
 
-        SimpleImage image = getMapImage(info, x, y, w, h, s, style)
+        return getMapImage(app, info, x, y, w, h, scale, style);
 
-        byte[] data = image.toPng().toByteArray()
-
-        response.setContentType("image/png")
-        response.setContentLength(data.length)
-        OutputStream	out = response.getOutputStream();
-        out.write(data)
-        out.close()
-        return null
     }
 
-    private addVariantImage(Map images, Terrain terrain, int variant, String path, int w, int h) {
-        if (images.get((int)terrain.id) == null) {
-            images.put((int)terrain.id, [:])
+    private void addVariantImage(Map<Integer, Map> images, Terrain terrain, int variant, String path, int w, int h) throws MalformedURLException {
+        if (images.get((int)terrain.getId()) == null) {
+            images.put((int)terrain.getId(), new HashMap());
         }
-        Map varmap = images.get((int)terrain.id)
+        Map varmap = images.get((int)terrain.getId());
         if (varmap.get(variant) == null) {
-            varmap.put(variant, getImage(terrain, variant, path, w, h))
+            varmap.put(variant, getImage(terrain, variant, path, w, h));
         } else {
-            varmap.put(variant, getImage(terrain, variant, path, w, h))
+            varmap.put(variant, getImage(terrain, variant, path, w, h));
         }
     }
 
-    private Image getVariantImage(Map images, int tid, int var) {
-        Map varmap = images.get(tid)
+    private Image getVariantImage(Map<Integer,Map> images, int tid, int var) {
+        Map varmap = images.get(tid);
         if (varmap != null) {
-            return varmap.get(var)
+            return (Image) varmap.get(var);
         }
-        return null
+        return null;
     }
 
-    private SimpleImage getMapImage(MapInfo info, int x, int y, int w, int h, int s, String style) {
+    private SimpleImage getMapImage(Cartexography app, MapInfo info, int x, int y, int w, int h, int s, String style) throws MalformedURLException {
         // Use a default scale if none is given. Based on largest dimension.
+        logger.debug("getMapImage: ");
         if (s < 1) {
             int size = w * h;
             if (size > 10000) {
@@ -190,59 +217,62 @@ public class ImageAPI extends Controller {
         if (style == null || style.length() == 0) {
             style = info.getStyle();
         }
+        logger.debug("getMapImage: Have style of [" + style + "]");
 
         SimpleImage image = new SimpleImage(width, height, "#ffffff");
 
-        String BASE_PATH = grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+style).file.absolutePath
+        String BASE_PATH = "cartexography/web-app/images/style/" + style; //grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+style).file.absolutePath;
+        BASE_PATH = new File(BASE_PATH).getAbsolutePath();
 
         int[][]		map = new int[h][w];
         int[][]		area = new int[h][w];
         Area        selectedArea = null;
-        if (params.areaId != null) {
-            selectedArea = areaService.getAreaByName(info, params.areaId);
-        }
+//        if (params.areaId != null) {
+//            selectedArea = areaService.getAreaByName(info, params.areaId);
+//        }
 
-        java.util.List list = Hex.findAll ({
-                eq('mapInfo', info);
-                between('x', x, x + w -1);
-                between('y', y, y + h - 1);
+        HexDao hexDao = app.getHexDao();
+        TerrainDao terrainDao = app.getTerrainDao();
+        AreaDao areaDao = app.getAreaDao();
 
-                projections {
-                property("x")
-                property("y")
-                property("terrainId")
-                property("areaId")
-                property("variant")
-        }
-                order("y")
-                order("x")
-        })
+        logger.debug("Got DAOs");
 
-        Map terrain = [:];
-        Map	images = [:];
+        Map terrain = new HashMap();
+        Map	images = new HashMap();
 
-        int		tileWidth = s
-        int		tileHeight = s * 0.86
-        int		columnWidth = s * 0.73
+        int		tileWidth = s;
+        int		tileHeight = (int) (s * 0.86);
+        int		columnWidth = (int) (s * 0.73);
 
-        Terrain background = Terrain.findById(info.background);
-        terrain.put(info.background, background);
-        Terrain oob = Terrain.findById(info.oob);
-        terrain.put(info.oob, oob);
-        Terrain unknown = Terrain.findById(Terrain.UNKNOWN);
+        Terrain background = terrainDao.get(info.getBackground());
+        terrain.put(info.getBackground(), background);
+        Terrain oob = terrainDao.get(info.getOob());
+        terrain.put(info.getOob(), oob);
+        Terrain unknown = terrainDao.get(Terrain.UNKNOWN);
+
+        logger.debug("Getting variants");
 
         addVariantImage(images, background, 0, BASE_PATH, tileWidth, tileHeight);
         addVariantImage(images, oob, 0, BASE_PATH, tileWidth, tileHeight);
         addVariantImage(images, unknown, 0, BASE_PATH, tileWidth, tileHeight);
 
-        list.each { hex ->
-                //println "${hex[0]},${hex[1]}"
-                map[hex[1] - y][hex[0] - x] = hex[2] * 10 + hex[4]
-            area[hex[1] - y][hex[0] - x] = hex[3]
-            if (getVariantImage(images, hex[2], hex[4]) == null) {
-                Terrain 	t = Terrain.findById(hex[2])
+        logger.debug("Got variants");
+
+        List<Hex> hexes = hexDao.getAll(info, x, y, w, h);
+
+        logger.debug("Found " + hexes.size() + " hexes");
+
+        for (Hex hex : hexes) {
+            //println "${hex[0]},${hex[1]}"
+            System.out.println(hex);
+            map[hex.getY() - y][hex.getX() - x] = hex.getTerrainId() * 10 + hex.getVariant();
+            area[hex.getY() - y][hex.getX() - x] = hex.getAreaId();
+            if (getVariantImage(images, hex.getTerrainId(), hex.getVariant()) == null) {
+                Terrain 	t = terrainDao.get(hex.getTerrainId());
+                System.out.println(hex.getTerrainId());
                 if (t != null) {
-                    addVariantImage(images, t, (int)hex[4], BASE_PATH, tileWidth, tileHeight)
+                    System.out.println("Adding terrain " + t.getName());
+                    addVariantImage(images, t, (int)hex.getVariant(), BASE_PATH, tileWidth, tileHeight);
                 }
             }
         }
@@ -257,33 +287,34 @@ public class ImageAPI extends Controller {
                     tid = map[py - py%10][px - px%10];
                     if (tid == 0) {
                         // Default to background terrain.
-                        if (mapService.isOut(info, x + px, y + py)) {
-                            tid = oob.id;
-                        } else {
-                            tid = background.id;
-                        }
-                        var = 0
+                        //if (mapService.isOut(info, x + px, y + py)) {
+                        //    tid = oob.id;
+                        //} else {
+                            tid = background.getId();
+                        //}
+                        var = 0;
                     }
                 }
-                Image img = getVariantImage(images, tid, var)
+                Image img = getVariantImage(images, tid, var);
                 if (img != null) {
-                    int		xx = px * columnWidth
-                    int		yy = py * tileHeight
+                    int		xx = px * columnWidth;
+                    int		yy = py * tileHeight;
                     if (px %2 == 1) {
-                        yy += tileHeight / 2
+                        yy += tileHeight / 2;
                     }
-                    if (selectedArea == null || selectedArea.id == area[py][px]) {
+                    if (selectedArea == null || selectedArea.getId() == area[py][px]) {
                         image.paint(img, xx, yy, tileWidth, tileHeight);
                     } else {
                         image.paint(img, xx, yy, tileWidth, tileHeight);
                         image.paint(getVariantImage(images, Terrain.UNKNOWN, 0), xx, yy, tileWidth, tileHeight);
                     }
                 } else {
-                    //println "No image for ${px}, ${py} ${tid} ${var}"
+                    System.out.println("No image for ${px}, ${py} ${tid} ${var}");
                 }
             }
         }
 
+        /*
         if (params.hex == "1") {
             String hexColour = "#44444444";
             float hexThickness = 3;
@@ -302,6 +333,9 @@ public class ImageAPI extends Controller {
                 }
             }
         }
+
+         */
+        /*
         if (params.areas == "1") {
             // Now do the area borders
             String borderColour = "#ff0000";
@@ -332,10 +366,14 @@ public class ImageAPI extends Controller {
                 }
             }
         }
+
+         */
         // Draw rivers
-        drawRivers(info, image, columnWidth, tileHeight, s, x, y, w, h)
+        //drawRivers(info, image, columnWidth, tileHeight, s, x, y, w, h)
+
 
         // Draw places
+        /*
         java.util.List places = Place.findAll ({
                 eq('mapInfo', info);
                 between('tileX', x, x + w -1);
@@ -369,7 +407,10 @@ public class ImageAPI extends Controller {
             }
         }
 
+         */
+
         // Draw labels
+        /*
         if (params.l != "0") {
             java.util.List labels = Label.findAll ({
                     eq('mapInfo', info);
@@ -401,6 +442,7 @@ public class ImageAPI extends Controller {
                 }
             }
         }
+        */
 
         return image;
     }

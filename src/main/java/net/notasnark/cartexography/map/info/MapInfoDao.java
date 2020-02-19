@@ -23,9 +23,7 @@ public class MapInfoDao extends Dao {
     }
 
     public MapInfo get(int id) {
-        MapInfo map = (MapInfo) session.find(MapInfo.class, id);
-
-        return map;
+        return (MapInfo) session.find(MapInfo.class, id);
     }
 
     public MapInfo get(String name) {
