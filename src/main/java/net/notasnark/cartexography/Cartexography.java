@@ -7,7 +7,7 @@ package net.notasnark.cartexography;
 import net.notasnark.cartexography.map.area.AreaDao;
 import net.notasnark.cartexography.map.hex.HexDao;
 import net.notasnark.cartexography.map.info.MapInfoDao;
-import net.notasnark.cartexography.map.terrain.TerrainDao;
+import net.notasnark.cartexography.map.hex.TerrainDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

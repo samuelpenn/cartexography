@@ -5,7 +5,7 @@
 package net.notasnark.cartexography.map.area;
 
 /**
- * Class which defines the bounds of a region on a map.
+ * Class which defines the bounds of a region on a map. All coordinates are inclusive.
  */
 public class Bounds {
     public int minX = 0;
@@ -13,7 +13,7 @@ public class Bounds {
     public int minY = 0;
     public int maxY = 0;
 
-    protected Bounds() {
+    public Bounds() {
         // We can only define it locally.
     }
 

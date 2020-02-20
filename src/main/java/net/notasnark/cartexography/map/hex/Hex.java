@@ -6,6 +6,13 @@ package net.notasnark.cartexography.map.hex;
 
 import javax.persistence.*;
 
+/**
+ * A Hex represents a single tile on a map. It has a type of Terrain associated with it, as well
+ * as a named area. A hex can also have a variant image defined, so that a large sections of tiles
+ * all of the same terrain type have some level of variation to their look.
+ *
+ * Together, the mapInfoId, x and y coordinates should be unique.
+ */
 @Entity
 @Table(name = "map")
 public class Hex {

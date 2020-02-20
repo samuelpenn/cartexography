@@ -8,13 +8,13 @@ import net.notasnark.cartexography.Cartexography;
 import net.notasnark.cartexography.map.area.Area;
 import net.notasnark.cartexography.map.hex.Hex;
 import net.notasnark.cartexography.map.hex.HexDao;
-import net.notasnark.cartexography.map.terrain.Terrain;
-import net.notasnark.cartexography.map.Thing;
+import net.notasnark.cartexography.map.hex.Terrain;
+import net.notasnark.cartexography.map.place.Thing;
 import net.notasnark.cartexography.map.area.AreaDao;
 import net.notasnark.cartexography.map.area.Bounds;
 import net.notasnark.cartexography.map.info.MapInfo;
 import net.notasnark.cartexography.map.info.MapInfoDao;
-import net.notasnark.cartexography.map.terrain.TerrainDao;
+import net.notasnark.cartexography.map.hex.TerrainDao;
 import net.notasnark.cartexography.web.Controller;
 import net.notasnark.cartexography.web.Server;
 import net.notasnark.utils.SimpleImage;
@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hibernate.criterion.Projections.property;
 import static spark.Spark.get;
 
 public class ImageAPI extends Controller {

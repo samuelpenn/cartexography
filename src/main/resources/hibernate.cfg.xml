@@ -31,8 +31,13 @@
 
         <mapping class="net.notasnark.cartexography.map.info.MapInfo" />
         <mapping class="net.notasnark.cartexography.map.area.Area" />
-        <mapping class="net.notasnark.cartexography.map.terrain.Terrain" />
+        <mapping class="net.notasnark.cartexography.map.hex.Terrain" />
         <mapping class="net.notasnark.cartexography.map.hex.Hex" />
+        <mapping class="net.notasnark.cartexography.map.path.Path" />
+        <mapping class="net.notasnark.cartexography.map.path.Vertex" />
+        <mapping class="net.notasnark.cartexography.map.place.Place" />
+        <mapping class="net.notasnark.cartexography.map.place.Thing" />
+        <mapping class="net.notasnark.cartexography.map.label.Label" />
     </session-factory>
 
 </hibernate-configuration>

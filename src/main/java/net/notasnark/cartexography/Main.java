@@ -9,6 +9,8 @@ import net.notasnark.cartexography.map.area.AreaDao;
 import net.notasnark.cartexography.map.area.Bounds;
 import net.notasnark.cartexography.map.info.MapInfoDao;
 import net.notasnark.cartexography.map.info.MapInfo;
+import net.notasnark.cartexography.map.path.Path;
+import net.notasnark.cartexography.map.path.PathDao;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
@@ -46,6 +48,14 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        testMaps();
+        //testAreas();
+        testPaths();
+
+    }
+
+    private static void testMaps() {
+        System.out.println("\n---- Maps ----\n");
         MapInfoDao dao = new MapInfoDao(sessionFactory.createEntityManager());
         List<MapInfo> maps = dao.getAll();
 
@@ -53,7 +63,10 @@ public class Main {
         for (MapInfo map : maps) {
             System.out.println(map.getName());
         }
-        System.out.println("\n----\n");
+    }
+
+    private static void testAreas() {
+        System.out.println("\n---- Areas ----\n");
         AreaDao areaDao = new AreaDao(sessionFactory.createEntityManager());
         Area a = areaDao.get(793);
         System.out.println(a.getTitle());
@@ -62,6 +75,16 @@ public class Main {
         System.out.println(b.maxX);
         System.out.println(b.minY);
         System.out.println(b.maxY);
+    }
+
+    private static void testPaths() {
+        System.out.println("\n---- Paths ----\n");
+        PathDao pathDao = new PathDao(sessionFactory.createEntityManager());
+
+        Path p = pathDao.get(322);
+        System.out.println(p.getName());
+        System.out.println("Vertices: " + p.getVertices().size());
+
 
     }
 }
