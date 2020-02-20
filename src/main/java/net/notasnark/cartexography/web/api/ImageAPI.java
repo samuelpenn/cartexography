@@ -39,20 +39,19 @@ public class ImageAPI extends Controller {
 
     public void setupEndpoints() {
         logger.info("Setting up endpoints for ImageAPI");
-        get("/api/image/hex", (request, response) -> drawHex(request, response));
-        get( "/api/image/map/:id", (request, response) -> imageByCoord(request, response));
+        get("/api/image/hex", this::drawHex);
+        get( "/api/image/map/:id", this::imageByCoord);
     }
 
     private Image getImage(Terrain terrain, int variant, String path, int width, int height) throws MalformedURLException {
         String fullpath = "file://" + path + "/terrain/" + terrain.getName() + "_" + variant + ".png";
-        System.out.println(fullpath);
         URL url = new URL(fullpath);
 
         return SimpleImage.createImage(width, height, url);
     }
 
     private Image getImage(Thing thing, String path, int width, int height) throws MalformedURLException {
-        URL		url = new URL("file://" + path + "/things/${thing.name}.png");
+        URL		url = new URL("file://" + path + "/things/" + thing.getName() + ".png");
 
         return SimpleImage.createImage(width, height, url);
     }
@@ -84,7 +83,8 @@ public class ImageAPI extends Controller {
             String areaId = getStringParam(request, "area");
             int border = getIntParamWithDefault(request, "border", 1);
             int s = getIntParamWithDefault(request, "s", 32);
-            String style = getStringParamWithDefault(request, "style", info.getStyle());
+
+            MapStyle style = new MapStyle(request, logger);
 
             AreaDao areaDao = app.getAreaDao();
             Area area = areaDao.get(info, areaId);
@@ -110,7 +110,7 @@ public class ImageAPI extends Controller {
                 w += 1;
             }
 
-            getImageByCoord(app, info, x, y, w, h, s, style);
+            getImageByCoord(app, info, x, y, w, h, style);
         } catch (Exception e) {
             response.status(404);
         }
@@ -140,12 +140,13 @@ public class ImageAPI extends Controller {
             int y = getIntParamWithDefault(request, "y", 0);
             int w = getIntParamWithDefault(request, "w", info.getWidth() - x);
             int h = getIntParamWithDefault(request, "h", info.getHeight() - y);
-            String style = getStringParamWithDefault(request, "style", info.getStyle());
             int s = getIntParamWithDefault(request, "s", 32);
+
+            MapStyle style = new MapStyle(request, logger);
 
 
             response.type("image/png");
-            SimpleImage image = getImageByCoord(app, info, x, y, w, h, s, style);
+            SimpleImage image = getImageByCoord(app, info, x, y, w, h, style);
 
             return image.save().toByteArray();
         } catch (Exception e) {
@@ -154,7 +155,7 @@ public class ImageAPI extends Controller {
         return null;
     }
 
-    private SimpleImage getImageByCoord(Cartexography app, MapInfo info, int x, int y, int w, int h, int scale, String style) throws MalformedURLException {
+    private SimpleImage getImageByCoord(Cartexography app, MapInfo info, int x, int y, int w, int h, MapStyle style) throws MalformedURLException {
 
         logger.info(String.format("getImageByCoord: [%s] [%d]+[%d] [%d]x[%d]", info.getTitle(), x, y, w, h));
 
@@ -174,7 +175,7 @@ public class ImageAPI extends Controller {
             h = info.getHeight() - y;
         }
 
-        return getMapImage(app, info, x, y, w, h, scale, style);
+        return getMapImage(app, info, x, y, w, h, style);
 
     }
 
@@ -198,29 +199,29 @@ public class ImageAPI extends Controller {
         return null;
     }
 
-    private SimpleImage getMapImage(Cartexography app, MapInfo info, int x, int y, int w, int h, int s, String style) throws MalformedURLException {
+    private SimpleImage getMapImage(Cartexography app, MapInfo info, int x, int y, int w, int h, MapStyle style) throws MalformedURLException {
         // Use a default scale if none is given. Based on largest dimension.
         logger.debug("getMapImage: ");
-        if (s < 1) {
+        if (style.scale < 1) {
             int size = w * h;
             if (size > 10000) {
-                s = 1000000 / size;
+                style.scale = 1000000 / size;
             } else {
-                s = 100;
+                style.scale = 100;
             }
         }
 
-        int			height = (int) ((h * s + s / 2) * 0.86);
-        int			width = (int) ((w * s) * 0.73 + s * 0.25);
+        int			height = (int) ((h * style.scale + style.scale / 2) * 0.86);
+        int			width = (int) ((w * style.scale) * 0.73 + style.scale * 0.25);
 
-        if (style == null || style.length() == 0) {
-            style = info.getStyle();
+        if (style.style == null || style.style.length() == 0) {
+            style.style = info.getStyle();
         }
-        logger.debug("getMapImage: Have style of [" + style + "]");
+        logger.debug("getMapImage: Have style of [" + style.style + "]");
 
         SimpleImage image = new SimpleImage(width, height, "#ffffff");
 
-        String BASE_PATH = "cartexography/web-app/images/style/" + style; //grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+style).file.absolutePath;
+        String BASE_PATH = "src/main/resources/public/images/style/" + style.style; //grailsApplication.parentContext.getResource("WEB-INF/../images/style/"+style).file.absolutePath;
         BASE_PATH = new File(BASE_PATH).getAbsolutePath();
 
         int[][]		map = new int[h][w];
@@ -239,9 +240,9 @@ public class ImageAPI extends Controller {
         Map terrain = new HashMap();
         Map	images = new HashMap();
 
-        int		tileWidth = s;
-        int		tileHeight = (int) (s * 0.86);
-        int		columnWidth = (int) (s * 0.73);
+        int		tileWidth = style.scale;
+        int		tileHeight = (int) (style.scale * 0.86);
+        int		columnWidth = (int) (style.scale * 0.73);
 
         Terrain background = terrainDao.get(info.getBackground());
         terrain.put(info.getBackground(), background);
@@ -262,8 +263,6 @@ public class ImageAPI extends Controller {
         logger.debug("Found " + hexes.size() + " hexes");
 
         for (Hex hex : hexes) {
-            //println "${hex[0]},${hex[1]}"
-            System.out.println(hex);
             map[hex.getY() - y][hex.getX() - x] = hex.getTerrainId() * 10 + hex.getVariant();
             area[hex.getY() - y][hex.getX() - x] = hex.getAreaId();
             if (getVariantImage(images, hex.getTerrainId(), hex.getVariant()) == null) {
@@ -313,8 +312,7 @@ public class ImageAPI extends Controller {
             }
         }
 
-        /*
-        if (params.hex == "1") {
+        if (style.showHexes) {
             String hexColour = "#44444444";
             float hexThickness = 3;
             // Draw a hex grid
@@ -333,7 +331,6 @@ public class ImageAPI extends Controller {
             }
         }
 
-         */
         /*
         if (params.areas == "1") {
             // Now do the area borders

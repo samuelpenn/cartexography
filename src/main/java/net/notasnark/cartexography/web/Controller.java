@@ -79,7 +79,7 @@ public abstract class Controller {
      * @return          Non-null and non-empty value of the parameter.
      * @throws ApiException     Thrown if parameter not set or was empty.
      */
-    protected String getStringParam(Request request, String name) throws ApiException {
+    public static String getStringParam(Request request, String name) throws ApiException {
         String value = request.params(":" + name);
 
         if (value == null || value.trim().length() == 0) {
@@ -92,7 +92,7 @@ public abstract class Controller {
         return value;
     }
 
-    protected String getStringParamWithDefault(Request request, String name, String value) throws ApiException {
+    public static String getStringParamWithDefault(Request request, String name, String value) throws ApiException {
         try {
             return getStringParam(request, name);
         } catch (ApiException e) {
@@ -112,7 +112,7 @@ public abstract class Controller {
      * @param name      Name of the parameter.
      * @return          Guaranteed to be an integer.
      */
-    protected int getIntParam(Request request, String name) throws ApiException {
+    public static int getIntParam(Request request, String name) throws ApiException {
         String value = getStringParam(request, name);
         try {
             return Integer.parseInt(value);
@@ -131,7 +131,7 @@ public abstract class Controller {
      * @param name      Name of the parameter.
      * @return          Guaranteed to be a strictly positive integer.
      */
-    protected int getIdParam(Request request, String name) throws ApiException {
+    public static int getIdParam(Request request, String name) throws ApiException {
         int id = getIntParam(request, name);
 
         if (id < 1) {
@@ -153,7 +153,7 @@ public abstract class Controller {
      * @return          Guaranteed to be an integer.
      * @throws ApiException Exception if parameter was an illegal format.
      */
-    protected int getIntParamWithDefault(Request request, String name, int value) throws ApiException {
+    public static int getIntParamWithDefault(Request request, String name, int value) throws ApiException {
         try {
             return getIntParam(request, name);
         } catch (ApiException e) {
@@ -174,7 +174,7 @@ public abstract class Controller {
      * @return          Guaranteed to be a long.
      * @throws ApiException Exception if parameter was an illegal format or missing.
      */
-    protected long getLongParam(Request request, String name) throws ApiException {
+    public static long getLongParam(Request request, String name) throws ApiException {
         String value = getStringParam(request, name);
         try {
             return Long.parseLong(value);
@@ -195,7 +195,7 @@ public abstract class Controller {
      * @return          Long value if set, default value otherwise.
      * @throws ApiException Exception if parameter was provided in invalid format.
      */
-    protected long getLongParamWithDefault(Request request, String name, long value) throws ApiException {
+    public static long getLongParamWithDefault(Request request, String name, long value) throws ApiException {
         try {
             return getLongParam(request, name);
         } catch (ApiException e) {
@@ -214,7 +214,7 @@ public abstract class Controller {
      * @return          True or False.
      * @throws ApiException Exception if parameter was missing or invalid.
      */
-    protected boolean getBooleanParam(Request request, String name) throws ApiException {
+    public static boolean getBooleanParam(Request request, String name) throws ApiException {
         String value = getStringParam(request, name);
 
         return Boolean.valueOf(value);
@@ -230,7 +230,7 @@ public abstract class Controller {
      * @return          True or False.
      * @throws ApiException Exception if parameter was missing or invalid.
      */
-    protected boolean getBooleanParamWithDefault(Request request, String name, boolean value) throws ApiException {
+    public static boolean getBooleanParamWithDefault(Request request, String name, boolean value) throws ApiException {
         try {
             return getBooleanParam(request, name);
         } catch (ApiException e) {
