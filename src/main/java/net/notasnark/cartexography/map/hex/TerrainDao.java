@@ -24,7 +24,7 @@ public class TerrainDao extends Dao {
 
     public List<Terrain> getAll(MapInfo map) {
         Query query =  session.createQuery("FROM Terrain WHERE mapinfo_id = :map");
-        query.setParameter("map", map.getId());
+        query.setParameter("map", map.getTemplate());
 
         return (List<Terrain>) query.getResultList();
     }

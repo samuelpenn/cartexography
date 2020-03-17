@@ -107,5 +107,7 @@ public class MapInfo {
         return world;
     }
 
+    public int getTemplate() { return template; }
+
 
 }

@@ -7,6 +7,8 @@ package net.notasnark.cartexography.web.api;
 import net.notasnark.cartexography.Cartexography;
 import net.notasnark.cartexography.map.hex.Hex;
 import net.notasnark.cartexography.map.hex.HexDao;
+import net.notasnark.cartexography.map.hex.Terrain;
+import net.notasnark.cartexography.map.hex.TerrainDao;
 import net.notasnark.cartexography.map.info.MapInfo;
 import net.notasnark.cartexography.map.info.MapInfoDao;
 import net.notasnark.cartexography.web.Controller;
@@ -29,6 +31,8 @@ public class MapAPI extends Controller {
     public void setupEndpoints() {
         logger.info("Setting up endpoints for MapAPI");
         get("/api/map/:id", this::map, json());
+        get("/api/map/:id/data", this::data, json());
+        get("/api/map/:id/terrain", this::terrain, json());
     }
 
     /**
@@ -39,7 +43,7 @@ public class MapAPI extends Controller {
      * @return              JSON data describing a MapInfo object.
      */
     private MapInfo map(Request request, Response response) {
-        System.out.println("MapAPI.map:");
+        logger.info("map:");
         try (Cartexography app = Server.getApp()) {
             MapInfoDao mapInfoDao = app.getMapInfoDao();
 
@@ -54,8 +58,8 @@ public class MapAPI extends Controller {
         return null;
     }
 
-    private Object data(Request request, Response response) {
-        System.out.println("MapAPI.data:");
+    private MapData data(Request request, Response response) {
+        logger.info("data:");
 
         try (Cartexography app = Server.getApp()) {
             MapInfoDao mapInfoDao = app.getMapInfoDao();
@@ -87,6 +91,29 @@ public class MapAPI extends Controller {
 
             response.type("application/json");
             return data;
+        } catch (Exception e) {
+            response.status(404);
+        }
+
+        return null;
+    }
+
+    private Object terrain(Request request, Response response) {
+        logger.info("terrain:");
+
+        try (Cartexography app = Server.getApp()) {
+            MapInfoDao mapInfoDao = app.getMapInfoDao();
+            TerrainDao terrainDao = app.getTerrainDao();
+
+            String  mapId = getStringParam(request, "id");
+            MapInfo mapInfo = mapInfoDao.get(mapId);
+
+            logger.debug("Getting terrain for " + mapInfo.getTemplate());
+            List<Terrain> list = terrainDao.getAll(mapInfo);
+            logger.debug("Got " + list.size() + " results");
+
+            response.type("application/json");
+            return list;
         } catch (Exception e) {
             response.status(404);
         }
