@@ -1,0 +1,37 @@
+{
+  "name": "cartexography",
+  "version": "2.0.0",
+  "description": "***Cartexography*** is a Java based application for drawing maps.",
+  "main": "cartexography.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/samuelpenn/cartexography.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GPL3",
+  "bugs": {
+    "url": "https://github.com/samuelpenn/cartexography/issues"
+  },
+  "homepage": "https://github.com/samuelpenn/cartexography/blob/master/README.md",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  }
+}
