@@ -1,3 +1,34 @@
 h1 {
     color: green;
 }
+
+div.header-stats {
+    background-color: #F0F0F0;
+    border-top: 1px solid black;
+}
+
+dl.statistics {
+    margin: 0;
+    padding: 0;
+}
+
+dl.statistics dt {
+    display: inline;
+    font-weight: bold;
+    width: auto;
+}
+
+dl.statistics dd {
+    display: inline;
+    margin-right: 2em;
+}
+
+dl.statistics dt::after {
+    content: ":"
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    border: 2px solid black;
+}

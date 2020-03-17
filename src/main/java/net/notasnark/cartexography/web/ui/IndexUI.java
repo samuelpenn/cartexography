@@ -7,6 +7,7 @@ package net.notasnark.cartexography.web.ui;
 import net.notasnark.cartexography.Cartexography;
 import net.notasnark.cartexography.map.info.MapInfo;
 import net.notasnark.cartexography.web.Controller;
+import net.notasnark.cartexography.web.api.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
@@ -26,11 +27,19 @@ public class IndexUI extends Controller {
 
     public void setupEndpoints() {
         logger.info("Setting up endpoints for IndexUI");
-        get("/", (request, response) -> index(request, response));
-        get("/index", (request, response) -> index(request, response));
-        get("/index.html", (request, response) -> index(request, response));
+        get("/", this::index);
+        get("/index", this::index);
+        get("/index.html", this::index);
+        get("/map/:id", this::map);
     }
 
+    /**
+     * Provide a list of maps that can be clicked on to take user to a specific map.
+     *
+     * @param request
+     * @param response
+     * @return
+     */
     private Object index(Request request, Response response) {
         try (Cartexography app = getApp()) {
             Map<String,Object> model = new HashMap<>();
@@ -41,6 +50,37 @@ public class IndexUI extends Controller {
 
             return new VelocityTemplateEngine().render(
                 new ModelAndView(model, "templates/index.vm")
+            );
+
+        } catch (Exception e) {
+            logger.error("Internal error", e);
+        }
+        return null;
+    }
+
+    /**
+     * Display a map for viewing and editing.
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    private Object map(Request request, Response response) throws ApiException {
+        System.out.println("IndexUI.map:");
+        String mapId = getStringParam(request, "id");
+
+        try (Cartexography app = getApp()) {
+            Map<String,Object> model = new HashMap<>();
+
+            MapInfo map = app.getMapInfoDao().get(mapId);
+            System.out.println(map.getTitle());
+            model.put("version", "2.0");
+            model.put("mapId", mapId);
+            model.put("mapInfo", map);
+            model.put("mapTitle", map.getTitle());
+
+            return new VelocityTemplateEngine().render(
+                    new ModelAndView(model, "templates/map.vm")
             );
 
         } catch (Exception e) {

@@ -8,6 +8,9 @@ import net.notasnark.cartexography.web.Controller;
 import org.slf4j.Logger;
 import spark.Request;
 
+/**
+ * Object for obtaining and passing around map style information from web parameters.
+ */
 public class MapStyle {
     String      style = "standard";
     boolean     showHexes = false;

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <title>${mapInfo.title}</title>
+      <link href="/css/cartexography.css" rel="stylesheet" type="text/css"/>
+    </head>
+
+    <script type="text/javascript">
+      MAP_ID=${mapInfo.id};
+      MAP_NAME="${mapInfo.name}";
+      MAP_TITLE="${mapInfo.title}";
+    </script>
+
+    <body>
+        <div id="app" mapName="${mapInfo.name}"/>
+        <div id="root">
+
+        </div>
+        <script type="text/javascript" src="/js/main.js"></script>
+    </body>
+</html>
