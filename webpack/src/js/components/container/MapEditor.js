@@ -14,11 +14,6 @@ function Header(props) {
 }
 
 function Statistics(props) {
-	console.log(props.info.width);
-	console.log(props.info.height);
-	console.log(props.view.x);
-	console.log(props.view.y);
-	console.log(props.view.scale);
     return (
         <div class="header-stats">
             <dl class="statistics">
